@@ -5,12 +5,19 @@
         .hidden {
             display: none;
         }
+
         .correct {
             color: black;
+            background-color: lightgreen;
         }
+
         .wrong {
             color: white;
             background-color: red;
+        }
+        .missing {
+            color: black;
+            background-color: orange;
         }
     </style>
 </head>
@@ -24,22 +31,34 @@
     </div>
 
     <div>
-        <button id="connectButton">Connect</button><span id="statusBar">Disconnected</span><br />
+        <button id="connectButton">Connect</button><span id="statusBar">Disconnected</span>
+    </div>
+    <div>
+        <button id="startButton">Clear</button>
     </div>
 
     <div>
-        Received from Morserino: <button id="showHideButton">Hide</button><br/>
-        
-        <textarea rows="3" cols="60" id="receiveText"></textarea>
+        Received from Morserino: <button id="showHideButton">Hide</button><br />
+
+        <textarea rows="3" cols="80" id="receiveText">vvv&lt;ka&gt; fefss ssg u0iy5 ,t .wm wg aa fvjt 0ofg ln5w u,iw5 v5 oyjr, ,gvn, ff + </textarea>
     </div>
+    
     <div>
-        Your Input:<br/>
-        <textarea rows="3" cols="60" id="inputText"></textarea>
+        Your Input:<br />
+        <textarea rows="3" cols="80" id="inputText">f fss ssg u0iy5 ,t .wm wg aa yvjt 0ofg l  w u,iw5 oljr, ,gun, ff</textarea>
     </div>
     <div id="resultComparison">
         Result comparing Received/Input: <button onclick="compareTexts()">Compare</button>
-        <div id="inputComparator"></div>
+        <div id="inputComparator" style="font-family:monospace;"></div>
         <div id="correctPercentage"></div> You must have >= 90% to continue with the next letter.
+        <div>
+            <ul>
+                <li>Green: correct character</li>
+                <li>Orange: missing character</li>
+                <li>Red: wrong character</li>
+            </ul>
+
+        </div>
     </div>
 
     <div class="footer">
@@ -60,6 +79,7 @@
         let connectButton = document.getElementById("connectButton");
         let showHideButton = document.getElementById("showHideButton");
         let statusBar = document.getElementById("statusBar");
+        let startButton = document.getElementById("startButton");
 
 
         let resultComparison = document.getElementById("resultComparison");
@@ -73,6 +93,7 @@
         connectButton.addEventListener("click", clickConnect)
 
         showHideButton.addEventListener("click", clickShowHide);
+        startButton.addEventListener("click", startChallenge);
 
         inputText.oninput = compareTexts;
 
@@ -104,9 +125,16 @@
         }
 
         function compareTexts() {
-            let received = receiveText.value;
-            let input = inputText.value;
+            let received = receiveText.value.trim();
+            let input = inputText.value.trim();
             let correctCount = 0;
+
+            if (received.startsWith("vvv<ka> ") && !input.startsWith("vvv<ka> ")) {
+                received = received.substring(" vvv<ka> ".length - 1);
+            }
+            if (received.endsWith(" +") && !input.endsWith(" +")) {
+                received = received.substring(0, received.length - " +".length -1);
+            }
 
             let elements = [];
             for (var index = 0; index < received.length; index++) {
@@ -115,18 +143,31 @@
                 if (index < input.length) {
                     inputChar = input.charAt(index);
                     if (receivedChar == inputChar) {
-                        element.classList.add("correct");
+                        elements.push(createSpanElement(inputChar, "correct"));
                         correctCount++;
                     } else {
-                        element.classList.add("wrong");
+                        elements.push(createSpanElement(inputChar, "missing"));
+                        elements.push(createSpanElement(receivedChar, "wrong"));
                     }
-                    element.innerHTML = inputChar;
-                    elements.push(element);
-                } 
+                }
             }
             inputComparator.replaceChildren(...elements);
-            correctPercentage.innerText = correctCount + "/" + received.length + " (" + Math.round(correctCount / received.length * 100) + "%)";
+            percentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
+            correctPercentage.innerText = correctCount + "/" + received.length + " correct (" + percentage + "%)";
         };
+
+        function createSpanElement(value, clasz) {
+            let element = document.createElement('span');
+            element.classList.add(clasz);
+            element.innerHTML = value;
+            return element;
+        }
+
+        function startChallenge() {
+            receiveText.value = "";
+            inputText.value = "";
+            inputComparator.innerHTML = "";
+        }
 
         //Define outputstream, inputstream and port so they can be used throughout the sketch
         var outputStream, inputStream, port;
