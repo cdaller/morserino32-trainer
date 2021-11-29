@@ -124,7 +124,7 @@ function compareTexts() {
 
     inputComparator.replaceChildren(...elements);
     percentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
-    correctPercentage.innerText = correctCount + "/" + received.length + " correct (" + percentage + "%)";
+    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + percentage + "%)";
 };
 
 function createSpanElement(value, clasz) {
