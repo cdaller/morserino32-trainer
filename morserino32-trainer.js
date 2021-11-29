@@ -64,8 +64,6 @@ function compareTexts() {
     let received = receiveText.value.trim();
     let input = inputText.value.trim();
 
-    let correctCount = 0;
-
     if (received.startsWith("vvv<ka> ") && !input.startsWith("vvv<ka> ")) {
         received = received.substring(" vvv<ka> ".length - 1);
     }
@@ -73,33 +71,28 @@ function compareTexts() {
         received = received.substring(0, received.length - " +".length - 1);
     }
 
-
     const changes = myers.diff(received, input, {
-        compare: 'chars', // lines|words|chars
+        compare: 'chars',
         ignoreWhitespace: false,
         ignoreCase: true,
         ignoreAccents: false
     });
 
-    console.log(changes);
+    //console.log(changes);
 
     let elements = [];
-    let elementsAdded = [];
     let index = 0;
-    // abc de fghi jklm nop qrst uvwx yz 1234567890
-    // abc de xxxx jklm nop qrst uvwx yz 1234567890
-    // abc de fghixxxx jklm nop qrst uvwx yz 1234567890
-    //           1         2         3         4
-    // 012345678901234567890123456789012345678901234567890
-
+    let errorCount = 0;
+    let correctCount = 0;
 
     for (const change of changes) {
-        // add correct text before any changes:
-        let minPos = Math.min(change.lhs.pos, change.rhs.pos);
-        let correctText = received.substring(index, minPos);
+        // add correct text before next change:
+        let nextPos = change.lhs.pos;
+        correctCount += nextPos - index;
+        let correctText = received.substring(index, nextPos);
         //console.log("correctText: ", correctText);
         elements.push(createSpanElement(correctText, "correct"));
-        index = minPos;
+        index = nextPos;
 
         if (myers.changed(change.lhs)) {
             // deleted
@@ -110,6 +103,7 @@ function compareTexts() {
             elements.push(createSpanElement(deletedText, "missing"))
             index = pos + length;
             //console.log("index: ", index);
+            errorCount += length;
         }
         if (myers.changed(change.rhs)) {
             // added
@@ -118,29 +112,16 @@ function compareTexts() {
             let addedText = input.substring(pos, pos + length);
             //console.log("addedText: ", addedText);
             elements.push(createSpanElement(addedText, "wrong"))
+            errorCount += length;
         }
     }
+
     // add end of string
+    correctCount += received.length - index;
     let endText = received.substring(index);
     //console.log("endText:", endText);
     elements.push(createSpanElement(endText, "correct"));
 
-
-    // let elements = [];
-    // for (var index = 0; index < received.length; index++) {
-    //     let element = document.createElement('span');
-    //     receivedChar = received.charAt(index);
-    //     if (index < input.length) {
-    //         inputChar = input.charAt(index);
-    //         if (receivedChar == inputChar) {
-    //             elements.push(createSpanElement(inputChar, "correct"));
-    //             correctCount++;
-    //         } else {
-    //             elements.push(createSpanElement(inputChar, "missing"));
-    //             elements.push(createSpanElement(receivedChar, "wrong"));
-    //         }
-    //     }
-    // }
     inputComparator.replaceChildren(...elements);
     percentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
     correctPercentage.innerText = correctCount + "/" + received.length + " correct (" + percentage + "%)";
