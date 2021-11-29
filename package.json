@@ -1,0 +1,14 @@
+{
+  "name": "morserino-trainer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "morserino-trainer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "myers-diff": "^2.0.1"
+  }
+}
