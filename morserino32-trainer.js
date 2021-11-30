@@ -4,6 +4,7 @@ This code is highly based on the webSerial tutorial by Google:
 https://codelabs.developers.google.com/codelabs/web-serial/#0
 */
 
+let jsdiff = require('diff');
 
 //Define the elements
 let receiveText = document.getElementById("receiveText");
@@ -11,15 +12,13 @@ let inputText = document.getElementById("inputText");
 let connectButton = document.getElementById("connectButton");
 let showHideButton = document.getElementById("showHideButton");
 let statusBar = document.getElementById("statusBar");
-let startButton = document.getElementById("startButton");
+let clearButton = document.getElementById("clearButton");
 
 
 let resultComparison = document.getElementById("resultComparison");
 let inputComparator = document.getElementById("inputComparator");
 let correctPercentage = document.getElementById("correctPercentage");
 let compareTextsButton = document.getElementById("compareTextsButton");
-
-const myers = require('myers-diff');
 
 let showHideButtonState = true; // true = show
 setTextShowHideButton();
@@ -28,7 +27,7 @@ setTextShowHideButton();
 connectButton.addEventListener("click", clickConnect)
 
 showHideButton.addEventListener("click", clickShowHide);
-startButton.addEventListener("click", startChallenge);
+clearButton.addEventListener("click", clearTextFields);
 compareTextsButton.addEventListener("click", compareTexts);
 
 inputText.oninput = compareTexts;
@@ -71,56 +70,22 @@ function compareTexts() {
         received = received.substring(0, received.length - " +".length - 1);
     }
 
-    const changes = myers.diff(received, input, {
-        compare: 'chars',
-        ignoreWhitespace: false,
-        ignoreCase: true,
-        ignoreAccents: false
-    });
-
-    //console.log(changes);
-
     let elements = [];
-    let index = 0;
-    let errorCount = 0;
     let correctCount = 0;
 
-    for (const change of changes) {
-        // add correct text before next change:
-        let nextPos = change.lhs.pos;
-        correctCount += nextPos - index;
-        let correctText = received.substring(index, nextPos);
-        //console.log("correctText: ", correctText);
-        elements.push(createSpanElement(correctText, "correct"));
-        index = nextPos;
-
-        if (myers.changed(change.lhs)) {
-            // deleted
-            const { pos, text, del, length } = change.lhs;
-            //console.log("deleted: ", pos, text, del, length);
-            let deletedText = received.substring(pos, pos + length);
-            //console.log("deletedText: ", deletedText);
-            elements.push(createSpanElement(deletedText, "missing"))
-            index = pos + length;
-            //console.log("index: ", index);
-            errorCount += length;
+    let diff = jsdiff.diffChars(received, input);
+    diff.forEach(function (part) {
+        // green for additions, red for deletions
+        // grey for common parts
+        if (part.added) {
+            elements.push(createSpanElement(part.value, "wrong"))
+        } else if (part.removed) {
+            elements.push(createSpanElement(part.value, "missing"))
+        } else {
+            correctCount += part.value.length;
+            elements.push(createSpanElement(part.value, "correct"))
         }
-        if (myers.changed(change.rhs)) {
-            // added
-            const { pos, text, add, length } = change.rhs;
-            //console.log("added: ", pos, text, add, length);
-            let addedText = input.substring(pos, pos + length);
-            //console.log("addedText: ", addedText);
-            elements.push(createSpanElement(addedText, "wrong"))
-            errorCount += length;
-        }
-    }
-
-    // add end of string
-    correctCount += received.length - index;
-    let endText = received.substring(index);
-    //console.log("endText:", endText);
-    elements.push(createSpanElement(endText, "correct"));
+    });
 
     inputComparator.replaceChildren(...elements);
     percentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
@@ -134,10 +99,11 @@ function createSpanElement(value, clasz) {
     return element;
 }
 
-function startChallenge() {
+function clearTextFields() {
     receiveText.value = "";
     inputText.value = "";
     inputComparator.innerHTML = "";
+    correctPercentage.innerHTML = "";
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
@@ -230,7 +196,6 @@ function clickSend() {
     writeToStream(sendText.value)
     //and clear the input field, so it's clear it has been sent
     sendText.value = "";
-
 }
 
 //Read the incoming data

@@ -9,6 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "myers-diff": "^2.0.1"
+    "diff": "^5.0.0"
   }
 }
