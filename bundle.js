@@ -68,7 +68,7 @@ function compareTexts() {
         received = received.substring(" vvv<ka> ".length - 1);
     }
     if (received.endsWith(" +") && !input.endsWith(" +")) {
-        received = received.substring(0, received.length - " +".length - 1);
+        received = received.substring(0, received.length - " +".length);
     }
 
     let elements = [];
