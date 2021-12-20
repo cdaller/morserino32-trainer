@@ -1,10 +1,8 @@
 
-/*
-This code is highly based on the webSerial tutorial by Google:
-https://codelabs.developers.google.com/codelabs/web-serial/#0
-*/
 
 let jsdiff = require('diff');
+
+let storageKey = 'morserino-trainer';
 
 //Define the elements
 let receiveText = document.getElementById("receiveText");
@@ -13,15 +11,18 @@ let connectButton = document.getElementById("connectButton");
 let showHideButton = document.getElementById("showHideButton");
 let statusBar = document.getElementById("statusBar");
 let clearButton = document.getElementById("clearButton");
-
+let saveButton = document.getElementById("saveButton");
 
 let resultComparison = document.getElementById("resultComparison");
 let inputComparator = document.getElementById("inputComparator");
 let correctPercentage = document.getElementById("correctPercentage");
 let compareTextsButton = document.getElementById("compareTextsButton");
 
+let lastPercentage;
 let showHideButtonState = true; // true = show
 setTextShowHideButton();
+showStoredResults(JSON.parse(localStorage.getItem(storageKey)));
+
 
 //Couple the elements to the Events
 connectButton.addEventListener("click", clickConnect)
@@ -29,6 +30,7 @@ connectButton.addEventListener("click", clickConnect)
 showHideButton.addEventListener("click", clickShowHide);
 clearButton.addEventListener("click", clearTextFields);
 compareTextsButton.addEventListener("click", compareTexts);
+saveButton.addEventListener("click", saveResult);
 
 inputText.oninput = compareTexts;
 
@@ -60,15 +62,8 @@ function setTextShowHideButton() {
 }
 
 function compareTexts() {
-    let received = receiveText.value.trim();
+    let received = trimReceivedText(receiveText.value);
     let input = inputText.value.trim();
-
-    if (received.startsWith("vvv<ka> ") && !input.startsWith("vvv<ka> ")) {
-        received = received.substring(" vvv<ka> ".length - 1);
-    }
-    if (received.endsWith(" +") && !input.endsWith(" +")) {
-        received = received.substring(0, received.length - " +".length);
-    }
 
     let elements = [];
     let correctCount = 0;
@@ -88,12 +83,28 @@ function compareTexts() {
     });
 
     inputComparator.replaceChildren(...elements);
-    percentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
-    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + percentage + "%)";
-};
+    lastPercentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
+    
+    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + lastPercentage + "%)";
+}
+
+function trimReceivedText(text) {
+    text = text.trim();
+    if (text.startsWith("vvv<ka> ")) {
+        text = text.substring(" vvv<ka> ".length - 1);
+    }
+    if (text.endsWith(" +")) {
+        text = text.substring(0, text.length - " +".length);
+    }
+    return text;
+}
 
 function createSpanElement(value, clasz) {
-    let element = document.createElement('span');
+    return createElement(value, 'span', clasz);
+}
+
+function createElement(value, tag, clasz) {
+    let element = document.createElement(tag);
     element.classList.add(clasz);
     element.innerHTML = value;
     return element;
@@ -104,6 +115,33 @@ function clearTextFields() {
     inputText.value = "";
     inputComparator.innerHTML = "";
     correctPercentage.innerHTML = "";
+}
+
+function saveResult() {
+    let storedResults = JSON.parse(localStorage.getItem(storageKey));
+    if (!storedResults) {
+        storedResults = [];
+    }
+    let receivedText = trimReceivedText(receiveText.value);
+    let result = {text: receivedText, percentage: lastPercentage, date: Date.now()}
+    storedResults.push(result);
+    let storedResultsText = JSON.stringify(storedResults);
+    localStorage.setItem(storageKey, storedResultsText);
+    console.log('Saving result to localStorage', storedResultsText);
+    showStoredResults(storedResults);
+}
+
+
+function showStoredResults(storedResults) {
+    let resultElement = this.document.getElementById('savedResults');
+    if (storedResults) {
+        let elements = storedResults.map(result => {
+            let text = result.text + (result.percentage ? ' (' + result.percentage + '%)' : '');
+            return createElement(text, 'li', null);
+        });
+        elements = elements.reverse(); // sort by date descending
+        resultElement.replaceChildren(...elements);  
+    }
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
