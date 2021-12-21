@@ -110,6 +110,12 @@ function createElement(value, tag, clasz) {
     return element;
 }
 
+function createElementWithChildren(tag, ...children) {
+    let element = document.createElement(tag);
+    element.replaceChildren(...children);
+    return element;
+}
+
 function clearTextFields() {
     receiveText.value = "";
     inputText.value = "";
@@ -123,7 +129,8 @@ function saveResult() {
         storedResults = [];
     }
     let receivedText = trimReceivedText(receiveText.value);
-    let result = {text: receivedText, percentage: lastPercentage, date: Date.now()}
+    let input = inputText.value.trim();
+    let result = {text: receivedText, input: input, percentage: lastPercentage, date: Date.now()};
     storedResults.push(result);
     let storedResultsText = JSON.stringify(storedResults);
     localStorage.setItem(storageKey, storedResultsText);
@@ -135,13 +142,26 @@ function saveResult() {
 function showStoredResults(storedResults) {
     let resultElement = this.document.getElementById('savedResults');
     if (storedResults) {
-        let elements = storedResults.map(result => {
-            let text = result.text + (result.percentage ? ' (' + result.percentage + '%)' : '');
-            return createElement(text, 'li', null);
+        let elements = storedResults.map((result, index) => {
+            let text = result.text + (result.percentage ? ' (' + result.percentage + '%)' : '') + '&nbsp;';
+            let spanElement = createSpanElement(text, null);
+            let removeElement = createElement('(remove)', 'a', null);
+            removeElement.setAttribute('href', '#');
+            removeElement.onclick = ( function(_index) { return function() {removeStoredResult(_index);}})(index);
+//            removeElement.setAttribute('onclick', 'removeStoredResult(' + index + ')');
+            return createElementWithChildren('li', spanElement, removeElement);
         });
         elements = elements.reverse(); // sort by date descending
         resultElement.replaceChildren(...elements);  
     }
+}
+
+function removeStoredResult(index) {
+    let storedResults = JSON.parse(localStorage.getItem(storageKey));
+    // remove element index from array:
+    storedResults = storedResults.slice(0,index).concat(storedResults.slice(index + 1));
+    localStorage.setItem(storageKey, JSON.stringify(storedResults));
+    showStoredResults(storedResults);
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
