@@ -20,14 +20,13 @@ let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
 let showHideButtonState = true; // true = show
-setTextShowHideButton();
 showStoredResults(JSON.parse(localStorage.getItem(storageKey)));
 
 
 //Couple the elements to the Events
 connectButton.addEventListener("click", clickConnect)
 
-showHideButton.addEventListener("click", clickShowHide);
+showHideButton.addEventListener("change", clickShowHide);
 clearButton.addEventListener("click", clearTextFields);
 compareTextsButton.addEventListener("click", compareTexts);
 saveButton.addEventListener("click", saveResult);
@@ -48,18 +47,9 @@ async function clickConnect() {
 
 function clickShowHide() {
     showHideButtonState = !showHideButtonState;
-    receiveText.classList.toggle("hidden");
     resultComparison.classList.toggle("hidden");
-    setTextShowHideButton();
 }
 
-function setTextShowHideButton() {
-    if (showHideButtonState) {
-        showHideButton.innerText = "Hide text from Morserino";
-    } else {
-        showHideButton.innerText = "Show text from Morserino";
-    }
-}
 
 function compareTexts() {
     let received = trimReceivedText(receiveText.value);
