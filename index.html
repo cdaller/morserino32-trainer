@@ -1,8 +1,14 @@
-<html>
+<!doctype html>
+<html lang="en">
 
 <head>
-    <script language="javascript" src="bootstrap.min.js"></script>
-    <link rel="stylesheet" href="bootstrap.min.css">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    
     <style>
         .hidden {
             display: none;
@@ -61,12 +67,44 @@
     </style>
 </head>
 
-
 <body>
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
     <div class="shadow-sm p-3 mb-2 bg-light">
         <h1>Morserino32 CW Training</h1>
-        <div>
-            Compare the characters received from Morserino32 with the decoded text you entered.
+            <div>
+                Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> with the decoded text you entered.
+            </div>
+            <div>
+                <button class="btn btn-info" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
+                    Help
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse" id="collapseHelp">
+        <div class="card card-body">
+            You might need to configure the morserino to send characters via serial line first!
+            <ul>
+                <li>Connect usb cable from Morserino32 to your PC/Mac/Linux machine</li>
+                <li>Use "Connect" button and select serial port of Morserino32</li>
+                <li>Start CW-Generator on Morserino</li>
+                <li>Type your decoded CW into the second field.</li>
+                <li>Hide received/compared text if you want.</li>
+            </ul>
+            <p>
+            The results can also be saved into the local storage of the browser to show the progress you make and to have some text to encode in cw.
+            </p>
+            <p>
+            Configure Morserino to send data via serial cable (by default, the morserino does not send data to the serial connection):
+            </p>
+            <ul>
+                <li>Double click black button on Morserino</li>
+                <li>Find "Serial Output"</li>
+                <li>Set to "Decoder", "Keyer+Decoder", or to "Everything"</li>
+            </ul>
         </div>
     </div>
 
@@ -76,6 +114,7 @@
             Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
             <br/>
             <button id="connectButton" class="btn btn-primary" style="margin-top: 4px">Connect</button>
+
         </div>
 
         <!--
@@ -128,6 +167,7 @@
         </div>
         <div class="alert alert-secondary mt-3">
             <h3>Saved Results</h3>
+            <div>(Saved results are only stored in your browser)</div>
             <ul id="savedResults">
             </ul>
         </div>
