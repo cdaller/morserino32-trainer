@@ -158,12 +158,14 @@ function removeStoredResult(index) {
 var outputStream, inputStream, port;
 navigator.serial.addEventListener('connect', e => {
     statusBar.innerText = `Connected to ${e.port}`;
-    connectButton.innerText = "Disconnect"
+    statusBar.className = 'badge bg-success';
+    connectButton.innerText = 'Disconnect';
 });
 
 navigator.serial.addEventListener('disconnect', e => {
     statusBar.innerText = `Disconnected`;
-    connectButton.innerText = "Connect"
+    statusBar.className = 'badge bg-danger';
+    connectButton.innerText = 'Connect';
 });
 
 //Connect to the Arduino
@@ -187,8 +189,10 @@ async function connect() {
         // - Wait for the port to open.
         await port.open({ baudRate: baudRate });
 
-        statusBar.innerText = "Connected";
-        connectButton.innerText = "Disconnect"
+        statusBar.innerText = `Connected`;
+        statusBar.className = 'badge bg-success';
+        connectButton.innerText = 'Disconnect';
+
         let decoder = new TextDecoderStream();
         inputDone = port.readable.pipeTo(decoder.writable);
         inputStream = decoder.readable;
@@ -231,8 +235,9 @@ async function disconnect() {
         outputStream = null;
         outputDone = null;
     }
-    statusBar.innerText = "Disconnected";
-    connectButton.innerText = "Connect"
+    statusBar.innerText = `Disconnected`;
+    statusBar.className = 'badge bg-danger';
+    connectButton.innerText = 'Connect';
     //Close the port.
     await port.close();
     port = null;

@@ -21,14 +21,13 @@ let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
 let showHideButtonState = true; // true = show
-setTextShowHideButton();
 showStoredResults(JSON.parse(localStorage.getItem(storageKey)));
 
 
 //Couple the elements to the Events
 connectButton.addEventListener("click", clickConnect)
 
-showHideButton.addEventListener("click", clickShowHide);
+showHideButton.addEventListener("change", clickShowHide);
 clearButton.addEventListener("click", clearTextFields);
 compareTextsButton.addEventListener("click", compareTexts);
 saveButton.addEventListener("click", saveResult);
@@ -49,18 +48,9 @@ async function clickConnect() {
 
 function clickShowHide() {
     showHideButtonState = !showHideButtonState;
-    receiveText.classList.toggle("hidden");
     resultComparison.classList.toggle("hidden");
-    setTextShowHideButton();
 }
 
-function setTextShowHideButton() {
-    if (showHideButtonState) {
-        showHideButton.innerText = "Hide text from Morserino";
-    } else {
-        showHideButton.innerText = "Show text from Morserino";
-    }
-}
 
 function compareTexts() {
     let received = trimReceivedText(receiveText.value);
@@ -169,12 +159,14 @@ function removeStoredResult(index) {
 var outputStream, inputStream, port;
 navigator.serial.addEventListener('connect', e => {
     statusBar.innerText = `Connected to ${e.port}`;
-    connectButton.innerText = "Disconnect"
+    statusBar.className = 'badge bg-success';
+    connectButton.innerText = 'Disconnect';
 });
 
 navigator.serial.addEventListener('disconnect', e => {
     statusBar.innerText = `Disconnected`;
-    connectButton.innerText = "Connect"
+    statusBar.className = 'badge bg-danger';
+    connectButton.innerText = 'Connect';
 });
 
 //Connect to the Arduino
@@ -198,8 +190,10 @@ async function connect() {
         // - Wait for the port to open.
         await port.open({ baudRate: baudRate });
 
-        statusBar.innerText = "Connected";
-        connectButton.innerText = "Disconnect"
+        statusBar.innerText = `Connected`;
+        statusBar.className = 'badge bg-success';
+        connectButton.innerText = 'Disconnect';
+
         let decoder = new TextDecoderStream();
         inputDone = port.readable.pipeTo(decoder.writable);
         inputStream = decoder.readable;
@@ -242,8 +236,9 @@ async function disconnect() {
         outputStream = null;
         outputDone = null;
     }
-    statusBar.innerText = "Disconnected";
-    connectButton.innerText = "Connect"
+    statusBar.innerText = `Disconnected`;
+    statusBar.className = 'badge bg-danger';
+    connectButton.innerText = 'Connect';
     //Close the port.
     await port.close();
     port = null;
