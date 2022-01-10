@@ -15,6 +15,13 @@ You might need to configure the morserino to send characters via serial line fir
 
 The results can also be saved into the local storage of the browser to show the progress you make and to have some text to encode in cw.
 
+Supported browsers:
+* Chrome
+* Edge
+* Opera
+
+For details of browser support see [here](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/serial).
+
 ## Configure morserino32 to send Decoder to serial output
 
 By default, the morserino does not send data to the serial connection.
