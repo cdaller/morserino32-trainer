@@ -53,8 +53,8 @@ function clickShowHide() {
 
 
 function compareTexts() {
-    let received = trimReceivedText(receiveText.value);
-    let input = inputText.value.trim();
+    let received = trimReceivedText(receiveText.value).toLowerCase();
+    let input = inputText.value.trim().toLowerCase();
 
     let elements = [];
     let correctCount = 0;
