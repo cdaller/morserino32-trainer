@@ -142,7 +142,6 @@ function showStoredResults(storedResults) {
     if (storedResults) {
         let tableElement = createElement(null, 'table', 'table');
         let elements = storedResults
-                         .sort((a, b) => b.date - a.date) // order by date desc
                          .map((result, index) => {
             let date = new Date(result.date);
             let rowElement = createElement(null, 'tr', null);
@@ -174,6 +173,7 @@ function showStoredResults(storedResults) {
             rowElement.replaceChildren(...cells);
             return rowElement;
         });
+        elements = elements.reverse(); // order by date desc
 
         let headerRow = createElementWithChildren('tr', 
           createElement('Received/Input/Comparison', 'th', null), 
