@@ -56,6 +56,15 @@ function compareTexts() {
     let received = trimReceivedText(receiveText.value).toLowerCase();
     let input = inputText.value.trim().toLowerCase();
 
+    let [elements, correctCount] = createHtmlForComparedText(received, input);
+
+    inputComparator.replaceChildren(...elements);
+    lastPercentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
+    
+    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + lastPercentage + "%)";
+}
+
+function createHtmlForComparedText(received, input) {
     let elements = [];
     let correctCount = 0;
 
@@ -72,11 +81,7 @@ function compareTexts() {
             elements.push(createSpanElement(part.value, "correct"))
         }
     });
-
-    inputComparator.replaceChildren(...elements);
-    lastPercentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
-    
-    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + lastPercentage + "%)";
+    return [elements, correctCount];
 }
 
 function trimReceivedText(text) {
@@ -96,7 +101,9 @@ function createSpanElement(value, clasz) {
 
 function createElement(value, tag, clasz) {
     let element = document.createElement(tag);
-    element.classList.add(clasz);
+    if (clasz) {
+        element.classList.add(...clasz.split(' '));
+    }
     element.innerHTML = value;
     return element;
 }
@@ -133,17 +140,54 @@ function saveResult() {
 function showStoredResults(storedResults) {
     let resultElement = this.document.getElementById('savedResults');
     if (storedResults) {
-        let elements = storedResults.map((result, index) => {
-            let text = result.text + (result.percentage ? ' (' + result.percentage + '%)' : '') + '&nbsp;';
-            let spanElement = createSpanElement(text, null);
-            let removeElement = createElement('(remove)', 'a', null);
-            removeElement.setAttribute('href', '#');
+        let tableElement = createElement(null, 'table', 'table');
+        let elements = storedResults
+                         .sort((a, b) => b.date - a.date) // order by date desc
+                         .map((result, index) => {
+            let date = new Date(result.date);
+            let rowElement = createElement(null, 'tr', null);
+            let cells = [];
+
+            let cellContent = [];
+            cellContent.push(createSpanElement(result.text, null));
+            cellContent.push(createElement(null, 'br', null));
+            if (result.input) {
+                cellContent.push(createSpanElement(result.input, null));
+                cellContent.push(createElement(null, 'br', null));
+                let [comparedElements, correctCount] = createHtmlForComparedText(result.text, result.input);
+                cellContent.push(...comparedElements);
+            }
+
+            let textCell = createElement(null, 'td', null);
+            textCell.replaceChildren(...cellContent);
+            cells.push(textCell);
+            cells.push(createElement((result.percentage ? ' (' + result.percentage + '%)' : ''), 'td', null));
+            cells.push(createElement((result.date ? ' ' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : ''), 'td', null));
+
+            let removeElement = createElement('Remove', 'button', 'btn btn-danger');
+            removeElement.setAttribute('type', 'button');
             removeElement.onclick = ( function(_index) { return function() {removeStoredResult(_index);}})(index);
-//            removeElement.setAttribute('onclick', 'removeStoredResult(' + index + ')');
-            return createElementWithChildren('li', spanElement, removeElement);
+            let buttonCell = createElement(null, 'td', null);
+            buttonCell.replaceChildren(removeElement);
+            cells.push(buttonCell);
+
+            rowElement.replaceChildren(...cells);
+            return rowElement;
         });
-        elements = elements.reverse(); // sort by date descending
-        resultElement.replaceChildren(...elements);  
+
+        let headerRow = createElementWithChildren('tr', 
+          createElement('Received/Input/Comparison', 'th', null), 
+          createElement('Success', 'th', null),
+          createElement('Date/Time', 'th', null),
+          createElement('', 'th', null),
+        );
+
+        let tableElements = [];
+        tableElements.push(createElementWithChildren('thead', headerRow));
+        tableElements.push(createElementWithChildren('tbody', ...elements));
+        tableElement.replaceChildren(...tableElements);
+
+        resultElement.replaceChildren(tableElement);  
     }
 }
 

@@ -43,6 +43,12 @@
             border: 1px solid #CCCCCC;
             padding: 12px;
         }
+        .savedResultContainer {
+            margin-top: 25px;
+            background-color: #f9f8f8;
+            border: 1px solid #CCCCCC;
+            padding: 12px;
+        }
         .form-group {
             margin-top: 12px;
             margin-bottom: 8px;
@@ -165,11 +171,10 @@
                 <button class="btn btn-primary" id="saveButton">Save Received Text and Score</button>
             </div>
         </div>
-        <div class="alert alert-secondary mt-3">
+        <div class="savedResultContainer">
             <h3>Saved Results</h3>
             <div>(Saved results are only stored in your browser)</div>
-            <ul id="savedResults">
-            </ul>
+            <div id="savedResults"></div>
         </div>
     </div>
 
