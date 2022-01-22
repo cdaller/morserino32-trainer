@@ -22,6 +22,35 @@ let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
 let showHideButtonState = true; // true = show
+
+let ctx = document.getElementById('savedResultChart');
+let savedResultChart = new Chart(ctx, {
+    type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Percentage Success',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        ticks: {
+                            // Include a dollar sign in the ticks
+                            callback: function(value, index, ticks) {
+                                return value + '%';
+                            }
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+    });
+
+
 showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 
 
@@ -190,8 +219,9 @@ function showSavedResults(savedResults) {
 
         resultElement.replaceChildren(tableElement);  
 
-        drawStoredResultGraph(savedResults);
+        drawSavedResultGraph(savedResults);
     }
+    showHideSavedResultGraph(savedResults);
 }
 
 function removeStoredResult(index) {
@@ -202,44 +232,30 @@ function removeStoredResult(index) {
     showSavedResults(savedResults);
 }
 
-function drawStoredResultGraph(savedResults) {
+function drawSavedResultGraph(savedResults) {
     console.log('Drawing stored result graph');
-    percentageValues = [];
-    labels = [];
-    let elements = savedResults
-                         .map((result, index) => {
-                            let date = new Date(result.date);
-                            var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
-                            labels.push(dateString);
-                            percentageValues.push(result.percentage);
-                         });
-    var ctx = document.getElementById('savedResultChart');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Percentage Success',
-                data: percentageValues,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    ticks: {
-                        // Include a dollar sign in the ticks
-                        callback: function(value, index, ticks) {
-                            return value + '%';
-                        }
-                    },
-                    beginAtZero: true
-                }
-            }
-        }
+    let percentageValues = [];
+    let labels = [];
+    savedResults.forEach((result, index) => {
+        let date = new Date(result.date);
+        var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+        labels.push(dateString);
+        percentageValues.push(result.percentage);
     });
+    savedResultChart.data.labels = labels;
+    savedResultChart.data.datasets[0].data = percentageValues;
+    savedResultChart.update();
+}
 
+function showHideSavedResultGraph(savedResults) {
+    var canvasElement = document.getElementById('savedResultChart');
+    if (savedResults && savedResults.length > 0) {
+        console.log('showing graph');
+        canvasElement.style.display = "block";
+    } else {
+        console.log('hiding graph');
+        canvasElement.style.display = "none";
+    }
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
