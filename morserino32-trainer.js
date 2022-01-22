@@ -1,6 +1,7 @@
 
 
 let jsdiff = require('diff');
+let Charts = require('chart.js');
 
 let storageKey = 'morserino-trainer';
 
@@ -20,7 +21,7 @@ let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
 let showHideButtonState = true; // true = show
-showStoredResults(JSON.parse(localStorage.getItem(storageKey)));
+showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 
 
 //Couple the elements to the Events
@@ -132,15 +133,15 @@ function saveResult() {
     let storedResultsText = JSON.stringify(storedResults);
     localStorage.setItem(storageKey, storedResultsText);
     console.log('Saving result to localStorage', storedResultsText);
-    showStoredResults(storedResults);
+    showSavedResults(storedResults);
 }
 
 
-function showStoredResults(storedResults) {
+function showSavedResults(savedResults) {
     let resultElement = this.document.getElementById('savedResults');
-    if (storedResults) {
+    if (savedResults) {
         let tableElement = createElement(null, 'table', 'table');
-        let elements = storedResults
+        let elements = savedResults
                          .map((result, index) => {
             let date = new Date(result.date);
             let rowElement = createElement(null, 'tr', null);
@@ -187,15 +188,57 @@ function showStoredResults(storedResults) {
         tableElement.replaceChildren(...tableElements);
 
         resultElement.replaceChildren(tableElement);  
+
+        drawStoredResultGraph(savedResults);
     }
 }
 
 function removeStoredResult(index) {
-    let storedResults = JSON.parse(localStorage.getItem(storageKey));
+    let savedResults = JSON.parse(localStorage.getItem(storageKey));
     // remove element index from array:
-    storedResults = storedResults.slice(0,index).concat(storedResults.slice(index + 1));
-    localStorage.setItem(storageKey, JSON.stringify(storedResults));
-    showStoredResults(storedResults);
+    savedResults = savedResults.slice(0,index).concat(savedResults.slice(index + 1));
+    localStorage.setItem(storageKey, JSON.stringify(savedResults));
+    showSavedResults(savedResults);
+}
+
+function drawStoredResultGraph(savedResults) {
+    console.log('Drawing stored result graph');
+    percentageValues = [];
+    labels = [];
+    let elements = savedResults
+                         .map((result, index) => {
+                            let date = new Date(result.date);
+                            var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+                            labels.push(dateString);
+                            percentageValues.push(result.percentage);
+                         });
+    var ctx = document.getElementById('savedResultChart');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Percentage Success',
+                data: percentageValues,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    ticks: {
+                        // Include a dollar sign in the ticks
+                        callback: function(value, index, ticks) {
+                            return value + '%';
+                        }
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch

@@ -9,6 +9,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "chart.js": "^3.7.0",
     "diff": "^5.0.0"
   }
 }

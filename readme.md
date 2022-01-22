@@ -28,7 +28,7 @@ By default, the morserino does not send data to the serial connection.
 
 * Double click black button
 * Find "Serial Output"
-* Set to "Decoder", "Keyer+Decoder", or to "Everything"
+* Set to "Everything" - you might to do this for every stored snapshot profile you want to use!
 
 ## Build
 
