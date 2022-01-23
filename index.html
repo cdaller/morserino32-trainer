@@ -87,7 +87,9 @@
         <h1>Morserino32 CW Training</h1>
             <div class="row">
                 <div class="col-12 col-md-11">
-                    Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> with the decoded text you entered.
+                    Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> in "CW Generator" 
+                    mode with the decoded text you entered<br/> 
+                    or the text you keyed on the Morserino in "CW Keyer" mode with the text you want to key.
                 </div>
                 <div class="col-12 col-md-1">
                     <button class="btn btn-info float-right" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
@@ -105,11 +107,14 @@
                 <li>Connect usb cable from Morserino32 to your PC/Mac/Linux machine.</li>
                 <li>Use "Connect" button and select serial port of Morserino32</li>
                 <li>Start CW-Generator on Morserino</li>
-                <li>Type your decoded CW into the second field.</li>
+                <li>Type your decoded CW text into the second field.</li>
                 <li>Hide received/compared text if you want.</li>
             </ul>
             <p>
             The results can also be saved into the local storage of the browser to show the progress you make and to have some text to encode in cw.
+            </p>
+            <p>
+            For a CW Keyer training copy the text to be keyed into the "Your Input" field and start keying on the Morserino.
             </p>
             <p>
             Configure Morserino to send data via serial cable (by default, the morserino does not send data to the serial connection):
@@ -143,7 +148,8 @@
             <div class="form-group">
                 <div id="morserino_detail" class="collapse show">
                     Received from Morserino:
-                    <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                    <!--<textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
+                    <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
                 </div>
             </div>
             
@@ -153,7 +159,8 @@
             </div>
 
             <div>
-                <button id="clearButton" class="btn btn-outline-primary">Clear</button>
+                <button id="clearAllButton" class="btn btn-outline-primary">Clear All (CW Generator Mode)</button>
+                <button id="clearReceivedButton" class="btn btn-outline-secondary">Clear Received Text (CW Keyer Mode)</button>
             </div>
 
             <div id="resultComparison" class="mt-2 collapse show">

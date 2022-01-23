@@ -16,7 +16,8 @@ let connectButton = document.getElementById("connectButton");
 let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");
 let autoHideCheckbox = document.getElementById("autoHideCheckbox");
 let statusBar = document.getElementById("statusBar");
-let clearButton = document.getElementById("clearButton");
+let clearAllButton = document.getElementById("clearAllButton");
+let clearReceivedButton = document.getElementById("clearReceivedButton");
 let saveButton = document.getElementById("saveButton");
 
 let resultComparison = document.getElementById("resultComparison");
@@ -85,11 +86,11 @@ showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 connectButton.addEventListener("click", clickConnect)
 
 showReceivedCheckbox.addEventListener("change", clickShowReceived);
-clearButton.addEventListener("click", clearTextFields);
+clearAllButton.addEventListener("click", clearTextFields);
+clearReceivedButton.addEventListener("click", clearReceivedTextField);
 compareTextsButton.addEventListener("click", compareTexts);
 saveButton.addEventListener("click", saveResult);
 
-receiveText.oninput = applyAutoHide;
 inputText.oninput = compareTexts;
 
 //When the connectButton is pressed
@@ -180,8 +181,12 @@ function createElementWithChildren(tag, ...children) {
 }
 
 function clearTextFields() {
-    receiveText.value = "";
     inputText.value = "";
+    clearReceivedTextField();
+}
+
+function clearReceivedTextField() {
+    receiveText.value = "";
     inputComparator.innerHTML = "";
     correctPercentage.innerHTML = "";
 }
