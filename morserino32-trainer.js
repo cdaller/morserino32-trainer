@@ -33,8 +33,8 @@ let savedResultChart = new Chart(ctx, {
                 datasets: [{
                     label: 'Score',
                     data: [],
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
+                    borderColor: '#0d6efd', // same color as blue buttons
+                    tension: 0.3
                 }]
             },
             options: {
@@ -50,6 +50,13 @@ let savedResultChart = new Chart(ctx, {
                     }
                 },
                 plugins: {
+                    title: {
+                        display: true,
+                        text: 'Score',
+                    },
+                    legend: {
+                        display: false,
+                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
