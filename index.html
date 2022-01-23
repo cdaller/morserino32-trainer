@@ -52,6 +52,10 @@
             border: 1px solid #CCCCCC;
             padding: 12px;
         }
+        .savedResultContainer button {
+            padding: 5px;
+            margin-top: 5px;
+        }
         .form-group {
             margin-top: 12px;
             margin-bottom: 8px;
@@ -131,7 +135,7 @@
         <div class="row">
             <div>
                 Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
-                <button id="connectButton" class="btn btn-primary" style="margin-top: 4px">Connect</button>
+                <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
             </div>
         </div>
 
@@ -159,8 +163,8 @@
             </div>
 
             <div>
-                <button id="clearAllButton" class="btn btn-outline-primary">Clear All (CW Generator Mode)</button>
-                <button id="clearReceivedButton" class="btn btn-outline-secondary">Clear Received Text (CW Keyer Mode)</button>
+                <button id="clearAllButton" class="btn btn-outline-primary" title="Clear text received from Morserino, your input and the comparison result (for CW Generator mode)" data-bs-toggle="tooltip">Clear All</button>
+                <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino and comparison result (for CW Keyer mode)" data-bs-toggle="tooltip">Clear Received Text and Result</button>
             </div>
 
             <div id="resultComparison" class="mt-2 collapse show">
@@ -180,8 +184,9 @@
                 </div>
             </div>
             <div>
-                <button class="btn btn-primary" id="saveButton">Save Result</button>
-                <span>(Saved results are only stored in your browser and not sent to anyone!)</span>
+                <button class="btn btn-primary" id="saveButton" title="Saved results are shown in list below and are only stored in your browser and not sent to anyone!" data-bs-toggle="tooltip">
+                    Save Result
+                </button>
             </div>
         </div>
         <div class="savedResultContainer">

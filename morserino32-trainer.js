@@ -77,9 +77,13 @@ let savedResultChart = new Chart(ctx, {
 
     });
 
+// enable bootstrap tooltips everywhere:    
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});    
 
 showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
-
 
 //Couple the elements to the Events
 connectButton.addEventListener("click", clickConnect)
@@ -232,11 +236,26 @@ function showSavedResults(savedResults) {
             cells.push(createElement((result.percentage ? ' (' + result.percentage + '%)' : ''), 'td', null));
             cells.push(createElement((result.date ? ' ' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : ''), 'td', null));
 
-            let removeElement = createElement('Remove', 'button', 'btn btn-danger');
+            let loadElement = createElement('Load', 'button', 'btn btn-outline-primary');
+            loadElement.setAttribute('type', 'button');
+            loadElement.setAttribute('data-toggle', 'tooltip');
+            loadElement.setAttribute('title', 'Load text into input field for CS Keyer mode.')
+            loadElement.onclick = ( function(_text) { 
+                return function() { 
+                    inputText.value = _text;
+                    document.getElementsByClassName('inputContainer')[0].scrollIntoView();
+                }
+            })(result.text);
+            new bootstrap.Tooltip(loadElement);
+
+            let removeElement = createElement('Remove', 'button', 'btn btn-outline-danger');
             removeElement.setAttribute('type', 'button');
-            removeElement.onclick = ( function(_index) { return function() {removeStoredResult(_index);}})(index);
+            removeElement.setAttribute('title', 'Remove result from saved results.')
+            removeElement.onclick = ( function(_index) { return function() { removeStoredResult(_index); }})(index);
+            new bootstrap.Tooltip(removeElement);
+
             let buttonCell = createElement(null, 'td', null);
-            buttonCell.replaceChildren(removeElement);
+            buttonCell.replaceChildren(loadElement, createElement(null, 'br', null), removeElement);
             cells.push(buttonCell);
 
             rowElement.replaceChildren(...cells);
@@ -320,17 +339,19 @@ function applyAutoHide() {
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
 var outputStream, inputStream, port;
-navigator.serial.addEventListener('connect', e => {
-    statusBar.innerText = `Connected to ${e.port}`;
-    statusBar.className = 'badge bg-success';
-    connectButton.innerText = 'Disconnect';
-});
+// navigator.serial.addEventListener('connect', e => {
+//     console.log('connect event triggered')
+//     statusBar.innerText = `Connected to ${e.port}`;
+//     statusBar.className = 'badge bg-success';
+//     connectButton.innerText = 'Disconnect';
+// });
 
-navigator.serial.addEventListener('disconnect', e => {
-    statusBar.innerText = `Disconnected`;
-    statusBar.className = 'badge bg-danger';
-    connectButton.innerText = 'Connect';
-});
+// navigator.serial.addEventListener('disconnect', e => {
+//     console.log('disconnect event triggered')
+//     statusBar.innerText = `Disconnected`;
+//     statusBar.className = 'badge bg-danger';
+//     connectButton.innerText = 'Connect';
+// });
 
 //Connect to the Arduino
 async function connect() {
@@ -367,6 +388,8 @@ async function connect() {
 
         reader = inputStream.getReader();
         readLoop();
+
+        inputText.focus();
     } catch (e) {
 
         //If the pipeTo error appears; clarify the problem by giving suggestions.
