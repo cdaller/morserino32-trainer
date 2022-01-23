@@ -32,7 +32,7 @@ let savedResultChart = new Chart(ctx, {
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Percentage Success',
+                    label: 'Score',
                     data: [],
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
@@ -49,8 +49,25 @@ let savedResultChart = new Chart(ctx, {
                         },
                         beginAtZero: true
                     }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                var label = context.dataset.label || '';        
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
                 }
-            }
+            },
+
     });
 
 
