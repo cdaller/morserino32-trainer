@@ -239,7 +239,7 @@ function showSavedResults(savedResults) {
             let loadElement = createElement('Load', 'button', 'btn btn-outline-primary');
             loadElement.setAttribute('type', 'button');
             loadElement.setAttribute('data-toggle', 'tooltip');
-            loadElement.setAttribute('title', 'Load text into input field for CS Keyer mode.')
+            loadElement.setAttribute('title', 'Load text into input field for CW Keyer mode.')
             loadElement.onclick = ( function(_text) { 
                 return function() { 
                     inputText.value = _text;
