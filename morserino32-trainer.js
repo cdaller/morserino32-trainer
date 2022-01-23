@@ -5,11 +5,15 @@ let Charts = require('chart.js');
 
 let storageKey = 'morserino-trainer';
 
+const MORSERINO_START = 'vvv<ka> ';
+const MORSERINO_END = ' +';
+
 //Define the elements
 let receiveText = document.getElementById("receiveText");
 let inputText = document.getElementById("inputText");
 let connectButton = document.getElementById("connectButton");
-let showHideButton = document.getElementById("showHideButton");
+let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");
+let autoHideCheckbox = document.getElementById("autoHideCheckbox");
 let statusBar = document.getElementById("statusBar");
 let clearButton = document.getElementById("clearButton");
 let saveButton = document.getElementById("saveButton");
@@ -20,7 +24,6 @@ let correctPercentage = document.getElementById("correctPercentage");
 let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
-let showHideButtonState = true; // true = show
 
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
@@ -56,11 +59,12 @@ showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 //Couple the elements to the Events
 connectButton.addEventListener("click", clickConnect)
 
-showHideButton.addEventListener("change", clickShowHide);
+showReceivedCheckbox.addEventListener("change", clickShowReceived);
 clearButton.addEventListener("click", clearTextFields);
 compareTextsButton.addEventListener("click", compareTexts);
 saveButton.addEventListener("click", saveResult);
 
+receiveText.oninput = applyAutoHide;
 inputText.oninput = compareTexts;
 
 //When the connectButton is pressed
@@ -75,9 +79,16 @@ async function clickConnect() {
     }
 }
 
-function clickShowHide() {
-    showHideButtonState = !showHideButtonState;
-    resultComparison.classList.toggle("hidden");
+function clickShowReceived() {
+    let shouldShow = showReceivedCheckbox.checked;
+    console.log('should show: ', shouldShow);
+    if (shouldShow) {
+        document.getElementById("morserino_detail").classList.add('show');
+        resultComparison.classList.add('show');
+    } else {
+        document.getElementById("morserino_detail").classList.remove('show');
+        resultComparison.classList.remove('show');
+    }
 }
 
 
@@ -115,11 +126,11 @@ function createHtmlForComparedText(received, input) {
 
 function trimReceivedText(text) {
     text = text.trim();
-    if (text.startsWith("vvv<ka> ")) {
-        text = text.substring(" vvv<ka> ".length - 1);
+    if (text.toLowerCase().startsWith(MORSERINO_START)) {
+        text = text.substring(MORSERINO_START.length);
     }
     if (text.endsWith(" +")) {
-        text = text.substring(0, text.length - " +".length);
+        text = text.substring(0, text.length - MORSERINO_END.length);
     }
     return text;
 }
@@ -247,13 +258,34 @@ function drawSavedResultGraph(savedResults) {
 }
 
 function showHideSavedResultGraph(savedResults) {
-    var canvasElement = document.getElementById('savedResultChart');
+    let canvasElement = document.getElementById('savedResultChart');
     if (savedResults && savedResults.length > 0) {
         console.log('showing graph');
         canvasElement.style.display = "block";
     } else {
         console.log('hiding graph');
         canvasElement.style.display = "none";
+    }
+}
+
+function applyAutoHide() {
+    if (!autoHideCheckbox.checked) {
+        return;
+    }
+    let text = receiveText.value;
+    if (!text || text.length < MORSERINO_START.length) {
+        return;
+    }
+    text = text.trim();
+    if (showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && !text.endsWith(MORSERINO_END)) {
+        showReceivedCheckbox.checked = false;
+        showReceivedCheckbox.dispatchEvent(new Event("change"));
+        console.log('auto hiding text');
+    }
+    if (!showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && text.endsWith(MORSERINO_END)) {
+        showReceivedCheckbox.checked = true;
+        showReceivedCheckbox.dispatchEvent(new Event("change"));
+        console.log('auto unhiding text');
     }
 }
 
@@ -366,5 +398,6 @@ async function readLoop() {
         //Scroll to the bottom of the text field
         receiveText.scrollTop = receiveText.scrollHeight;
         compareTexts();
+        applyAutoHide();
     }
 }
