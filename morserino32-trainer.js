@@ -26,7 +26,7 @@ let correctPercentage = document.getElementById("correctPercentage");
 let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
-let ignoreWhitespace = true;
+let ignoreWhitespace = false;
 
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
@@ -133,12 +133,7 @@ function compareTexts() {
     let received = trimReceivedText(receiveText.value).toLowerCase();
     let input = inputText.value.trim().toLowerCase();
 
-    if(ignoreWhitespace) {
-        received = received.replace(/\s/g,"");
-        input = input.replace(/\s/g,"");
-    }
-
-    let [elements, correctCount] = createHtmlForComparedText(received, input);
+    let [elements, correctCount] = createHtmlForComparedText(received, input, ignoreWhitespace);
 
     inputComparator.replaceChildren(...elements);
     lastPercentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
@@ -146,9 +141,14 @@ function compareTexts() {
     correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + lastPercentage + "%)";
 }
 
-function createHtmlForComparedText(received, input) {
+function createHtmlForComparedText(received, input, ignoreWhitespace) {
     let elements = [];
     let correctCount = 0;
+
+    if (ignoreWhitespace) {
+        received = received.replace(/\s/g,"");
+        input = input.replace(/\s/g,"");
+    }
 
     let diff = jsdiff.diffChars(received, input);
     diff.forEach(function (part) {
@@ -214,7 +214,7 @@ function saveResult() {
     }
     let receivedText = trimReceivedText(receiveText.value);
     let input = inputText.value.trim();
-    let result = {text: receivedText, input: input, percentage: lastPercentage, date: Date.now()};
+    let result = {text: receivedText, input: input, percentage: lastPercentage, date: Date.now(), ignoreWhitespace: ignoreWhitespace};
     storedResults.push(result);
     let storedResultsText = JSON.stringify(storedResults);
     localStorage.setItem(storageKey, storedResultsText);
@@ -239,7 +239,8 @@ function showSavedResults(savedResults) {
             if (result.input) {
                 cellContent.push(createSpanElement(result.input, null));
                 cellContent.push(createElement(null, 'br', null));
-                let [comparedElements, correctCount] = createHtmlForComparedText(result.text, result.input);
+                let ignoreWhitespace = result.ignoreWhitespace || false;
+                let [comparedElements, correctCount] = createHtmlForComparedText(result.text, result.input, ignoreWhitespace);
                 cellContent.push(...comparedElements);
             }
 
