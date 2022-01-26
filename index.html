@@ -152,8 +152,8 @@
             <div class="form-group">
                 <div id="morserino_detail" class="collapse show">
                     Received from Morserino:
-                    <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
-                    <!--<textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
+                    <!--<textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
+                    <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
                 </div>
             </div>
             
@@ -172,7 +172,12 @@
                     Result comparing Received/Input: <button id="compareTextsButton" style="display:none;">Compare</button>
                     <div id="inputComparator" class="result"></div>
                     <div id="correctPercentage"></div> 
-                
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked id="ignoreWhitespaceCheckbox">
+                        <label class="form-check-label" for="ignoreWhitespaceCheckbox">Ignore whitespace during comparison</label>
+                    </div>
+
                     <div class="legend">
                         You must have >= 90% to continue with the next letter.
                         <ul>
