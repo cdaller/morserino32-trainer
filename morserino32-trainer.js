@@ -27,6 +27,7 @@ let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
 let ignoreWhitespace = false;
+ignoreWhitespaceCheckbox.checked = ignoreWhitespace;
 
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
