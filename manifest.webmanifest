@@ -1,0 +1,17 @@
+{
+    "name": "Morserino32 CW Training",
+    "short_name": "Morserino32 CW",
+    "description": "Connect your Morserino32 and start learning CW.",
+    "start_url": "./",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+    "icons": [
+        {
+            "src": "icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
