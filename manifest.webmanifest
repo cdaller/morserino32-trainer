@@ -1,7 +1,7 @@
 {
     "name": "Morserino32 CW Training",
     "short_name": "Morserino32 CW",
-    "start_url": "/",
+    "start_url": "./",
     "display": "standalone",
     "theme_color": "#ffffff",
     "background_color": "#ffffff",
