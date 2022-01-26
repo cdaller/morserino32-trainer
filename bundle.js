@@ -81,7 +81,7 @@ let savedResultChart = new Chart(ctx, {
 // enable bootstrap tooltips everywhere:    
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
+    return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
 });    
 
 showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
@@ -247,13 +247,13 @@ function showSavedResults(savedResults) {
                     document.getElementsByClassName('inputContainer')[0].scrollIntoView();
                 }
             })(result.text);
-            new bootstrap.Tooltip(loadElement);
+            new bootstrap.Tooltip(loadElement, { trigger : 'hover' });
 
             let removeElement = createElement('Remove', 'button', 'btn btn-outline-danger');
             removeElement.setAttribute('type', 'button');
             removeElement.setAttribute('title', 'Remove result from saved results.')
             removeElement.onclick = ( function(_index) { return function() { removeStoredResult(_index); }})(index);
-            new bootstrap.Tooltip(removeElement);
+            new bootstrap.Tooltip(removeElement, { trigger : 'hover' });
 
             let buttonCell = createElement(null, 'td', null);
             buttonCell.replaceChildren(loadElement, createElement(null, 'br', null), removeElement);
