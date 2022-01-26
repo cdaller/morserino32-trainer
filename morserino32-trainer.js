@@ -13,7 +13,6 @@ let receiveText = document.getElementById("receiveText");
 let inputText = document.getElementById("inputText");
 let connectButton = document.getElementById("connectButton");
 let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");
-let ignoreWhitespaceCheckbox = document.getElementById("ignoreWhitespaceCheckbox");
 let autoHideCheckbox = document.getElementById("autoHideCheckbox");
 let statusBar = document.getElementById("statusBar");
 let clearAllButton = document.getElementById("clearAllButton");
@@ -26,7 +25,6 @@ let correctPercentage = document.getElementById("correctPercentage");
 let compareTextsButton = document.getElementById("compareTextsButton");
 
 let lastPercentage;
-let ignoreWhitespace = true;
 
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
@@ -91,7 +89,6 @@ showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 connectButton.addEventListener("click", clickConnect)
 
 showReceivedCheckbox.addEventListener("change", clickShowReceived);
-ignoreWhitespaceCheckbox.addEventListener("change", clickIgnoreWhitespace);
 clearAllButton.addEventListener("click", clearTextFields);
 clearReceivedButton.addEventListener("click", clearReceivedTextField);
 compareTextsButton.addEventListener("click", compareTexts);
@@ -123,20 +120,10 @@ function clickShowReceived() {
     }
 }
 
-function clickIgnoreWhitespace() {
-    ignoreWhitespace = ignoreWhitespaceCheckbox.checked;
-    console.log('ignore whitespace: ', ignoreWhitespace);
-    compareTexts();
-}
 
 function compareTexts() {
     let received = trimReceivedText(receiveText.value).toLowerCase();
     let input = inputText.value.trim().toLowerCase();
-
-    if(ignoreWhitespace) {
-        received = received.replace(/\s/g,"");
-        input = input.replace(/\s/g,"");
-    }
 
     let [elements, correctCount] = createHtmlForComparedText(received, input);
 
