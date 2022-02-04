@@ -134,12 +134,12 @@ function compareTexts() {
     let received = trimReceivedText(receiveText.value).toLowerCase();
     let input = inputText.value.trim().toLowerCase();
 
-    let [elements, correctCount] = createHtmlForComparedText(received, input, ignoreWhitespace);
+    let [elements, correctCount, totalCount] = createHtmlForComparedText(received, input, ignoreWhitespace);
 
     inputComparator.replaceChildren(...elements);
-    lastPercentage = received.length > 0 ? Math.round(correctCount / received.length * 100) : 0;
+    lastPercentage = received.length > 0 ? Math.round(correctCount / totalCount * 100) : 0;
     
-    correctPercentage.innerText = "Score: " + correctCount + "/" + received.length + " correct (" + lastPercentage + "%)";
+    correctPercentage.innerText = "Score: " + correctCount + "/" + totalCount + " correct (" + lastPercentage + "%)";
 }
 
 function createHtmlForComparedText(received, input, ignoreWhitespace) {
@@ -164,7 +164,7 @@ function createHtmlForComparedText(received, input, ignoreWhitespace) {
             elements.push(createSpanElement(part.value, "correct"))
         }
     });
-    return [elements, correctCount];
+    return [elements, correctCount, received.length];
 }
 
 function trimReceivedText(text) {
