@@ -2,7 +2,7 @@
 
 A browser reads the cw trainer characters from the morserino device via serial input and compares them to the characters entered by the user.
 
-Just go to the [Live Demo Page](https://cdaller.github.io/morserino32-trainer/index.html)!
+Just go to the [Live Demo Page](https://tegmento.org)!
 
 You might need to configure the morserino to send characters via serial line first! (see below how to do so)
 
