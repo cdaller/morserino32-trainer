@@ -83,6 +83,12 @@
         #receiveText {
             background-color: #e2e3e5;
         }
+        #receiveTextEchoTrainer {
+            background-color: #e2e3e5;
+        }
+        #mainTab {
+            padding-top: 20px;
+        }
 
     </style>
 </head>
@@ -143,68 +149,94 @@
             </div>
         </div>
 
-        <div class="inputContainer">
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" checked id="showReceivedCheckbox">
-                <label class="form-check-label" for="showReceivedCheckbox">Show comparision received/input and received text from Morserino</label>
-            </div>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" checked id="autoHideCheckbox">
-                <label class="form-check-label" for="autoHideCheckbox">Auto hide during reception (between receiving 'vvv&lt;ka&gt;' and '+')</label>
-            </div>
-
-            <div class="form-group">
-                <div id="morserino_detail" class="collapse show">
-                    Received from Morserino:
-                    <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
-                    <!--<textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
-                </div>
-            </div>
-            
-            <div class="form-group">
-                Your Input:<br />
-                <textarea rows="3" cols="80" id="inputText" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
-            </div>
-
-            <div>
-                <button id="clearAllButton" class="btn btn-outline-primary" title="Clear text received from Morserino, your input and the comparison result (for CW Generator mode)" data-bs-toggle="tooltip">Clear All</button>
-                <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino and comparison result (for CW Keyer mode)" data-bs-toggle="tooltip">Clear Received Text and Result</button>
-            </div>
-
-            <div id="resultComparison" class="mt-2 collapse show">
-                <div class="alert alert-secondary">
-                    Result comparing Received/Input: <button id="compareTextsButton" style="display:none;">Compare</button>
-                    <div id="inputComparator" class="result"></div>
-                    <div id="correctPercentage"></div> 
-
+        <ul class="nav nav-tabs" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
+            </li>
+            <li class="nav-item" role="presentation">
+            <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer (beta)</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="mainTabContent">
+            <!-- start cw generator -->
+            <div class="tab-pane fade show active" id="cw-generator-tab-content" role="tabpanel" aria-labelledby="cw-generator-tab">
+                <h2>CW Generator / CW Keyer</h2>
+                <div class="inputContainer">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" checked="false" id="ignoreWhitespaceCheckbox">
-                        <label class="form-check-label" for="ignoreWhitespaceCheckbox">Ignore whitespace during comparison</label>
+                        <input class="form-check-input" type="checkbox" checked id="showReceivedCheckbox">
+                        <label class="form-check-label" for="showReceivedCheckbox">Show comparision received/input and received text from Morserino</label>
                     </div>
-
-                    <div class="legend">
-                        You must have >= 90% to continue with the next letter.
-                        <ul>
-                            <li>Green: correct character</li>
-                            <li>Orange: missing character</li>
-                            <li>Red: wrong character</li>
-                        </ul>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" checked id="autoHideCheckbox">
+                        <label class="form-check-label" for="autoHideCheckbox">Auto hide during reception (between receiving 'vvv&lt;ka&gt;' and '+')</label>
+                    </div>
+        
+                    <div class="form-group">
+                        <div id="morserino_detail" class="collapse show">
+                            Received from Morserino:
+                            <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                            <!--<textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        Your Input:<br />
+                        <textarea rows="3" cols="80" id="inputText" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
+                    </div>
+        
+                    <div>
+                        <button id="clearAllButton" class="btn btn-outline-primary" title="Clear text received from Morserino, your input and the comparison result (for CW Generator mode)" data-bs-toggle="tooltip">Clear All</button>
+                        <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino and comparison result (for CW Keyer mode)" data-bs-toggle="tooltip">Clear Received Text and Result</button>
+                    </div>
+        
+                    <div id="resultComparison" class="mt-2 collapse show">
+                        <div class="alert alert-secondary">
+                            Result comparing Received/Input: <button id="compareTextsButton" style="display:none;">Compare</button>
+                            <div id="inputComparator" class="result"></div>
+                            <div id="correctPercentage"></div> 
+        
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked="false" id="ignoreWhitespaceCheckbox">
+                                <label class="form-check-label" for="ignoreWhitespaceCheckbox">Ignore whitespace during comparison</label>
+                            </div>
+        
+                            <div class="legend">
+                                You must have >= 90% to continue with the next letter.
+                                <ul>
+                                    <li>Green: correct character</li>
+                                    <li>Orange: missing character</li>
+                                    <li>Red: wrong character</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" id="saveButton" title="Saved results are shown in list below and are only stored in your browser and not sent to anyone!" data-bs-toggle="tooltip">
+                            Save Result
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div>
-                <button class="btn btn-primary" id="saveButton" title="Saved results are shown in list below and are only stored in your browser and not sent to anyone!" data-bs-toggle="tooltip">
-                    Save Result
-                </button>
-            </div>
-        </div>
-        <div class="savedResultContainer">
-            <h3>Saved Results</h3>
-            <div id="savedResults"></div>
-        </div>
+                <div class="savedResultContainer">
+                    <h3>Saved Results</h3>
+                    <div id="savedResults"></div>
+                </div>
+        
+                <canvas id="savedResultChart" height="100"></canvas>
+            </div> <!-- end cw generator -->
 
-        <canvas id="savedResultChart" height="100"></canvas>
+            <!-- start echo trainer -->
+            <div class="tab-pane fade" id="echo-trainer-tab-content" role="tabpanel" aria-labelledby="echo-trainer-tab">
+                <h2>Echo Trainer (Beta)</h2>
+                <div class="form-group">
+                    Received from Morserino:
+                    <textarea readonly onfocus="this.blur()" rows="10" cols="80" id="receiveTextEchoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                </div>
+                <div>
+                    <button id="clearEchoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for Echo Trainer mode)" data-bs-toggle="tooltip">Clear</button>
+                </div>
 
+            </div> <!-- end echo trainer -->
+        </div> <!-- end tab-content -->
     </div>
 
     <script type="text/javascript" src="bundle.js"></script>
