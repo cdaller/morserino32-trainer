@@ -37,6 +37,12 @@ ignoreWhitespaceCheckbox.checked = ignoreWhitespace;
 let receiveTextEchoTrainer = document.getElementById("receiveTextEchoTrainer");
 let clearEchoTrainerButton = document.getElementById("clearEchoTrainerButton");
 
+let serialCommunicationavailable = navigator.serial !== undefined;
+//console.log("serial communication available", serialCommunicationavailable);
+if (!serialCommunicationavailable) {
+    disableSerialCommunication();
+} 
+
 // --------------- chart template -----------------
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
@@ -404,6 +410,11 @@ function clearEchoTrainerFields() {
 }
 
 // ------------------------ serial communication code ------------------------
+
+function disableSerialCommunication() {
+    connectButton.disabled = true;
+    document.getElementById("serialCommunicationDisabledInfo").style.display = "block";
+}
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
 var outputStream, inputStream, port;
