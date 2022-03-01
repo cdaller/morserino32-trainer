@@ -5,6 +5,8 @@ let jsdiff = require('diff');
 let Charts = require('chart.js');
 
 // some constants
+
+let VERSION = '0.2.0';
 let storageKey = 'morserino-trainer';
 
 const MORSERINO_START = 'vvv<ka> ';
@@ -37,6 +39,12 @@ ignoreWhitespaceCheckbox.checked = ignoreWhitespace;
 
 let receiveTextEchoTrainer = document.getElementById("receiveTextEchoTrainer");
 let clearEchoTrainerButton = document.getElementById("clearEchoTrainerButton");
+
+// after page is loaded, set version string from javascript:
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("versionSpan").textContent = VERSION;
+});
+
 
 let serialCommunicationavailable = navigator.serial !== undefined;
 //console.log("serial communication available", serialCommunicationavailable);
@@ -525,7 +533,7 @@ async function readLoop() {
         if (done === true) {
             break;
         }
-        //When recieved something add it to the textarea
+        // when recieved something add it to the textarea
         if (mode == MODE_CW_GENERATOR) {
             receiveText.value += value;
             //Scroll to the bottom of the text field
