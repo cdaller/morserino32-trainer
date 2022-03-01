@@ -107,9 +107,12 @@
         <h1>Morserino32 CW Training</h1>
             <div class="row">
                 <div class="col-12 col-md-11">
-                    Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> in "CW Generator" 
-                    mode with the decoded text you entered<br/> 
-                    or the text you keyed on the Morserino in "CW Keyer" mode with the text you want to key.
+                    <ul>
+                        <li>Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> in "CW Generator" 
+                            mode with the decoded text you entered</li>
+                        <li>or the text you keyed on the Morserino in "CW Keyer" mode with the text you want to key</li>
+                        <li>New: learn abbreviations in "Echo Trainer" mode showing the meaning of the abbreviations you keyed correctly</li>
+                    </ul>
                 </div>
                 <div class="col-12 col-md-1">
                     <button class="btn btn-info float-right" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
@@ -142,8 +145,9 @@
             <ul>
                 <li>Double click black button on Morserino</li>
                 <li>Find "Serial Output"</li>
-                <li>Set to "Everything" - you might to do this for every stored snapshot profile you want to use!</li>
+                <li>Set to "Everything"</li>
             </ul>
+            You might to do this for every stored snapshot profile you want to use!
         </div>
     </div>
 
@@ -170,7 +174,7 @@
             <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
             </li>
             <li class="nav-item" role="presentation">
-            <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer (beta)</button>
+            <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer (new!)</button>
             </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
@@ -242,14 +246,27 @@
 
             <!-- start echo trainer -->
             <div class="tab-pane fade" id="echo-trainer-tab-content" role="tabpanel" aria-labelledby="echo-trainer-tab">
-                <h2>Echo Trainer (Beta)</h2>
+                <h2>Echo Trainer</h2>
                 <div class="form-group">
                     Received from Morserino:
-                    <textarea readonly onfocus="this.blur()" rows="10" cols="80" id="receiveTextEchoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                    <textarea readonly onfocus="this.blur()" rows="6" cols="80" id="receiveTextEchoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
                 </div>
                 <div>
-                    <button id="clearEchoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for Echo Trainer mode)" data-bs-toggle="tooltip">Clear</button>
+                    <button id="clearEchoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for Echo Trainer mode) and abbreviation list." data-bs-toggle="tooltip">Clear</button>
+                    <button id="showAllAbbreviationsButton" class="btn btn-outline-primary" title="Show all abbreviations" data-bs-toggle="tooltip">Show All Abbreviations</button>
                 </div>
+
+                <table id="abbreviationTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Abbr.</th>
+                            <th>English</th>
+                            <th>German</th>
+                        </tr>  
+                    </thead>
+                    <tbody>
+                    </tbody>                  
+                </table>
 
             </div> <!-- end echo trainer -->
         </div> <!-- end tab-content -->

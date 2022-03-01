@@ -6,7 +6,7 @@ let Charts = require('chart.js');
 
 // some constants
 
-let VERSION = '0.2.1';
+let VERSION = '0.3.0';
 let storageKey = 'morserino-trainer';
 
 const MORSERINO_START = 'vvv<ka> ';
@@ -39,6 +39,7 @@ ignoreWhitespaceCheckbox.checked = ignoreWhitespace;
 
 let receiveTextEchoTrainer = document.getElementById("receiveTextEchoTrainer");
 let clearEchoTrainerButton = document.getElementById("clearEchoTrainerButton");
+let showAllAbbreviationsButton = document.getElementById("showAllAbbreviationsButton");
 
 // after page is loaded, set version string from javascript:
 document.addEventListener("DOMContentLoaded", function() {
@@ -124,6 +125,7 @@ saveButton.addEventListener("click", saveResult);
 
 inputText.oninput = compareTexts;
 clearEchoTrainerButton.addEventListener("click", clearEchoTrainerFields);
+showAllAbbreviationsButton.addEventListener("click", showAllAbbreviations);
 
 
 //When the connectButton is pressed
@@ -404,20 +406,46 @@ function detectAbbreviation() {
     if (text.endsWith(' OK')) {
         let lines = text.split(String.fromCharCode(10));
         let lastLine = lines[lines.length - 1];
-        console.log("lastline: ", lastLine);
+        //console.log("lastline: ", lastLine);
         let abbreviation = lastLine.split(' ')[0];
-        console.log("abbreviation: ", abbreviation);
+        //console.log("abbreviation: ", abbreviation);
         if (abbreviation in abbreviations) {
-            console.log('Abbreviation detected:', abbreviation, abbreviations[abbreviation]);
-            let abbrevText = abbreviations[abbreviation]['en'] + '/' + abbreviations[abbreviation]['de'];
-            let content = receiveTextEchoTrainer.value;//.slice(0, -1); // cut off trailing new line
-            receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')';//  + String.fromCharCode(10);
+            addAbbreviationToList(abbreviation, 1);
+            //console.log('Abbreviation detected:', abbreviation, abbreviations[abbreviation]);
+            // let abbrevText = abbreviations[abbreviation]['en'] + '/' + abbreviations[abbreviation]['de'];
+            // let content = receiveTextEchoTrainer.value;//.slice(0, -1); // cut off trailing new line
+            // receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')';//  + String.fromCharCode(10);
         }
     }
 }
 
+function addAbbreviationToList(abbreviation, position) {
+    let table = document.getElementById("abbreviationTable");
+    let rowElement = table.insertRow(position); // insert in 1st position after header
+    let cells = [];
+    cells.push(createElement(abbreviation, 'td', null));
+    cells.push(createElement(abbreviations[abbreviation]['en'], 'td', null));
+    cells.push(createElement(abbreviations[abbreviation]['de'], 'td', null));
+    rowElement.replaceChildren(...cells);
+}
+
 function clearEchoTrainerFields() {
     receiveTextEchoTrainer.value = "";
+    clearAbbreviations();
+}
+
+function clearAbbreviations() {
+    let table = document.getElementById("abbreviationTable");
+    let rowCount = table.getElementsByTagName("tr").length;
+    for (count = 1; count < rowCount; count++) {
+        table.deleteRow(-1);
+    }
+}
+
+function showAllAbbreviations() {
+    Object.entries(abbreviations).forEach(([k,v]) => {
+        addAbbreviationToList(k, -1);
+    })
 }
 
 // ------------------------ serial communication code ------------------------
@@ -562,7 +590,7 @@ abbreviations = {
     '73': {'de': 'Viele Grüße', 'en': 'Best regards' },
     '88': {'de': 'Liebe und Küsse', 'en': 'Love and kisses' },
     '99': {'de': 'Verschwinde!', 'en': 'get lost!' },
-    'a': {'de': 'alpha', 'en': 'alpha'  },
+    'a': {'de': 'Alpha', 'en': 'Alpha'  },
     'aa': {'de': 'alles nach...', 'en': 'all after...' },
     'abt': {'de': 'ungefähr', 'en': 'about' },
     'ac': {'de': 'Wechselstrom (auch Brumm)', 'en': 'alternating current' },
@@ -584,7 +612,7 @@ abbreviations = {
     'award': {'de': 'Amateurfunkdiplom', 'en': 'award' },
     'awdh': {'de': 'Auf Wiederhören', 'en': '' },
     'awds': {'de': 'Auf Wiedersehen', 'en': '' },
-    'b': {'de': 'bravo', 'en': 'bravo'  },
+    'b': {'de': 'Bravo', 'en': 'Bravo'  },
     'b4': {'de': 'vorher', 'en': 'before' },
     'bc': {'de': 'Rundfunk', 'en': 'broadcast' },
     'bci': {'de': 'Rundfunkstörungen', 'en': 'Broadcast interference' },
@@ -598,7 +626,7 @@ abbreviations = {
     'btw': {'de': 'Nebenbei bemerkt', 'en': 'by the way' },
     'bug': {'de': 'halbautomatische Taste', 'en': 'semi-automatic key' },
     'buro': {'de': 'Büro', 'en': 'bureau' },
-    'c': {'de': 'ja, Bejahung (von spanisch "si"), charly', 'en': 'yes, correct, affirmation (from spanish "si"), charly' },
+    'c': {'de': 'ja, Bejahung (von spanisch "si"), Charly', 'en': 'yes, correct, affirmation (from spanish "si"), Charly' },
     'call': {'de': 'Rufzeichen, rufen', 'en': 'call-sign, call' },
     'cfm': {'de': 'bestätige', 'en': 'confirm' },
     'cheerio': {'de': 'Servus! Tschüss! (Grußwort)', 'en': 'cheerio' },
@@ -618,7 +646,7 @@ abbreviations = {
     'cud': {'de': 'konnte, könnte', 'en': 'could' },
     'cul': {'de': 'wir sehen uns wieder', 'en': 'see you later' },
     'cw': {'de': 'Tastfunk, Morsetelegrafie', 'en': 'continuous wave' },
-    'd': {'de': 'delta', 'en': 'delta'  },
+    'd': {'de': 'Delta', 'en': 'Delta'  },
     'db': {'de': 'Dezibel', 'en': '' },
     'dc': {'de': 'direct current, Gleichstrom', 'en': '' },
     'de': {'de': 'von (vor dem eigenen Rufz.)', 'en': 'from' },
@@ -628,13 +656,14 @@ abbreviations = {
     'dr': {'de': 'Liebe(r) ...', 'en': 'dear ...' },
     'dwn': {'de': 'abwärts, niedrigere Frequenz', 'en': 'down' },
     'dx': {'de': 'große Entfernung, Fernverbindung', 'en': 'long distance' },
+    'e': {'de': 'Echo', 'en': 'Echo'  },
     'ee': {'de': 'ENDE', 'en': 'end' },
     'el': {'de': '(Antennen-)Elemente', 'en': 'elements' },
     'elbug': {'de': 'elektronische Taste', 'en': 'electronic key' },
     'ere': {'de': 'hier', 'en': 'here' },
     'es': {'de': 'und, &', 'en': 'and, &' },
     'excus': {'de': 'Entschuldigung', 'en': 'excuse me' },
-    'f': {'de': 'foxrott', 'en': 'foxrott'  },
+    'f': {'de': 'Foxrott', 'en': 'Foxrott'  },
     'fb': {'de': 'ausgezeichnet, prima', 'en': 'fine business' },
     'fer': {'de': 'für', 'en': 'for' },
     'fm': {'de': 'von, Frequenzmodulation', 'en': 'from, frequency modulation' },
@@ -643,7 +672,7 @@ abbreviations = {
     'frd': {'de': 'Freund', 'en': 'friend' },
     'freq': {'de': 'Frequenz', 'en': 'frequency' },
     'fwd': {'de': 'vorwärts', 'en': 'forward' },
-    'g': {'de': 'golf', 'en': 'golf'  },
+    'g': {'de': 'Golf', 'en': 'Golf'  },
     'ga': {'de': 'beginnen Sie, anfangen', 'en': 'go ahead' },
     'ga': {'de': 'Guten Nachmittag', 'en': 'good afternoon' },
     'gb': {'de': 'leben Sie wohl', 'en': 'good bye' },
@@ -659,7 +688,7 @@ abbreviations = {
     'gt': {'de': 'Guten Tag', 'en': '-' },
     'gud': {'de': 'gut', 'en': 'good' },
     'guhor': {'de': 'kein Empfang (mehr)', 'en': 'going unable to hear or receive' },
-    'h': {'de': 'hotel', 'en': 'hotel'  },
+    'h': {'de': 'Hotel', 'en': 'Hotel'  },
     'ham': {'de': 'Funkamateur', 'en': 'ham' },
     'hf': {'de': 'high frequency, Kurzwelle (3-30MHz)', 'en': 'high frequency, shortwave (3-30MHz)' },
     'hh': {'de': 'Irrung', 'en': 'correction' },
@@ -672,7 +701,7 @@ abbreviations = {
     'hvy': {'de': 'schwer', 'en': 'heavy' },
     'hw?': {'de': 'wie werde ich gehört?', 'en': 'how copy?' },
     'hwsat?': {'de': 'wie finden Sie das?', 'en': 'how is about that?' },
-    'ii': {'de': 'ich Wiederhole', 'en': 'i repeat' },
+    'ii': {'de': 'ich wiederhole', 'en': 'i repeat' },
     'i': {'de': 'ich, India', 'en': 'I, India' },
     'iaru': {'de': 'international amateur radio union', 'en': 'international amateur radio union' },
     'if': {'de': 'Zwischenfrequenz', 'en': 'intermediate freq.' },
@@ -681,7 +710,7 @@ abbreviations = {
     'input': {'de': 'Eingangsleistung', 'en': 'input' },
     'irc': {'de': 'Antwortschein', 'en': 'international return coupon' },
     'itu': {'de': 'Int. Fernmeldeunion', 'en': 'International Telecommunication Union' },
-    'j': {'de': 'juliett', 'en': 'juliett'  },
+    'j': {'de': 'Juliett', 'en': 'Juliett'  },
     'k': {'de': 'Kommen ..., Kilo', 'en': 'come, Kilo' },
     'ka': {'de': 'Spruchanfang', 'en': 'message begins' },
     'key': {'de': 'Morsetaste', 'en': 'key' },
@@ -690,7 +719,7 @@ abbreviations = {
     'knw': {'de': 'wissen', 'en': 'know' },
     'kw': {'de': 'kilowatt', 'en': 'kilowatt' },
     'ky': {'de': 'Morsetaste', 'en': 'morse key' },
-    'l': {'de': 'lima', 'en': 'lima'  },
+    'l': {'de': 'Lima', 'en': 'Lima'  },
     'lbr': {'de': 'Lieber ...', 'en': '-' },
     'lf': {'de': 'Niederfrequenz, siehe NF', 'en': 'low frequency' },
     'lid': {'de': 'schlechter Operator', 'en': '"lousy incompetent dummy"' },
@@ -704,7 +733,7 @@ abbreviations = {
     'ltr': {'de': 'Brief', 'en': 'letter' },
     'luf': {'de': 'lowest usable freq.', 'en': 'lowest usable freq.' },
     'lw': {'de': 'Langdrahtantenne', 'en': 'long wire antenna' },
-    'm': {'de': 'mobile. Mike', 'en': 'mobile. Mike' },
+    'm': {'de': 'mobile., Mike', 'en': 'mobile., Mike' },
     'ma': {'de': 'mA (milli-Ampere)', 'en': 'mA (milli-Ampere)' },
     'mesz': {'de': 'Sommerzeit', 'en': 'middle european summer time' },
     'mez': {'de': 'Winterzeit', 'en': 'middle european time zone' },
@@ -728,7 +757,7 @@ abbreviations = {
     'no': {'de': 'nein (auch: Nummer)', 'en': 'no (number)' },
     'nr': {'de': 'Nahe, Nummer', 'en': 'near, number' },
     'nw': {'de': 'Jetzt', 'en': 'now' },
-    'o': {'de': 'oscar', 'en': 'oscar'  },
+    'o': {'de': 'Oscar', 'en': 'Oscar'  },
     'ob': {'de': 'alter Junge (vertrauliche Anrede)', 'en': 'old boy' },
     'oc': {'de': 'alter Knabe (vertrauliche Anrede)', 'en': 'old chap' },
     'ok': {'de': 'in Ordnung', 'en': 'O.K., okay' },
@@ -829,7 +858,7 @@ abbreviations = {
     'urs': {'de': 'die Ihrigen, Deine Familie', 'en': 'your´s' },
     'usb': {'de': 'oberes Seitenband', 'en': 'upper side band' },
     'utc': {'de': 'koordinierte Weltzeit (Z-time)', 'en': 'universal time coordinated' },
-    'v': {'de': 'FEHLT, morserino gibt das, "Warteschleife"?, Viktor', 'en': 'Viktor' },
+    'v': {'de': 'Viktor', 'en': 'Viktor' },
     've': {'de': 'Verstanden', 'en': 'verified' },
     'vert': {'de': 'Vertikal (Antenne)', 'en': 'vertical (antenna)' },
     'vfo': {'de': 'verstellbarer Oszillator', 'en': 'variable frequency oscillator' },
