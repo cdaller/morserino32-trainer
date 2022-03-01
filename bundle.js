@@ -401,15 +401,17 @@ function tabEventListener(event) {
 // ------------------------ echo trainer code ------------------------
 function detectAbbreviation() {
     let text = receiveTextEchoTrainer.value;
-    if (text.endsWith(' OK' + String.fromCharCode(10))) {
+    if (text.endsWith(' OK')) {
         let lines = text.split(String.fromCharCode(10));
-        let lastLine = lines[lines.length - 2]; // last element is always empty
+        let lastLine = lines[lines.length - 1];
+        console.log("lastline: ", lastLine);
         let abbreviation = lastLine.split(' ')[0];
+        console.log("abbreviation: ", abbreviation);
         if (abbreviation in abbreviations) {
             console.log('Abbreviation detected:', abbreviation, abbreviations[abbreviation]);
             let abbrevText = abbreviations[abbreviation]['en'] + '/' + abbreviations[abbreviation]['de'];
-            let content = receiveTextEchoTrainer.value.slice(0, -1); // cut off trailing new line
-            receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')' + String.fromCharCode(10);
+            let content = receiveTextEchoTrainer.value;//.slice(0, -1); // cut off trailing new line
+            receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')';//  + String.fromCharCode(10);
         }
     }
 }
@@ -670,7 +672,7 @@ abbreviations = {
     'hvy': {'de': 'schwer', 'en': 'heavy' },
     'hw?': {'de': 'wie werde ich gehört?', 'en': 'how copy?' },
     'hwsat?': {'de': 'wie finden Sie das?', 'en': 'how is about that?' },
-    'i i': {'de': 'ich Wiederhole', 'en': 'i repeat' },
+    'ii': {'de': 'ich Wiederhole', 'en': 'i repeat' },
     'i': {'de': 'ich, India', 'en': 'I, India' },
     'iaru': {'de': 'international amateur radio union', 'en': 'international amateur radio union' },
     'if': {'de': 'Zwischenfrequenz', 'en': 'intermediate freq.' },
