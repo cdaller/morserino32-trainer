@@ -276,13 +276,23 @@
     <!--
         Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
         Further investigation needed on this topic.
+    -->
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js')
-                .then(function () { console.log("Service worker registered"); });
+            // unregister previously created service worker
+            // sw had the effect of serving old javascript files, so unregister it for the moment!
+            navigator.serviceWorker.getRegistrations()
+            .then(function(registrations) {
+                for(let registration of registrations) {
+                registration.unregister();
+                }
+            });
+
+            // register service worker
+            // navigator.serviceWorker.register('sw.js')
+            //     .then(function () { console.log("Service worker registered"); });
         }
     </script>
-    -->
 </body>
 
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
