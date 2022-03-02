@@ -5,7 +5,7 @@ let Charts = require('chart.js');
 
 // some constants
 
-let VERSION = '0.3.0';
+let VERSION = '0.3.1';
 let storageKey = 'morserino-trainer';
 
 const MORSERINO_START = 'vvv<ka> ';
@@ -582,7 +582,7 @@ async function readLoop() {
 // and cw abbreviations CW-Schule graz
 abbreviations = {
     '33': {'de': 'Grüße unter Funkerinnen', 'en': 'female ham greeting' },
-    '44': {'de': 'WFF greetings', 'en': '' },
+    '44': {'de': 'Melde mich via Telefon, WFF Gruß', 'en': 'answer by wire, call on telephone, WFF greetings' },
     '55': {'de': 'Viel Erfolg', 'en': '-' },
     '5nn': {'de': '599', 'en': '599' },
     '72': {'de': 'Viele Grüße QRP', 'en': 'Best regards QRP' },
@@ -594,11 +594,11 @@ abbreviations = {
     'abt': {'de': 'ungefähr', 'en': 'about' },
     'ac': {'de': 'Wechselstrom (auch Brumm)', 'en': 'alternating current' },
     'adr': {'de': 'Anschrift', 'en': 'address' },
-    'af': {'de': 'Niederfrequenz', 'en': 'audio frequency' },
+    'af': {'de': 'Audiofrequenz', 'en': 'audio frequency' },
     'afsk': {'de': 'audio freq. shift keying', 'en': 'audio freq. shift keying' },
-    'agc': {'de': 'automatic gain control, Automatische Lautstärkeregelung', 'en': '' },
+    'agc': {'de': 'Automatische Lautstärkeregelung', 'en': 'automatic gain control' },
     'agn': {'de': 'Wieder, nochmals', 'en': 'again' },
-    'alc': {'de': 'automatic level control, Automatische Pegel-Regelung', 'en': '' },
+    'alc': {'de': 'Automatische Pegel-Regelung', 'en': 'automatic level control' },
     'am': {'de': 'Vormittag, Amplitudenmodulation', 'en': 'before lunch, amplitude modulation' },
     'ani': {'de': 'Irgendein, jemand', 'en': 'any' },
     'ans': {'de': 'Antwort', 'en': 'answer' },
@@ -607,10 +607,10 @@ abbreviations = {
     'ar': {'de': 'Spruchende', 'en': 'end of message' },
     'as': {'de': 'Bitte warten', 'en': 'please wait quietly' },
     'atv': {'de': 'amateur TV', 'en': 'amateur TV' },
-    'avc': {'de': 'automatic volume control, Automatische Lautstärkeregelung', 'en': '' },
+    'avc': {'de': 'Automatische Lautstärkeregelung', 'en': 'automatic volume control' },
     'award': {'de': 'Amateurfunkdiplom', 'en': 'award' },
-    'awdh': {'de': 'Auf Wiederhören', 'en': '' },
-    'awds': {'de': 'Auf Wiedersehen', 'en': '' },
+    'awdh': {'de': 'Auf Wiederhören', 'en': '-' },
+    'awds': {'de': 'Auf Wiedersehen', 'en': '-' },
     'b': {'de': 'Bravo', 'en': 'Bravo'  },
     'b4': {'de': 'vorher', 'en': 'before' },
     'bc': {'de': 'Rundfunk', 'en': 'broadcast' },
@@ -646,8 +646,8 @@ abbreviations = {
     'cul': {'de': 'wir sehen uns wieder', 'en': 'see you later' },
     'cw': {'de': 'Tastfunk, Morsetelegrafie', 'en': 'continuous wave' },
     'd': {'de': 'Delta', 'en': 'Delta'  },
-    'db': {'de': 'Dezibel', 'en': '' },
-    'dc': {'de': 'direct current, Gleichstrom', 'en': '' },
+    'db': {'de': 'Dezibel', 'en': 'decibels' },
+    'dc': {'de': 'Gleichstrom', 'en': 'direct current' },
     'de': {'de': 'von (vor dem eigenen Rufz.)', 'en': 'from' },
     'diff': {'de': 'Unterschied', 'en': 'difference' },
     'dl': {'de': 'Deutschland', 'en': 'Germany' },
@@ -744,7 +744,7 @@ abbreviations = {
     'mm': {'de': 'maritime mobile', 'en': 'maritime mobile' },
     'mni': {'de': 'viel, viele', 'en': 'many' },
     'mni': {'de': 'viel(e)', 'en': 'many' },
-    'mod': {'de': 'modulation', 'en': '' },
+    'mod': {'de': 'Modulation', 'en': 'modulation' },
     'msg': {'de': 'Nachricht, Telegramm', 'en': 'message' },
     'mtr': {'de': 'Meter, Messgerät', 'en': 'meter' },
     'muf': {'de': 'maximum usable freq.', 'en': 'maximum usable freq.' },
@@ -763,7 +763,7 @@ abbreviations = {
     'om': {'de': 'Funker, Herr', 'en': 'old man' },
     'op': {'de': 'Funker, Operator', 'en': 'operator' },
     'osc': {'de': 'Oszillator', 'en': 'oscillator' },
-    'oscar': {'de': 'OSCAR Amateurfunksatellit', 'en': '' },
+    'oscar': {'de': 'OSCAR Amateurfunksatellit', 'en': 'OSCAR satellite' },
     'ot': {'de': 'langjähriger Funker, "alter Herr"', 'en': 'oldtimer' },
     'output': {'de': 'Ausgang(sleistung)', 'en': 'output (power)' },
     'ow': {'de': 'Ehefrau eines CB-Funkers', 'en': 'old woman' },
@@ -774,7 +774,7 @@ abbreviations = {
     'pse': {'de': 'Bitte', 'en': 'please' },
     'psed': {'de': 'erfreut', 'en': 'pleased' },
     'pwr': {'de': 'Leistung', 'en': 'power' },
-    'px': {'de': 'Präfix, Landeskenner', 'en': '' },
+    'px': {'de': 'Präfix, Landeskenner', 'en': 'prefix, country code' },
     'q': {'de': 'Quebec', 'en': 'Quebec'  },
     'qra':  {'de': 'Der Name meiner Funkstelle ist...', 'en': 'name of my station is...'},
     'qrb':  {'de': 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', 'en': 'distance betwenn our stations is...'},
