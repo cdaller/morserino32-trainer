@@ -273,12 +273,16 @@
     </div>
 
     <script type="text/javascript" src="bundle.js"></script>
+    <!--
+        Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
+        Further investigation needed on this topic.
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
                 .then(function () { console.log("Service worker registered"); });
         }
     </script>
+    -->
 </body>
 
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
