@@ -6,7 +6,7 @@ let Charts = require('chart.js');
 
 // some constants
 
-let VERSION = '0.3.1';
+let VERSION = '0.3.2';
 let storageKey = 'morserino-trainer';
 
 const MORSERINO_START = 'vvv<ka> ';
