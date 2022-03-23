@@ -171,10 +171,13 @@
 
         <ul class="nav nav-tabs" id="mainTab" role="tablist">
             <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
+                <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
             </li>
             <li class="nav-item" role="presentation">
-            <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer (new!)</button>
+                <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="qso-trainer-tab" data-bs-toggle="tab" data-bs-target="#qso-trainer-tab-content" type="button" role="tab" aria-controls="qso-trainer-tab-content" aria-selected="false">QSO Trainer (beta!)</button>
             </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
@@ -269,9 +272,23 @@
                 </table>
 
             </div> <!-- end echo trainer -->
+
+            <!-- start QSO trainer -->
+            <div class="tab-pane fade" id="qso-trainer-tab-content" role="tabpanel" aria-labelledby="qso-trainer-tab">
+                <h2>QSO Trainer</h2>
+                <p>Make a QSO, end with "kn"</p>
+                <div class="form-group">
+                    Received from Morserino:
+                    <textarea readonly onfocus="this.blur()" rows="6" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                </div>
+                <div>
+                    <button id="clearQsoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for QSO Trainer mode)." data-bs-toggle="tooltip">Clear</button>
+                </div>
+            </div> <!-- end QSO trainer -->
         </div> <!-- end tab-content -->
     </div>
 
+    <script type="text/javascript" src="jscwlib-0.2.2.js"></script>
     <script type="text/javascript" src="bundle.js"></script>
     <!--
         Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
@@ -297,7 +314,9 @@
 
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
     Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
-    - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
+    <!--
+        - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
+    -->
     - V<span id="versionSpan">0.1.0</span>
 </footer>
 
