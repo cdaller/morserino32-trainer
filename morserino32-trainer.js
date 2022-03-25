@@ -398,6 +398,12 @@ for (tabElement of document.querySelectorAll('button[data-bs-toggle="tab"]')) {
 	tabElement.addEventListener('shown.bs.tab', tabEventListener);
 }
 
+// function setTab(mode) {
+//     if (mode === MODE_CW_GENERATOR) {
+        
+//     }
+// }
+
 function tabEventListener(event) {
     //console.log('tab event', event);	
     if (event.target.id === 'cw-generator-tab') {
@@ -462,7 +468,7 @@ function showAllAbbreviations() {
 var cwPlayer = new jscw();
 cwPlayer.setWpm(15);
 cwPlayer.setEws(2); // extra word spacing
-cwPlayer.
+
 let endOfMessageDetected = false;
 let qsoCallSign;
 let qsoName;
