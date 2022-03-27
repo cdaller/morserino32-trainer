@@ -136,26 +136,31 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
 
 // couple the elements to the Events
-connectButton.addEventListener("click", clickConnect)
+connectButton.addEventListener('click', clickConnect)
 
-showReceivedCheckbox.addEventListener("change", clickShowReceived);
-ignoreWhitespaceCheckbox.addEventListener("change", clickIgnoreWhitespace);
-clearAllButton.addEventListener("click", clearTextFields);
-clearReceivedButton.addEventListener("click", clearReceivedTextField);
-compareTextsButton.addEventListener("click", compareTexts);
-saveButton.addEventListener("click", saveResult);
+showReceivedCheckbox.addEventListener('change', clickShowReceived);
+ignoreWhitespaceCheckbox.addEventListener('change', clickIgnoreWhitespace);
+clearAllButton.addEventListener('click', clearTextFields);
+clearReceivedButton.addEventListener('click', clearReceivedTextField);
+compareTextsButton.addEventListener('click', compareTexts);
+saveButton.addEventListener('click', saveResult);
 
 inputText.oninput = compareTexts;
-clearEchoTrainerButton.addEventListener("click", clearEchoTrainerFields);
-showAllAbbreviationsButton.addEventListener("click", showAllAbbreviations);
+clearEchoTrainerButton.addEventListener('click', clearEchoTrainerFields);
+showAllAbbreviationsButton.addEventListener('click', showAllAbbreviations);
 
-clearQsoTrainerButton.addEventListener("click", clearQsoTrainerFields);
-autoKeyQsoTrainerButton.addEventListener("click", autoKeyQso);
-inputTextQsoTrainerButton.addEventListener("click", moveQsoInputTextToMessages);
-qsoRptWordsCheckbox.addEventListener("change", function(event) {
+clearQsoTrainerButton.addEventListener('click', clearQsoTrainerFields);
+autoKeyQsoTrainerButton.addEventListener('click', autoKeyQso);
+inputTextQsoTrainerButton.addEventListener('click', moveQsoInputTextToMessages);
+qsoRptWordsCheckbox.addEventListener('change', function(event) {
     console.log(event);
     qsoRptWords = event.target.checked;
     console.log('qsoRptWords', qsoRptWords);
+});
+qsoWpmSelect.addEventListener('select', function(event) {
+    let wpm = event.target.value;
+    cwPlayer.setWpm(wpm);
+    console.log('set wpm to: ', wpm);
 });
 
 let url = new URL(window.location.href);
@@ -183,10 +188,10 @@ function clickShowReceived() {
     let shouldShow = showReceivedCheckbox.checked;
     console.log('should show: ', shouldShow);
     if (shouldShow) {
-        document.getElementById("morserino_detail").classList.add('show');
+        document.getElementById('morserino_detail').classList.add('show');
         resultComparison.classList.add('show');
     } else {
-        document.getElementById("morserino_detail").classList.remove('show');
+        document.getElementById('morserino_detail').classList.remove('show');
         resultComparison.classList.remove('show');
     }
 }
@@ -208,12 +213,12 @@ function applyAutoHide() {
     text = text.trim();
     if (showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && !text.endsWith(MORSERINO_END)) {
         showReceivedCheckbox.checked = false;
-        showReceivedCheckbox.dispatchEvent(new Event("change"));
+        showReceivedCheckbox.dispatchEvent(new Event('change'));
         console.log('auto hiding text');
     }
     if (!showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && text.endsWith(MORSERINO_END)) {
         showReceivedCheckbox.checked = true;
-        showReceivedCheckbox.dispatchEvent(new Event("change"));
+        showReceivedCheckbox.dispatchEvent(new Event('change'));
         console.log('auto unhiding text');
     }
 }
@@ -228,7 +233,7 @@ function compareTexts() {
     inputComparator.replaceChildren(...elements);
     lastPercentage = received.length > 0 ? Math.round(correctCount / totalCount * 100) : 0;
     
-    correctPercentage.innerText = "Score: " + correctCount + "/" + totalCount + " correct (" + lastPercentage + "%)";
+    correctPercentage.innerText = 'Score: ' + correctCount + '/' + totalCount + ' correct (' + lastPercentage + '%)';
 }
 
 function createHtmlForComparedText(received, input, ignoreWhitespace) {
@@ -236,8 +241,8 @@ function createHtmlForComparedText(received, input, ignoreWhitespace) {
     let correctCount = 0;
 
     if (ignoreWhitespace) {
-        received = received.replace(/\s/g,"");
-        input = input.replace(/\s/g,"");
+        received = received.replace(/\s/g,'');
+        input = input.replace(/\s/g,'');
     }
 
     let diff = jsdiff.diffChars(received, input);
@@ -245,12 +250,12 @@ function createHtmlForComparedText(received, input, ignoreWhitespace) {
         // green for additions, red for deletions
         // grey for common parts
         if (part.added) {
-            elements.push(createSpanElement(part.value, "wrong"))
+            elements.push(createSpanElement(part.value, 'wrong'))
         } else if (part.removed) {
-            elements.push(createSpanElement(part.value, "missing"))
+            elements.push(createSpanElement(part.value, 'missing'))
         } else {
             correctCount += part.value.length;
-            elements.push(createSpanElement(part.value, "correct"))
+            elements.push(createSpanElement(part.value, 'correct'))
         }
     });
     return [elements, correctCount, received.length];
@@ -261,7 +266,7 @@ function trimReceivedText(text) {
     if (text.toLowerCase().startsWith(MORSERINO_START)) {
         text = text.substring(MORSERINO_START.length);
     }
-    if (text.endsWith(" +")) {
+    if (text.endsWith(' +')) {
         text = text.substring(0, text.length - MORSERINO_END.length);
     }
     return text;
@@ -289,14 +294,14 @@ function createElementWithChildren(tag, ...children) {
 }
 
 function clearTextFields() {
-    inputText.value = "";
+    inputText.value = '';
     clearReceivedTextField();
 }
 
 function clearReceivedTextField() {
-    receiveText.value = "";
-    inputComparator.innerHTML = "";
-    correctPercentage.innerHTML = "";
+    receiveText.value = '';
+    inputComparator.innerHTML = '';
+    correctPercentage.innerHTML = '';
 }
 
 // ------------------------------ handle save(d) result(s) -------------------------------
@@ -417,10 +422,10 @@ function showHideSavedResultGraph(savedResults) {
     let canvasElement = document.getElementById('savedResultChart');
     if (savedResults && savedResults.length > 0) {
         console.log('showing graph');
-        canvasElement.style.display = "block";
+        canvasElement.style.display = 'block';
     } else {
         console.log('hiding graph');
-        canvasElement.style.display = "none";
+        canvasElement.style.display = 'none';
     }
 }
 
@@ -432,13 +437,13 @@ for (tabElement of document.querySelectorAll('button[data-bs-toggle="tab"]')) {
 
 function openTabForMode(mode) {
     if (mode === MODE_CW_GENERATOR) {
-        document.getElementById("cw-generator-tab").click();
+        document.getElementById('cw-generator-tab').click();
     } else if (mode === MODE_ECHO_TRAINER) {
-        document.getElementById("echo-trainer-tab").click();
+        document.getElementById('echo-trainer-tab').click();
     } else if (mode === MODE_QSO_TRAINER) {
-        document.getElementById("qso-trainer-tab").click();
+        document.getElementById('qso-trainer-tab').click();
     } else {
-        console.log("Unknown mode: ", mode);
+        console.log('Unknown mode: ', mode);
     }
 }
 
@@ -460,9 +465,9 @@ function detectAbbreviation() {
     if (text.endsWith(' OK')) {
         let lines = text.split(String.fromCharCode(10));
         let lastLine = lines[lines.length - 1];
-        //console.log("lastline: ", lastLine);
+        //console.log('lastline: ', lastLine);
         let abbreviation = lastLine.split(' ')[0];
-        //console.log("abbreviation: ", abbreviation);
+        //console.log('abbreviation: ', abbreviation);
         if (abbreviation in abbreviations) {
             addAbbreviationToList(abbreviation, 1);
             //console.log('Abbreviation detected:', abbreviation, abbreviations[abbreviation]);
@@ -474,7 +479,7 @@ function detectAbbreviation() {
 }
 
 function addAbbreviationToList(abbreviation, position) {
-    let table = document.getElementById("abbreviationTable");
+    let table = document.getElementById('abbreviationTable');
     let rowElement = table.insertRow(position); // insert in 1st position after header
     let cells = [];
     cells.push(createElement(abbreviation, 'td', null));
@@ -484,13 +489,13 @@ function addAbbreviationToList(abbreviation, position) {
 }
 
 function clearEchoTrainerFields() {
-    receiveTextEchoTrainer.value = "";
+    receiveTextEchoTrainer.value = '';
     clearAbbreviations();
 }
 
 function clearAbbreviations() {
-    let table = document.getElementById("abbreviationTable");
-    let rowCount = table.getElementsByTagName("tr").length;
+    let table = document.getElementById('abbreviationTable');
+    let rowCount = table.getElementsByTagName('tr').length;
     for (count = 1; count < rowCount; count++) {
         table.deleteRow(-1);
     }
@@ -816,7 +821,7 @@ function resetQsoTrainerFields() {
 
 function disableSerialCommunication() {
     connectButton.disabled = true;
-    document.getElementById("serialCommunicationDisabledInfo").style.display = "block";
+    document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
 }
 
 //Define outputstream, inputstream and port so they can be used throughout the sketch
@@ -875,10 +880,10 @@ async function connect() {
     } catch (e) {
 
         //If the pipeTo error appears; clarify the problem by giving suggestions.
-        if (e == "TypeError: Cannot read property 'pipeTo' of undefined") {
-            e += "\n Use Google Chrome and enable-experimental-web-platform-features"
+        if (e == 'TypeError: Cannot read property "pipeTo" of undefined') {
+            e += '\n Use Google Chrome and enable-experimental-web-platform-features'
         }
-        connectButton.innerText = "Connect"
+        connectButton.innerText = 'Connect'
         statusBar.innerText = e;
     }
 }
@@ -917,7 +922,7 @@ function clickSend() {
     //send the message
     writeToStream(sendText.value)
     //and clear the input field, so it's clear it has been sent
-    sendText.value = "";
+    sendText.value = '';
 }
 
 //Read the incoming data
