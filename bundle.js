@@ -49,6 +49,9 @@ let clearQsoTrainerButton = document.getElementById("clearQsoTrainerButton");
 let autoKeyQsoTrainerButton = document.getElementById("autoKeyQsoTrainerButton");
 let qsoMessages = document.getElementById("qsoMessages");
 let inputTextQsoTrainer = document.getElementById("inputTextQsoTrainer");
+let inputTextQsoTrainerButton = document.getElementById("inputTextQsoTrainerButton");
+let qsoWpmSelect = document.getElementById("qsoWpmSelect");
+let qsoRptWordsCheckbox = document.getElementById("qsoRptWordsCheckbox");
 
 let autoQsoCallsign;
 let autoQsoCallsignBot;
@@ -57,6 +60,7 @@ let qsoCallSign;
 let qsoName;
 let qsoCallSignBot;
 let autoKeyQsoIndex;
+let qsoRptWords = qsoRptWordsCheckbox.checked;
 clearQsoTrainerFields();
 
 
@@ -147,7 +151,13 @@ clearEchoTrainerButton.addEventListener("click", clearEchoTrainerFields);
 showAllAbbreviationsButton.addEventListener("click", showAllAbbreviations);
 
 clearQsoTrainerButton.addEventListener("click", clearQsoTrainerFields);
-autoKeyQsoTrainerButton.addEventListener("click", autoKeyQso)
+autoKeyQsoTrainerButton.addEventListener("click", autoKeyQso);
+inputTextQsoTrainerButton.addEventListener("click", moveQsoInputTextToMessages);
+qsoRptWordsCheckbox.addEventListener("change", function(event) {
+    console.log(event);
+    qsoRptWords = event.target.checked;
+    console.log('qsoRptWords', qsoRptWords);
+});
 
 let url = new URL(window.location.href);
 console.log('url', url);
@@ -525,49 +535,70 @@ function detectQsoMessageEnded() {
 
 function answerQso(message) {
     let answer = createQsoAnswer(message);
-    playCw(message);
+    playCw(answer);
     displayQsoMessage(answer, true);
     cwPlayer.onFinished = function(event) {
         console.log('player finished event received', event);
     }
 }
 
+function duplicateWords(text) {
+    let result = '';
+    text.split(' ').forEach(word => result += word + ' ' + word + ' ');
+    console.log('duplicate words: ', text, result);
+    return result.trim();
+}
+
 function displayQsoMessage(message, isAnswer) {
-    let clasz = isAnswer ? 'qso-answer' : 'qso-request';
     let htmlMessage = message.replace(/\n/g, '<br/>');
     let answerElement;
     if (isAnswer) {
         answerElement = createAnswerElement(htmlMessage)        
     } else {
-        answerElement = createElement(htmlMessage, 'p', clasz)
+        answerElement = createElement(htmlMessage, 'p', 'qso-request')
     }
     //console.log('adding element', answerElement);
     qsoMessages.appendChild(answerElement);
 }
 
 function playCw(message) {
-    cwPlayer.play(message.replace(/\n/g, ' '));
+    message = message.replace(/\n/g, ' ');
+    let messageToPlay = message;
+    if (qsoRptWords) {
+        messageToPlay = duplicateWords(message);
+    }
+    cwPlayer.play(messageToPlay);
 }
 
+function moveQsoInputTextToMessages() {
+    let message = inputTextQsoTrainer.value;
+    let htmlMessage = message.replace(/\n/g, '<br/>');
+    let answerElement = createElement(htmlMessage, 'span', 'qso-answer');
+
+    let col1 = createElement(null, 'div', 'col-12 col-md-10');
+    col1.appendChild(answerElement);
+    
+    let row = createElement(null, 'div', 'row');
+    row.appendChild(col1);
+    
+    let container = createElement(null, 'div', 'container');
+    container.appendChild(row);
+
+    qsoMessages.appendChild(container);
+
+    inputTextQsoTrainer.value = '';
+}
+
+
 function createAnswerElement(message) {
-    let replayElement = createElement('Replay', 'button', 'btn btn-outline-primary');
-    replayElement.setAttribute('type', 'button');
-    replayElement.setAttribute('data-toggle', 'tooltip');
-    replayElement.setAttribute('title', 'Replay cw code.')
-    replayElement.onclick = ( function(_message) { 
-        return function() { 
-            playCw(_message);
-        }
-    })(message);
-    new bootstrap.Tooltip(replayElement, { trigger : 'hover' });
 
     let answerElement = createElement(message, 'p', 'qso-answer unreadable')
 
-    let showElement = createElement('Show', 'button', 'btn btn-outline-primary');
-    showElement.setAttribute('type', 'button');
-    showElement.setAttribute('data-toggle', 'tooltip');
-    showElement.setAttribute('title', 'Show/hide text of answer.')
-    showElement.onclick = ( function(_targetElement, _buttonElement) { 
+    let showButton = createElement('Show', 'button', 'btn btn-outline-primary btn-sm qso-answer-button');
+    showButton.setAttribute('type', 'button');
+    showButton.setAttribute('data-toggle', 'tooltip');
+    showButton.setAttribute('title', 'Show/hide text of answer.')
+    showButton.onclick = ( function(_targetElement, _buttonElement) { 
         return function() { 
             _targetElement.classList.toggle('unreadable');
             if (_targetElement.classList.contains('unreadable')) {
@@ -576,25 +607,51 @@ function createAnswerElement(message) {
                 _buttonElement.textContent = 'Hide';
             }
         }
-    })(answerElement, showElement);
-    
+    })(answerElement, showButton);
 
-    let col1 = createElement(null, 'div', 'col');
-    col1.appendChild(answerElement);
-    let col2 = createElement(null, 'div', 'col');
-    col2.appendChild(replayElement);
-    let col3 = createElement(null, 'div', 'col');
-    col2.appendChild(showElement);
+    let replayButton = createElement('Rpt', 'button', 'btn btn-outline-success btn-sm qso-answer-button');
+    replayButton.setAttribute('type', 'button');
+    replayButton.setAttribute('data-toggle', 'tooltip');
+    replayButton.setAttribute('title', 'Replay cw code.')
+    replayButton.onclick = ( function(_message) { 
+        return function() {
+            playCw(_message);
+        }
+    })(message);
+    new bootstrap.Tooltip(replayButton, { trigger : 'hover' });
+
+    let stopButton = createElement('Stop', 'button', 'btn btn-outline-danger btn-sm qso-answer-button');
+    stopButton.setAttribute('type', 'button');
+    stopButton.setAttribute('data-toggle', 'tooltip');
+    stopButton.setAttribute('title', 'Stop cw player.')
+    stopButton.onclick = ( function() { 
+        return function() { 
+            cwPlayer.stop();
+        }
+    })();
+    let pauseButton = createElement('Pause', 'button', 'btn btn-outline-warning btn-sm qso-answer-button');
+    pauseButton.setAttribute('type', 'button');
+    pauseButton.setAttribute('data-toggle', 'tooltip');
+    pauseButton.setAttribute('title', 'Pause cw player.')
+    pauseButton.onclick = ( function() { 
+        return function() { 
+            cwPlayer.pause();
+        }
+    })();
+    
+    let messageColumn = createElement(null, 'div', 'col-12 col-md-9');
+    messageColumn.appendChild(answerElement);
+    let buttonColumn = createElement(null, 'div', 'col-12 col-md-3');
+    buttonColumn.appendChild(showButton);
+    buttonColumn.appendChild(replayButton);
+    buttonColumn.appendChild(stopButton);
+    buttonColumn.appendChild(pauseButton);
 
     let row = createElement(null, 'div', 'row');
-    row.appendChild(col1);
-    row.appendChild(col2);
-    row.appendChild(col3);
+    row.appendChild(messageColumn);
+    row.appendChild(buttonColumn);
     
-    let container = createElement(null, 'div', 'container');
-    container.appendChild(row);
-
-    return container;
+    return row;
 }
 
 // 

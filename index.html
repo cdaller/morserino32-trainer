@@ -108,10 +108,18 @@
             background-color: #f9f8f8;
             text-shadow: unset;
         }
+        .qso-answer-button {
+            margin-left: 2px;
+        }
         .qso-answer.unreadable {
-            color: #202020;
-            background-color: #202020;
-            text-shadow: 0px 0px 10px #303030;
+            filter:url(#wherearemyglasses);
+            /*
+            color: #e0e0e0;
+            background-color: #e0e0e0;
+            text-shadow: rgba(0,0,0,0.1) -1px 0, rgba(0,0,0,0.1) 0 -1px,
+                         rgba(255,255,255,0.1) 1px 0, rgba(255,255,255,0.1) 0 1px,
+                         rgba(0,0,0,0.1) -1px -1px, rgba(255,255,255,0.1) 1px 1px;
+                         */
         }
     </style>
 </head>
@@ -136,7 +144,7 @@
                     </ul>
                 </div>
                 <div class="col-12 col-md-1">
-                    <button class="btn btn-info float-right" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
+                    <button class="btn btn-info" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
                         Help
                     </button>
                 </div>
@@ -298,7 +306,33 @@
             <!-- start QSO trainer -->
             <div class="tab-pane fade" id="qso-trainer-tab-content" role="tabpanel" aria-labelledby="qso-trainer-tab">
                 <h2>QSO Trainer</h2>
-                <p>Make a QSO, end all your messages with "kn" or "&lt;kn&gt;"</p>
+                <div class="row">
+                    <div class="col-12 col-md-7">
+                        <p>Make a QSO, end all your messages with "kn" or "&lt;kn&gt;"</p>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <label for="qsoWpm">Speed:</label>
+                       <select id="qsoWpmSelect" name="qsoWpm" value="15">
+                           <option value="10">10 wpm</option>
+                           <option value="13">13 wpm</option>
+                           <option value="15" selected>15 wpm</option>
+                           <option value="18">18 wpm</option>
+                           <option value="20">20 wpm</option>
+                           <option value="23">23 wpm</option>
+                           <option value="25">25 wpm</option>
+                           <option value="28">28 wpm</option>
+                           <option value="30">30 wpm</option>
+                           <option value="33">33 wpm</option>
+                           <option value="35">35 wpm</option>
+                           <option value="38">38 wpm</option>
+                           <option value="40">40 wpm</option>
+                       </select>
+                    </div>
+                    <div class="col-12 col-md-2">
+                        <label for="qsoRptWords">Rpt all words:</label>
+                       <input id="qsoRptWordsCheckbox" type="checkbox" name="qsoRptWords"/>
+                    </div>
+                </div>
                 <div id="qsoMessages">
                 </div>
                 Received from Morserino:
@@ -308,7 +342,16 @@
                 </div>
                 <div class="form-group">
                     Your Input:<br />
-                    <textarea rows="2" cols="80" id="inputTextQsoTrainer" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
+                    <div class="row">
+                        <div class="col-12 col-md-11">
+                            <textarea rows="2" cols="80" id="inputTextQsoTrainer" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
+                        </div>
+                        <div class="col-12 col-md-1">
+                            <button id="inputTextQsoTrainerButton" class="btn btn-outline-primary" style="margin-top: 4px" title="Move my input to list of messages above" data-bs-togglee="tooltip">
+                                OK
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div>
@@ -350,5 +393,13 @@
     -->
     - V<span id="versionSpan">0.1.0</span>
 </footer>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter id="wherearemyglasses" x="0" y="0">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+      </filter>
+    </defs>
+  </svg>
 
 </html>
