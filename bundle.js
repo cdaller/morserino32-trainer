@@ -46,6 +46,18 @@ let showAllAbbreviationsButton = document.getElementById("showAllAbbreviationsBu
 
 let receiveTextQsoTrainer = document.getElementById("receiveTextQsoTrainer");
 let clearQsoTrainerButton = document.getElementById("clearQsoTrainerButton");
+let autoKeyQsoTrainerButton = document.getElementById("autoKeyQsoTrainerButton");
+let qsoMessages = document.getElementById("qsoMessages");
+let inputTextQsoTrainer = document.getElementById("inputTextQsoTrainer");
+
+let autoQsoCallsign;
+let autoQsoCallsignBot;
+let autoQsoMessages;
+let qsoCallSign;
+let qsoName;
+let qsoCallSignBot;
+let autoKeyQsoIndex;
+clearQsoTrainerFields();
 
 
 // after page is loaded, set version string from javascript:
@@ -135,7 +147,15 @@ clearEchoTrainerButton.addEventListener("click", clearEchoTrainerFields);
 showAllAbbreviationsButton.addEventListener("click", showAllAbbreviations);
 
 clearQsoTrainerButton.addEventListener("click", clearQsoTrainerFields);
+autoKeyQsoTrainerButton.addEventListener("click", autoKeyQso)
 
+let url = new URL(window.location.href);
+console.log('url', url);
+if (url.hash) {
+    let modeFromUrl = url.hash.substring(1);
+    console.log('setting mode:', modeFromUrl);
+    openTabForMode(modeFromUrl);
+}
 
 //When the connectButton is pressed
 async function clickConnect() {
@@ -242,10 +262,12 @@ function createSpanElement(value, clasz) {
     return createElement(value, 'span', clasz);
 }
 
-function createElement(value, tag, clasz) {
+function createElement(value, tag, classes) {
     let element = document.createElement(tag);
-    if (clasz) {
-        element.classList.add(...clasz.split(' '));
+    if (classes) {
+        classes.split(' ').forEach(clasz => {
+            element.classList.add(clasz);    
+        });
     }
     element.innerHTML = value;
     return element;
@@ -399,11 +421,17 @@ for (tabElement of document.querySelectorAll('button[data-bs-toggle="tab"]')) {
 	tabElement.addEventListener('shown.bs.tab', tabEventListener);
 }
 
-// function setTab(mode) {
-//     if (mode === MODE_CW_GENERATOR) {
-        
-//     }
-// }
+function openTabForMode(mode) {
+    if (mode === MODE_CW_GENERATOR) {
+        document.getElementById("cw-generator-tab").click();
+    } else if (mode === MODE_ECHO_TRAINER) {
+        document.getElementById("echo-trainer-tab").click();
+    } else if (mode === MODE_QSO_TRAINER) {
+        document.getElementById("qso-trainer-tab").click();
+    } else {
+        console.log("Unknown mode: ", mode);
+    }
+}
 
 function tabEventListener(event) {
     //console.log('tab event', event);	
@@ -471,9 +499,6 @@ cwPlayer.setWpm(15);
 cwPlayer.setEws(2); // extra word spacing
 
 let endOfMessageDetected = false;
-let qsoCallSign;
-let qsoName;
-let botCallSign;
 
 function detectQso() {
     endOfMessageDetected = false;
@@ -482,26 +507,94 @@ function detectQso() {
     if (text.endsWith('kn ') || text.endsWith('<kn> ') || text.endsWith('pse k ') || text.endsWith('e e ')) {
         endOfMessageDetected = true;
         //console.log('detecteQso: end of message detected', endOfMessageDetected)
-        setTimeout(answerQso, QSO_WAIT_TIME_MS)
+        setTimeout(detectQsoMessageEnded, QSO_WAIT_TIME_MS)
     }
 }
 
-function answerQso() {
-    console.log('answerQso, endOfMessageDetected=', endOfMessageDetected)
+function detectQsoMessageEnded() {
+    console.log('detectQsoMessageEnded, endOfMessageDetected=', endOfMessageDetected)
     if (endOfMessageDetected) {
         //console.log('really answerQso')
-        let text = receiveTextQsoTrainer.value;
-
-        let lastMessage = text.split('\n').pop();
-        console.log('last message:', lastMessage);
-
-        let answer = createQsoAnswer(lastMessage);
-        cwPlayer.play(answer);
-        text += '\n' + answer + '\n'
-        receiveTextQsoTrainer.value = text;
-        //Scroll to the bottom of the text field
-        receiveTextQsoTrainer.scrollTop = receiveTextQsoTrainer.scrollHeight;
+        let message = receiveTextQsoTrainer.value;
+        console.log('last message:', message);
+        displayQsoMessage('Your message: ' + message, false);
+        receiveTextQsoTrainer.value = '';
+        answerQso(message);
     }
+}
+
+function answerQso(message) {
+    let answer = createQsoAnswer(message);
+    playCw(message);
+    displayQsoMessage(answer, true);
+    cwPlayer.onFinished = function(event) {
+        console.log('player finished event received', event);
+    }
+}
+
+function displayQsoMessage(message, isAnswer) {
+    let clasz = isAnswer ? 'qso-answer' : 'qso-request';
+    let htmlMessage = message.replace(/\n/g, '<br/>');
+    let answerElement;
+    if (isAnswer) {
+        answerElement = createAnswerElement(htmlMessage)        
+    } else {
+        answerElement = createElement(htmlMessage, 'p', clasz)
+    }
+    //console.log('adding element', answerElement);
+    qsoMessages.appendChild(answerElement);
+}
+
+function playCw(message) {
+    cwPlayer.play(message.replace(/\n/g, ' '));
+}
+
+function createAnswerElement(message) {
+    let replayElement = createElement('Replay', 'button', 'btn btn-outline-primary');
+    replayElement.setAttribute('type', 'button');
+    replayElement.setAttribute('data-toggle', 'tooltip');
+    replayElement.setAttribute('title', 'Replay cw code.')
+    replayElement.onclick = ( function(_message) { 
+        return function() { 
+            playCw(_message);
+        }
+    })(message);
+    new bootstrap.Tooltip(replayElement, { trigger : 'hover' });
+
+    let answerElement = createElement(message, 'p', 'qso-answer unreadable')
+
+    let showElement = createElement('Show', 'button', 'btn btn-outline-primary');
+    showElement.setAttribute('type', 'button');
+    showElement.setAttribute('data-toggle', 'tooltip');
+    showElement.setAttribute('title', 'Show/hide text of answer.')
+    showElement.onclick = ( function(_targetElement, _buttonElement) { 
+        return function() { 
+            _targetElement.classList.toggle('unreadable');
+            if (_targetElement.classList.contains('unreadable')) {
+                _buttonElement.textContent = 'Show';
+            } else {
+                _buttonElement.textContent = 'Hide';
+            }
+        }
+    })(answerElement, showElement);
+    
+
+    let col1 = createElement(null, 'div', 'col');
+    col1.appendChild(answerElement);
+    let col2 = createElement(null, 'div', 'col');
+    col2.appendChild(replayElement);
+    let col3 = createElement(null, 'div', 'col');
+    col2.appendChild(showElement);
+
+    let row = createElement(null, 'div', 'row');
+    row.appendChild(col1);
+    row.appendChild(col2);
+    row.appendChild(col3);
+    
+    let container = createElement(null, 'div', 'container');
+    container.appendChild(row);
+
+    return container;
 }
 
 // 
@@ -527,12 +620,22 @@ function createQsoAnswer(message) {
     console.log('message:', message);
     let answer = '';
     let shouldAppendEndOfMessage = true;
+    let isIntro = false;
     // CQ CQ CQ de .... 
     addMessageIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, function(groups) { 
         qsoCallSign = groups[0];
-        botCallSign = generateCallSign();
-        answer = appendToMessage(answer, qsoCallSign + ' de ' + botCallSign + ' ' + spreadString(botCallSign));
+        qsoCallSignBot = generateCallSign();
+        autoQsoCallsign = qsoCallSign;
+        autoQsoCallsignBot = qsoCallSignBot;
+        generateAutoQsoMessages();
+        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + spreadString(qsoCallSignBot) + ' pse k');
+        shouldAppendEndOfMessage = false;
+        isIntro = true;
     });
+    console.log('isIntro', isIntro);
+    if (!isIntro) {
+        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' =\n');        
+    }
     addMessageIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
         answer = appendToMessage(answer, groups[0] + ' ' + getRandom('om', 'yl'));
     });
@@ -564,7 +667,7 @@ function createQsoAnswer(message) {
     if (answer == '') {
         answer = appendToMessage(answer, 'pse rpt kn'); // did not understand!
     } else if (shouldAppendEndOfMessage) {
-        answer = appendToMessage(answer, getRandom('pse kn', 'kn'), true);
+        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + getRandom('pse kn', 'kn'), true);
     }
 
     return answer;
@@ -576,14 +679,6 @@ function addMessageIfMatch(message, regexp, answer, callback) {
         result.shift(); // remove matching string, only return groups (if any)
         return callback(result, answer);
     }
-}
-
-function clearQsoTrainerFields() {
-    receiveTextQsoTrainer.value = "";
-    // clean all qso state variables
-    qsoCallSign = '';
-    botCallSign = '';
-    qsoName = '';
 }
 
 function appendToMessage(message, textToAppend, isEndOfMessage = false) {
@@ -618,6 +713,46 @@ function spreadString(text) {
 function getRandom(...strings) {
     let randomIndex = Math.random() * strings.length | 0;
     return strings[randomIndex];
+}
+
+function autoKeyQso() {
+    let message = autoQsoMessages[autoKeyQsoIndex];
+    autoKeyQsoIndex++;
+    if (autoKeyQsoIndex >= autoQsoMessages.length) {
+        resetQsoTrainerFields();
+    }
+    receiveTextQsoTrainer.value = message;
+    //Scroll to the bottom of the text field
+    receiveTextQsoTrainer.scrollTop = receiveTextQsoTrainer.scrollHeight;
+    detectQso();
+}
+
+function generateAutoQsoMessages() {
+    let deText = autoQsoCallsignBot + ' de ' + autoQsoCallsign;
+    autoQsoMessages = [
+        'cq cq cq de ' + autoQsoCallsign + ' ' + spreadString(autoQsoCallsign) + ' pse k <kn> ', 
+        deText + ' =\n' + getRandom('gm', 'ge') + ' om = \nur rst is 599 5nn = hw ?\n' + deText + ' kn ',
+        deText + ' =\nmy name is tommy =\n' + deText + ' kn ',
+        deText + ' =\nmy qth is linz =\n' + deText + ' kn ',
+    ];
+}
+
+function clearQsoTrainerFields() {
+    receiveTextQsoTrainer.value = '';
+    inputTextQsoTrainer.value = '';
+    qsoMessages.replaceChildren();
+    resetQsoTrainerFields();
+}
+
+function resetQsoTrainerFields() {
+    // clean all qso state variables
+    qsoCallSign = '';
+    qsoCallSignBot = '';
+    qsoName = '';
+    autoKeyQsoIndex = 0;
+    autoQsoCallsign = generateCallSign();
+    autoQsoCallsignBot = generateCallSign();
+    generateAutoQsoMessages();
 }
 
 

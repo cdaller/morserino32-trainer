@@ -9,6 +9,9 @@
     <meta name="theme-color" content="#ffffff"/>
     
     <!-- Bootstrap CSS -->
+    <!--
+        <link href="libs/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <link rel="manifest" href="manifest.webmanifest">
@@ -95,12 +98,29 @@
         #serialCommunicationDisabledInfo {
             display: none;
         }
-
+        #receiveTextQsoTrainer {
+            background-color: #e2e3e5;
+        }
+        .qso-request {
+            background-color: #e2e3e5;
+        }
+        .qso-answer {
+            background-color: #f9f8f8;
+            text-shadow: unset;
+        }
+        .qso-answer.unreadable {
+            color: #202020;
+            background-color: #202020;
+            text-shadow: 0px 0px 10px #303030;
+        }
     </style>
 </head>
 
 <body>
     <!-- JavaScript Bundle with Popper -->
+    <!--
+        <script src="libs/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     
     <div class="shadow-sm p-3 mb-2 bg-light">
@@ -111,7 +131,8 @@
                         <li>Compare the characters received from <a href="https://www.morserino.info" target="_blank">Morserino32</a> in "CW Generator" 
                             mode with the decoded text you entered</li>
                         <li>or the text you keyed on the Morserino in "CW Keyer" mode with the text you want to key</li>
-                        <li>New: learn abbreviations in "Echo Trainer" mode showing the meaning of the abbreviations you keyed correctly</li>
+                        <li>Learn abbreviations in "Echo Trainer" mode showing the meaning of the abbreviations you keyed correctly</li>
+                        <li>New: Train QSOs: key your QSOs and a bot will answer. End all your messages with "kn" or "&lt;kn&gt;".</li>
                     </ul>
                 </div>
                 <div class="col-12 col-md-1">
@@ -169,6 +190,7 @@
             </div>
         </div>
 
+        <!-- tabs -->
         <ul class="nav nav-tabs" id="mainTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
@@ -276,19 +298,28 @@
             <!-- start QSO trainer -->
             <div class="tab-pane fade" id="qso-trainer-tab-content" role="tabpanel" aria-labelledby="qso-trainer-tab">
                 <h2>QSO Trainer</h2>
-                <p>Make a QSO, end with "kn"</p>
-                <div class="form-group">
-                    Received from Morserino:
-                    <textarea readonly onfocus="this.blur()" rows="6" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                <p>Make a QSO, end all your messages with "kn" or "&lt;kn&gt;"</p>
+                <div id="qsoMessages">
                 </div>
+                Received from Morserino:
+                <div class="col-sm form-group">
+                    <!--<textarea readonly onfocus="this.blur()" rows="2" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
+                    <textarea rows="2" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                </div>
+                <div class="form-group">
+                    Your Input:<br />
+                    <textarea rows="2" cols="80" id="inputTextQsoTrainer" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
+                </div>
+
                 <div>
+                    <button id="autoKeyQsoTrainerButton" class="btn btn-outline-primary" title="I am too lazy to key, please do it for me!" data-bs-toggle="tooltip">I'm lazy!</button>
                     <button id="clearQsoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for QSO Trainer mode)." data-bs-toggle="tooltip">Clear</button>
                 </div>
             </div> <!-- end QSO trainer -->
         </div> <!-- end tab-content -->
     </div>
 
-    <script type="text/javascript" src="jscwlib-0.2.2.js"></script>
+    <script type="text/javascript" src="libs/jscwlib-0.2.2.js"></script>
     <script type="text/javascript" src="bundle.js"></script>
     <!--
         Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
