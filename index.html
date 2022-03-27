@@ -140,7 +140,7 @@
                             mode with the decoded text you entered</li>
                         <li>or the text you keyed on the Morserino in "CW Keyer" mode with the text you want to key</li>
                         <li>Learn abbreviations in "Echo Trainer" mode showing the meaning of the abbreviations you keyed correctly</li>
-                        <li>New: Train QSOs: key your QSOs and a bot will answer. End all your messages with "kn" or "&lt;kn&gt;".</li>
+                        <li>New/beta: Train QSOs: key your QSOs and a bot will answer.</li>
                     </ul>
                 </div>
                 <div class="col-12 col-md-1">
@@ -154,6 +154,8 @@
 
     <div class="collapse" id="collapseHelp">
         <div class="card card-body">
+            <h3>Help</h3>
+            <h4>CW Generator mode</h4>
             You might need to configure the morserino to send characters via serial line first (see below)! Only Chrome, Edge and Opera are supported at the moment!
             <ul>
                 <li>Connect usb cable from Morserino32 to your PC/Mac/Linux machine.</li>
@@ -168,6 +170,25 @@
             <p>
             For a CW Keyer training copy the text to be keyed into the "Your Input" field and start keying on the Morserino.
             </p>
+            <h4>Echo/Abbreviations Trainer</h4>
+            <p>
+                To learn CW-abbreviations set the Morserino to "Echo Trainer/Abbreviations". All correctly abbreviations 
+                that you keyed correctly show the abbreviation to easy learning the meaning.
+            </p>
+            <h4>QSO Trainer</h4>
+            <p>
+                For a QSO training set Morserino to "CW Keyer" mode and start talking to the qso bot.<br/>
+                Example of QSO messages:
+                <ul>
+                    <li>cq cq cq de &lt;your callsign&gt; kn</li>
+                    <li>r r &lt;bot callsign&gt; de &lt;your callsign&gt; =<br/>my name is &lt;your name&gt; =<br/> my qth is &lt;your location&gt;=<br/>&lt;bot callsign&gt; de &lt;your callsign&gt; kn</li>
+                    <li>r r gm om =<br/>ur rst is 589 589 = hw ?</li>
+                    <li>r r gb yl</li>
+                    <li>tu e e</li>
+                </ul>
+                The QSO bot is answering in cw - you can note down what you understand, repeat the bot's message or simply show the message as text.
+            </p>
+            <h4>Morserino Configuration</h4>
             <p>
             Configure Morserino to send data via serial cable (by default, the morserino does not send data to the serial connection):
             </p>
@@ -308,11 +329,12 @@
                 <h2>QSO Trainer</h2>
                 <div class="row">
                     <div class="col-12 col-md-7">
-                        <p>Make a QSO, end all your messages with "kn" or "&lt;kn&gt;"</p>
+                        <p>Make a QSO, bot is triggered by words like 'name', 'qth', 'rst'. Start communication with 'cq cq cq de &lt;callsign&gt;.<br/>
+                            <b>End all your messages with 'kn' or '&lt;kn&gt;'!</b></p>
                     </div>
                     <div class="col-12 col-md-3">
                         <label for="qsoWpm">Speed:</label>
-                       <select id="qsoWpmSelect" name="qsoWpm" value="15">
+                        <select id="qsoWpmSelect" name="qsoWpm" value="15">
                            <option value="10">10 wpm</option>
                            <option value="13">13 wpm</option>
                            <option value="15" selected>15 wpm</option>
@@ -337,7 +359,6 @@
                 </div>
                 Received from Morserino:
                 <div class="col-sm form-group">
-                    <!--<textarea readonly onfocus="this.blur()" rows="2" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>-->
                     <textarea rows="2" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
                 </div>
                 <div class="form-group">
@@ -389,8 +410,8 @@
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
     Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
     <!--
-        - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
     -->
+    - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
     - V<span id="versionSpan">0.1.0</span>
 </footer>
 

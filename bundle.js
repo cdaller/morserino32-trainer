@@ -3,6 +3,7 @@
 
 let jsdiff = require('diff');
 let Charts = require('chart.js');
+const { convertChangesToXML } = require('diff');
 
 // some constants
 
@@ -158,18 +159,32 @@ qsoRptWordsCheckbox.addEventListener('change', function(event) {
     qsoRptWords = event.target.checked;
     console.log('qsoRptWords', qsoRptWords);
 });
-qsoWpmSelect.addEventListener('change', function(event) {
+qsoWpmSelect.addEventListener('select', function(event) {
     let wpm = event.target.value;
     cwPlayer.setWpm(wpm);
     console.log('set wpm to: ', wpm);
 });
 
-let url = new URL(window.location.href);
-console.log('url', url);
-if (url.hash) {
-    let modeFromUrl = url.hash.substring(1);
-    console.log('setting mode:', modeFromUrl);
-    openTabForMode(modeFromUrl);
+let urlParams = new URLSearchParams(window.location.search);
+let paramMode = urlParams.get('mode');
+if (paramMode) {
+    console.log('setting mode from url params:', paramMode);
+    openTabForMode(paramMode);
+}
+if (urlParams.get('debug') !== null) {
+    console.log('debug mode enabled!');
+    receiveTextQsoTrainer.addEventListener('input', function(event) {
+        detectQso();
+    });
+} else {
+    // disable editing of morserino input fields
+    console.log('debug mode disabled!');
+    receiveTextEchoTrainer.readonly = true;
+    receiveTextEchoTrainer.onfocus = null;
+    receiveTextQsoTrainer.readonly = true;
+    receiveTextQsoTrainer.addEventListener('focus', function(event) {
+        event.target.blur();
+    });
 }
 
 //When the connectButton is pressed
@@ -512,6 +527,18 @@ function showAllAbbreviations() {
 var cwPlayer = new jscw();
 cwPlayer.setWpm(15);
 cwPlayer.setEws(2); // extra word spacing
+//cwPlayer.setEff(10);
+
+let cwPlayerIsPlaying = false;
+cwPlayer.onPlay = function(event) {
+    console.log('player play event received', event);
+    cwPlayerIsPlaying = true;
+}
+cwPlayer.onFinished = function(event) {
+    console.log('player finished event received', event);
+    cwPlayerIsPlaying = false;
+}
+
 
 let endOfMessageDetected = false;
 
@@ -542,9 +569,6 @@ function answerQso(message) {
     let answer = createQsoAnswer(message);
     playCw(answer);
     displayQsoMessage(answer, true);
-    cwPlayer.onFinished = function(event) {
-        console.log('player finished event received', event);
-    }
 }
 
 function duplicateWords(text) {
@@ -572,6 +596,9 @@ function playCw(message) {
     if (qsoRptWords) {
         messageToPlay = duplicateWords(message);
     }
+    if (cwPlayerIsPlaying) {
+        cwPlayer.stop(); // stop any message that is currently played
+    }
     cwPlayer.play(messageToPlay);
 }
 
@@ -580,16 +607,13 @@ function moveQsoInputTextToMessages() {
     let htmlMessage = message.replace(/\n/g, '<br/>');
     let answerElement = createElement(htmlMessage, 'span', 'qso-answer');
 
-    let col1 = createElement(null, 'div', 'col-12 col-md-10');
+    let col1 = createElement(null, 'div', 'col-12 col-md-12');
     col1.appendChild(answerElement);
     
     let row = createElement(null, 'div', 'row');
     row.appendChild(col1);
     
-    let container = createElement(null, 'div', 'container');
-    container.appendChild(row);
-
-    qsoMessages.appendChild(container);
+    qsoMessages.appendChild(row);
 
     inputTextQsoTrainer.value = '';
 }
@@ -659,24 +683,20 @@ function createAnswerElement(message) {
     return row;
 }
 
-// 
-let callSignRE = new RegExp('.*cq.*\\s+de\\s(\\w+)');
-
-
-let answer = createQsoAnswer('cq cq cq de oe6chd o e 6 c h d');
-console.log('answer:', answer);
-answer = createQsoAnswer('r r ur rst is 599');
-console.log('answer:', answer);
-answer = createQsoAnswer('gm yl ur rst is 568');
-console.log('answer:', answer);
-answer = createQsoAnswer('foobar');
-console.log('answer:', answer);
-answer = createQsoAnswer('tu e e');
-console.log('answer:', answer);
-answer = createQsoAnswer('my name is otto');
-console.log('answer:', answer);
-answer = createQsoAnswer('gb om');
-console.log('answer:', answer);
+// let answer = createQsoAnswer('cq cq cq de oe6chd o e 6 c h d');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('r r ur rst is 599');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('gm yl ur rst is 568');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('foobar');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('tu e e');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('my name is otto');
+// console.log('answer:', answer);
+// answer = createQsoAnswer('gb om');
+// console.log('answer:', answer);
 
 function createQsoAnswer(message) {
     console.log('message:', message);
@@ -693,43 +713,51 @@ function createQsoAnswer(message) {
         answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + spreadString(qsoCallSignBot) + ' pse k');
         shouldAppendEndOfMessage = false;
         isIntro = true;
+        console.log('matched cq, answer:', answer);
     });
     console.log('isIntro', isIntro);
     if (!isIntro) {
-        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' =\n');        
+        answer = appendToMessage(answer, 'r r ' + qsoCallSign + ' de ' + qsoCallSignBot);        
     }
     addMessageIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
         answer = appendToMessage(answer, groups[0] + ' ' + getRandom('om', 'yl'));
+        console.log('matched gm/ga/ge, answer:', answer);
     });
     addMessageIfMatch(message, /.*rst\sis\s(\w+)/, answer, function(groups) { 
         var rst = getRandom('555', '569', '579', '589', '599');
         answer = appendToMessage(answer, 'ur rst is ' + rst + ' ' + rst);
+        console.log('matched rst, answer:', answer);
     });
-    addMessageIfMatch(message, /.*name\sis\s(\w+)/, answer, function(groups) { 
+    addMessageIfMatch(message, /.*\sname\sis\s(\w+)/, answer, function(groups) { 
         qsoName = groups[0];
-        var name = getRandom('frank', 'christof', 'john', 'gerhard', 'manfred', 'steve', 'yuan xi', 'carl', 'tommy', 'andrea', 'sabine', 'karin', 'anja', 'yvonne');
+        var name = getRandom('frank', 'christof', 'john', 'gerhard', 'manfred', 'steve', 'yuan', 'carl', 'tommy', 'andrea', 'sabine', 'karin', 'anja', 'yvonne');
         answer = appendToMessage(answer, 'ok ' + getRandom('om', 'yl') + ' ' + qsoName);
         answer = appendToMessage(answer, 'my name is ' + name + ' ' + name);
+        console.log('matched name, answer:', answer);
     });
     addMessageIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
         var qth = getRandom('graz', 'vienna', 'berlin', 'nyborg', 'paris', 'london', 'kyiv', 'tokyo', 'hamburg', 'salzburg', 'linz', 'weyregg');
         answer = appendToMessage(answer, 'my qth is ' + qth + ' ' + qth);
+        console.log('matched qth, answer:', answer);
     });
     addMessageIfMatch(message, /.*gb\s(om|yl)/, answer, function(groups) { 
         answer = appendToMessage(answer, 'gb ' + getRandom('om', 'yl') + ' ' + qsoName + ' 73 es 55');
+        console.log('matched gb, answer:', answer);
     });
     addMessageIfMatch(message, /tu e e/, answer, function(groups) { 
         answer = appendToMessage(answer, 'e e');
         shouldAppendEndOfMessage = false;
+        console.log('matched tu e e, answer:', answer);
     });
     addMessageIfMatch(message, /.*test/, answer, function(groups) { 
         answer = appendToMessage(answer, 'test back');
+        console.log('matched test, answer:', answer);
     });
 
     if (answer == '') {
         answer = appendToMessage(answer, 'pse rpt kn'); // did not understand!
     } else if (shouldAppendEndOfMessage) {
-        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + getRandom('pse kn', 'kn'), true);
+        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + getRandom('pse kn', 'kn'));
     }
 
     return answer;
@@ -743,11 +771,11 @@ function addMessageIfMatch(message, regexp, answer, callback) {
     }
 }
 
-function appendToMessage(message, textToAppend, isEndOfMessage = false) {
+function appendToMessage(message, textToAppend) {
     if (!message || message.length == 0) {
         message = textToAppend;
     } else {
-        message += (!isEndOfMessage ? ' =\n' : ' ') + textToAppend;
+        message += ' =\n' + textToAppend;
     }
     return message;
 }
