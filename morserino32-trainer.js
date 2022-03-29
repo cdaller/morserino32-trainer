@@ -876,7 +876,7 @@ function loadSettings() {
     if (storedSettings && 'cwPlayerEws' in storedSettings) {
         cwPlayerEws = storedSettings.cwPlayerEws;
     } else {
-        cwPlayerEws = 5;
+        cwPlayerEws = 0;
     }
     if (storedSettings && 'cwPlayerEls' in storedSettings) {
         cwPlayerEls = storedSettings.cwPlayerEls;
