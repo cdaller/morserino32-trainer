@@ -159,7 +159,7 @@ qsoRptWordsCheckbox.addEventListener('change', function(event) {
     qsoRptWords = event.target.checked;
     console.log('qsoRptWords', qsoRptWords);
 });
-qsoWpmSelect.addEventListener('select', function(event) {
+qsoWpmSelect.addEventListener('change', function(event) {
     let wpm = event.target.value;
     cwPlayer.setWpm(wpm);
     console.log('set wpm to: ', wpm);
