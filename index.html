@@ -113,13 +113,10 @@
         }
         .qso-answer.unreadable {
             filter:url(#wherearemyglasses);
-            /*
-            color: #e0e0e0;
-            background-color: #e0e0e0;
-            text-shadow: rgba(0,0,0,0.1) -1px 0, rgba(0,0,0,0.1) 0 -1px,
-                         rgba(255,255,255,0.1) 1px 0, rgba(255,255,255,0.1) 0 1px,
-                         rgba(0,0,0,0.1) -1px -1px, rgba(255,255,255,0.1) 1px 1px;
-                         */
+        }
+        .cw-settings {
+            border: 1px solid #CCCCCC;
+            box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
         }
     </style>
 </head>
@@ -328,31 +325,87 @@
             <div class="tab-pane fade" id="qso-trainer-tab-content" role="tabpanel" aria-labelledby="qso-trainer-tab">
                 <h2>QSO Trainer</h2>
                 <div class="row">
-                    <div class="col-12 col-md-7">
+                    <div class="col-12 col-md-10">
                         <p>Make a QSO, bot is triggered by words like 'name', 'qth', 'rst'. Start communication with 'cq cq cq de &lt;callsign&gt;.<br/>
                             <b>End all your messages with 'kn' or '&lt;kn&gt;'!</b></p>
                     </div>
-                    <div class="col-12 col-md-3">
-                        <label for="qsoWpm">Speed:</label>
-                        <select id="qsoWpmSelect" name="qsoWpm" value="15">
-                           <option value="10">10 wpm</option>
-                           <option value="13">13 wpm</option>
-                           <option value="15" selected>15 wpm</option>
-                           <option value="18">18 wpm</option>
-                           <option value="20">20 wpm</option>
-                           <option value="23">23 wpm</option>
-                           <option value="25">25 wpm</option>
-                           <option value="28">28 wpm</option>
-                           <option value="30">30 wpm</option>
-                           <option value="33">33 wpm</option>
-                           <option value="35">35 wpm</option>
-                           <option value="38">38 wpm</option>
-                           <option value="40">40 wpm</option>
-                       </select>
+                    <div class="shadow-sm col-12 col-md-2">
+                        <b>CW Settings</b>
+                        <button class="btn btn-outline-info btn-sm" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQsoSettings" aria-expanded="false" aria-controls="collapseQsoSettings">
+                            Change
+                        </button>
+                        <span id="qsoCwWpmLabel">15wpm</span>, L:<span id="qsoCwElsLabel">1</span>, W:<span id="qsoCwEwsLabel">3</span>, <span id="qsoRptLabel"></span>
                     </div>
-                    <div class="col-12 col-md-2">
-                        <label for="qsoRptWords">Rpt all words:</label>
-                       <input id="qsoRptWordsCheckbox" type="checkbox" name="qsoRptWords"/>
+                </div>
+                <div class="collapse" id="collapseQsoSettings">
+                    <div class="card card-body">
+                        <h4>CW Settings</h4>
+                        <div class="row">
+                            <div class="col-12 col-md-3">
+                                <label for="qsoWpm">Speed:</label>
+                                <select id="qsoWpmSelect" name="qsoWpm">
+                                   <option value="10">10 wpm</option>
+                                   <option value="13">13 wpm</option>
+                                   <option value="15">15 wpm</option>
+                                   <option value="18">18 wpm</option>
+                                   <option value="20">20 wpm</option>
+                                   <option value="23">23 wpm</option>
+                                   <option value="25">25 wpm</option>
+                                   <option value="28">28 wpm</option>
+                                   <option value="30">30 wpm</option>
+                                   <option value="33">33 wpm</option>
+                                   <option value="35">35 wpm</option>
+                                   <option value="38">38 wpm</option>
+                                   <option value="40">40 wpm</option>
+                               </select>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label for="qsoEls">Letter Spacing:</label>
+                                <select id="qsoElsSelect" name="qsoEls">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                               </select>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label for="qsoEws">Word Spacing:</label>
+                                <select id="qsoEwsSelect" name="qsoEws">
+                                   <option value="0">0</option>
+                                   <option value="1">1</option>
+                                   <option value="2">2</option>
+                                   <option value="3">3</option>
+                                   <option value="4">4</option>
+                                   <option value="5">5</option>
+                                   <option value="6">6</option>
+                                   <option value="7" selected>7</option>
+                                   <option value="8">8</option>
+                                   <option value="9">9</option>
+                                   <option value="10">10</option>
+                               </select>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <label for="qsoRptWords">Rpt all words:</label>
+                               <input id="qsoRptWordsCheckbox" type="checkbox" name="qsoRptWords"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            Test CW Settings:
+                            <div class="row">
+                                <div class="col-12 col-md-10">
+                                    <textarea rows="1" cols="80" id="testCwSettingsText" spellcheck="false" placeholder="Type text to test CW settings.">cq cq cq de oe6chd pls k</textarea>
+                                </div>
+                                <div class="col-12 col-md-2">
+                                    <button id="testCwSettingsPlayButton" class="btn btn-outline-primary btn-sm" style="margin-top: 4px" title="Play text" data-bs-togglee="tooltip">
+                                        Test
+                                    </button>
+                                    <button id="testCwSettingsStopButton" class="btn btn-outline-danger btn-sm" style="margin-top: 4px" title="Stop playing." data-bs-togglee="tooltip">
+                                        Stop
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="qsoMessages">
@@ -362,7 +415,7 @@
                     <textarea rows="2" cols="80" id="receiveTextQsoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
                 </div>
                 <div class="form-group">
-                    Your Input:<br />
+                    Your Input:
                     <div class="row">
                         <div class="col-12 col-md-11">
                             <textarea rows="2" cols="80" id="inputTextQsoTrainer" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>

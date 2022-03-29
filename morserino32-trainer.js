@@ -7,7 +7,8 @@ const { convertChangesToXML } = require('diff');
 // some constants
 
 let VERSION = '0.4.0-beta1';
-let storageKey = 'morserino-trainer';
+let STORAGE_KEY = 'morserino-trainer';
+let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
 const MORSERINO_START = 'vvv<ka> ';
 const MORSERINO_END = ' +';
@@ -51,7 +52,11 @@ let qsoMessages = document.getElementById("qsoMessages");
 let inputTextQsoTrainer = document.getElementById("inputTextQsoTrainer");
 let inputTextQsoTrainerButton = document.getElementById("inputTextQsoTrainerButton");
 let qsoWpmSelect = document.getElementById("qsoWpmSelect");
+let qsoEwsSelect = document.getElementById("qsoEwsSelect");
+let qsoElsSelect = document.getElementById("qsoElsSelect");
 let qsoRptWordsCheckbox = document.getElementById("qsoRptWordsCheckbox");
+let testCwSettingsPlayButton = document.getElementById("testCwSettingsPlayButton");
+let testCwSettingsStopButton = document.getElementById("testCwSettingsStopButton");
 
 let autoQsoCallsign;
 let autoQsoCallsignBot;
@@ -134,7 +139,7 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
 });    
 
-showSavedResults(JSON.parse(localStorage.getItem(storageKey)));
+showSavedResults(JSON.parse(localStorage.getItem(STORAGE_KEY)));
 
 // couple the elements to the Events
 connectButton.addEventListener('click', clickConnect)
@@ -157,11 +162,26 @@ qsoRptWordsCheckbox.addEventListener('change', function(event) {
     console.log(event);
     qsoRptWords = event.target.checked;
     console.log('qsoRptWords', qsoRptWords);
+    setCwSettingsInUILabels();
+    saveSettings();
 });
 qsoWpmSelect.addEventListener('change', function(event) {
-    let wpm = event.target.value;
-    cwPlayer.setWpm(wpm);
-    console.log('set wpm to: ', wpm);
+    cwPlayerWpm = event.target.value;
+    setCwPlayerSettings();
+    setCwSettingsInUILabels();
+    saveSettings();
+});
+qsoEwsSelect.addEventListener('change', function(event) {
+    cwPlayerEws = event.target.value;
+    setCwPlayerSettings();
+    setCwSettingsInUILabels();
+    saveSettings();
+});
+qsoElsSelect.addEventListener('change', function(event) {
+    cwPlayerEls = event.target.value;
+    setCwPlayerSettings();
+    setCwSettingsInUILabels();
+    saveSettings();
 });
 
 let urlParams = new URLSearchParams(window.location.search);
@@ -321,7 +341,7 @@ function clearReceivedTextField() {
 
 // ------------------------------ handle save(d) result(s) -------------------------------
 function saveResult() {
-    let storedResults = JSON.parse(localStorage.getItem(storageKey));
+    let storedResults = JSON.parse(localStorage.getItem(STORAGE_KEY));
     if (!storedResults) {
         storedResults = [];
     }
@@ -330,7 +350,7 @@ function saveResult() {
     let result = {text: receivedText, input: input, percentage: lastPercentage, date: Date.now(), ignoreWhitespace: ignoreWhitespace};
     storedResults.push(result);
     let storedResultsText = JSON.stringify(storedResults);
-    localStorage.setItem(storageKey, storedResultsText);
+    localStorage.setItem(STORAGE_KEY, storedResultsText);
     console.log('Saving result to localStorage', storedResultsText);
     showSavedResults(storedResults);
 }
@@ -410,10 +430,10 @@ function showSavedResults(savedResults) {
 }
 
 function removeStoredResult(index) {
-    let savedResults = JSON.parse(localStorage.getItem(storageKey));
+    let savedResults = JSON.parse(localStorage.getItem(STORAGE_KEY));
     // remove element index from array:
     savedResults = savedResults.slice(0,index).concat(savedResults.slice(index + 1));
-    localStorage.setItem(storageKey, JSON.stringify(savedResults));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedResults));
     showSavedResults(savedResults);
 }
 
@@ -523,12 +543,15 @@ function showAllAbbreviations() {
 }
 
 // ------------------------ qso trainer code ------------------------
-var cwPlayer = new jscw();
-cwPlayer.setWpm(15);
-cwPlayer.setEws(2); // extra word spacing
-//cwPlayer.setEff(10);
+let cwPlayer = new jscw();
 
-let cwPlayerIsPlaying = false;
+let cwPlayerWpm; // wpm
+let cwPlayerEws; // extended word spacing
+let cwPlayerEls; // extended letter spacing: effective speed
+
+loadSettings();
+
+var cwPlayerIsPlaying = false;
 cwPlayer.onPlay = function(event) {
     console.log('player play event received', event);
     cwPlayerIsPlaying = true;
@@ -537,7 +560,6 @@ cwPlayer.onFinished = function(event) {
     console.log('player finished event received', event);
     cwPlayerIsPlaying = false;
 }
-
 
 let endOfMessageDetected = false;
 
@@ -843,6 +865,76 @@ function resetQsoTrainerFields() {
     autoQsoCallsignBot = generateCallSign();
     generateAutoQsoMessages();
 }
+
+function loadSettings() {
+    let storedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_SETTINGS));
+    if (storedSettings && 'cwPlayerWpm' in storedSettings) {
+        cwPlayerWpm = storedSettings.cwPlayerWpm;
+    } else {
+        cwPlayerWpm = 15;
+    }
+    if (storedSettings && 'cwPlayerEws' in storedSettings) {
+        cwPlayerEws = storedSettings.cwPlayerEws;
+    } else {
+        cwPlayerEws = 5;
+    }
+    if (storedSettings && 'cwPlayerEls' in storedSettings) {
+        cwPlayerEls = storedSettings.cwPlayerEls;
+    } else {
+        cwPlayerEls = 2;
+    }
+    if (storedSettings && 'qsoRptWords' in storedSettings) {
+        qsoRptWords = storedSettings.qsoRptWords;
+    } else {
+        qsoRptWords = false;
+    }
+    setCwPlayerSettings();
+    setCwSettingsInUIInput();
+    setCwSettingsInUILabels();
+}
+
+function saveSettings() {
+    let storedSettings = {
+        'cwPlayerWpm': cwPlayerWpm, 
+        'cwPlayerEws': cwPlayerEws, 
+        'cwPlayerEls': cwPlayerEls,
+        'qsoRptWords': qsoRptWords,
+    };
+    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(storedSettings));
+}
+
+function setCwSettingsInUIInput() {
+    document.getElementById('qsoWpmSelect').value = cwPlayerWpm;
+    document.getElementById('qsoEwsSelect').value = cwPlayerEws;
+    document.getElementById('qsoElsSelect').value = cwPlayerEls;
+    qsoRptWordsCheckbox.checked = qsoRptWords;
+}
+
+function setCwSettingsInUILabels() {
+    document.getElementById('qsoCwWpmLabel').textContent = cwPlayerWpm + 'wpm';
+    document.getElementById('qsoCwEwsLabel').textContent = cwPlayerEws;
+    document.getElementById('qsoCwElsLabel').textContent = cwPlayerEls;
+    if (qsoRptWords) {
+        document.getElementById('qsoRptLabel').textContent = 'rpt';
+    } else {
+        document.getElementById('qsoRptLabel').textContent = 'no rpt';
+    }
+}
+
+function setCwPlayerSettings() {
+    cwPlayer.setWpm(cwPlayerWpm);
+    cwPlayer.setEws(cwPlayerEws);
+    let eff = cwPlayerWpm / cwPlayerEls;
+    cwPlayer.setEff(eff);
+}
+
+
+testCwSettingsPlayButton.addEventListener('click', function() {
+    playCw(testCwSettingsText.value);
+});
+testCwSettingsStopButton.addEventListener('click', function() {
+    cwPlayer.stop();
+});
 
 
 // ------------------------ serial communication code ------------------------
