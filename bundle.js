@@ -7,7 +7,7 @@ const { convertChangesToXML } = require('diff');
 
 // some constants
 
-let VERSION = '0.4.0-beta1';
+let VERSION = '0.4.1-beta1';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
@@ -568,7 +568,9 @@ function detectQso() {
     endOfMessageDetected = false;
     //console.log('detecteQso', endOfMessageDetected)
     let text = receiveTextQsoTrainer.value;
-    if (text.endsWith('kn ') || text.endsWith('<kn> ') || text.endsWith('pse k ') || text.endsWith('e e ')) {
+    if (text.endsWith(' kn ') || text.endsWith(' <kn> ') 
+        || text.endsWith('e e ')
+        || text.endsWith(' bk ') || text.endsWith(' k ')) {
         endOfMessageDetected = true;
         //console.log('detecteQso: end of message detected', endOfMessageDetected)
         setTimeout(detectQsoMessageEnded, QSO_WAIT_TIME_MS)
@@ -595,7 +597,18 @@ function answerQso(message) {
 
 function duplicateWords(text) {
     let result = '';
-    text.split(' ').forEach(word => result += word + ' ' + word + ' ');
+    let words = text.split(' ');
+    let lastWord = '';
+    // dupliate all words, except when they are already duplicated in the message
+    for (let index = 0; index < words.length; index++) {
+        let word = words[index];
+        if (word !== lastWord) {
+            result += word + ' ' + word + ' ';
+        } else {
+            lastWord = ''; // if there are more than 2 repetitions in the text, use them!
+        }
+        lastWord = word;
+    }
     console.log('duplicate words: ', text, result);
     return result.trim();
 }
@@ -725,6 +738,7 @@ function createQsoAnswer(message) {
     let answer = '';
     let shouldAppendEndOfMessage = true;
     let isIntro = false;
+    let textDetected = false;
     // CQ CQ CQ de .... 
     addMessageIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, function(groups) { 
         qsoCallSign = groups[0];
@@ -735,6 +749,7 @@ function createQsoAnswer(message) {
         answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + spreadString(qsoCallSignBot) + ' pse k');
         shouldAppendEndOfMessage = false;
         isIntro = true;
+        textDetected = true;
         console.log('matched cq, answer:', answer);
     });
     console.log('isIntro', isIntro);
@@ -742,41 +757,48 @@ function createQsoAnswer(message) {
         answer = appendToMessage(answer, 'r r ' + qsoCallSign + ' de ' + qsoCallSignBot);        
     }
     addMessageIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
-        answer = appendToMessage(answer, groups[0] + ' ' + getRandom('om', 'yl'));
+        answer = appendToMessage(answer, groups[0]); // do not reply with 'om' or 'yl' because we do not know if om or yl!
+        textDetected = true;
         console.log('matched gm/ga/ge, answer:', answer);
     });
     addMessageIfMatch(message, /.*rst\sis\s(\w+)/, answer, function(groups) { 
         var rst = getRandom('555', '569', '579', '589', '599');
         answer = appendToMessage(answer, 'ur rst is ' + rst + ' ' + rst);
+        textDetected = true;
         console.log('matched rst, answer:', answer);
     });
     addMessageIfMatch(message, /.*\sname\sis\s(\w+)/, answer, function(groups) { 
         qsoName = groups[0];
-        var name = getRandom('frank', 'christof', 'john', 'gerhard', 'manfred', 'steve', 'yuan', 'carl', 'tommy', 'andrea', 'sabine', 'karin', 'anja', 'yvonne');
-        answer = appendToMessage(answer, 'ok ' + getRandom('om', 'yl') + ' ' + qsoName);
+        var name = getRandomName();
+        answer = appendToMessage(answer, 'ok ' + qsoName);
         answer = appendToMessage(answer, 'my name is ' + name + ' ' + name);
+        textDetected = true;
         console.log('matched name, answer:', answer);
     });
     addMessageIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
-        var qth = getRandom('graz', 'vienna', 'berlin', 'nyborg', 'paris', 'london', 'kyiv', 'tokyo', 'hamburg', 'salzburg', 'linz', 'weyregg');
+        var qth = getRandomQth();
         answer = appendToMessage(answer, 'my qth is ' + qth + ' ' + qth);
+        textDetected = true;
         console.log('matched qth, answer:', answer);
     });
     addMessageIfMatch(message, /.*gb\s(om|yl)/, answer, function(groups) { 
-        answer = appendToMessage(answer, 'gb ' + getRandom('om', 'yl') + ' ' + qsoName + ' 73 es 55');
+        answer = appendToMessage(answer, 'gb ' + qsoName + ' 73 es 55');
+        textDetected = true;
         console.log('matched gb, answer:', answer);
     });
     addMessageIfMatch(message, /tu e e/, answer, function(groups) { 
         answer = appendToMessage(answer, 'e e');
         shouldAppendEndOfMessage = false;
+        textDetected = true;
         console.log('matched tu e e, answer:', answer);
     });
     addMessageIfMatch(message, /.*test/, answer, function(groups) { 
         answer = appendToMessage(answer, 'test back');
+        textDetected = true;
         console.log('matched test, answer:', answer);
     });
 
-    if (answer == '') {
+    if (!textDetected) {
         answer = appendToMessage(answer, 'pse rpt kn'); // did not understand!
     } else if (shouldAppendEndOfMessage) {
         answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + getRandom('pse kn', 'kn'));
@@ -806,6 +828,17 @@ function generateCallSign() {
     // TODO: use more realistic call sign generator!
     return randomString(5);
 }
+
+function getRandomName() {
+    return getRandom('frank', 'christof', 'john', 'gerhard', 'manfred', 'steve', 'yuan', 'carl', 'tommy', 
+    'andrea', 'sabine', 'karin', 'anja', 'yvonne');
+}
+
+function getRandomQth() {
+    return getRandom('graz', 'vienna', 'berlin', 'nyborg', 'paris', 'london', 'kyiv', 'tokyo', 'hamburg', 
+    'salzburg', 'linz', 'weyregg');
+}
+
 
 function randomString(length) {
     let letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -841,10 +874,11 @@ function autoKeyQso() {
 
 function generateAutoQsoMessages() {
     let deText = autoQsoCallsignBot + ' de ' + autoQsoCallsign;
+    let name = getRandomName();
     autoQsoMessages = [
         'cq cq cq de ' + autoQsoCallsign + ' ' + spreadString(autoQsoCallsign) + ' pse k <kn> ', 
-        deText + ' =\n' + getRandom('gm', 'ge') + ' om = \nur rst is 599 5nn = hw ?\n' + deText + ' kn ',
-        deText + ' =\nmy name is tommy =\n' + deText + ' kn ',
+        deText + ' =\n' + getRandom('gm', 'ge') + ' = \nur rst is 599 5nn = hw ?\n' + deText + ' kn ',
+        deText + ' =\nmy name is ' + name + ' ' + name + ' =\n' + deText + ' kn ',
         deText + ' =\nmy qth is linz =\n' + deText + ' kn ',
     ];
 }
