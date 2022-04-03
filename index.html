@@ -167,6 +167,7 @@
             <p>
             For a CW Keyer training copy the text to be keyed into the "Your Input" field and start keying on the Morserino.
             </p>
+
             <h4>Echo/Abbreviations Trainer</h4>
             <p>
                 To learn CW-abbreviations set the Morserino to "Echo Trainer/Abbreviations". All correctly abbreviations 
@@ -185,6 +186,7 @@
                 </ul>
                 The QSO bot is answering in cw - you can note down what you understand, repeat the bot's message or simply show the message as text.
             </p>
+
             <h4>Morserino Configuration</h4>
             <p>
             Configure Morserino to send data via serial cable (by default, the morserino does not send data to the serial connection):
@@ -194,7 +196,35 @@
                 <li>Find "Serial Output"</li>
                 <li>Set to "Everything"</li>
             </ul>
-            You might to do this for every stored snapshot profile you want to use!
+            <p>
+                You might to do this for every stored snapshot profile you want to use!
+            </p>
+            
+            <h4>Serial Communication Driver Installation</h4>
+            <p>
+            If you connect the Morserino to your PC/laptop and the device is detected, 
+            but no driver is found, you need to install the driver for your operating system
+            from the <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers" target="_blank">Download section of the SiLab chip company</a>
+            </p>
+            <ul>
+                <li>Open the link above (will open in a new tab)</li>
+                <li>Go to "Download"</li>
+                <li>For Windows PCs: choose "CP210x Universal Windows Driver"</li>
+                <ul>
+                    <li>Download the zip file and unzip its content (you really need to extract the files to be able to install the driver!)</li>
+                    <li>Right click with your mouse on "silabser.inf" (or "silabser" if you do not see the file extension) with with type "Setup Information"</li>
+                    <li>Choose "Install"</li>
+                    <li>Unplug an replug your Morserino, then use the "Connect" to connect the web application to it.</li>
+                </ul>
+
+                <li>For Macs: choose "CP210x VCP Mac OSX Driver"</li>
+                <ul>
+                    <li>Download the zip file and unzip its content. The directory "macOS_VCP_Driver" is then created.</li>
+                    <li>Open the installation image "SiLabsUSBDriverDisk.dmg"</li>
+                    <li>Start the installation application "Install CP210x VCP Driver.app"</li>
+                </ul>
+                <li>For Linux: no need to download/install anything. Should work out of the box.</li>
+            </ul>
         </div>
     </div>
 
