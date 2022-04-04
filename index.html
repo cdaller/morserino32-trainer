@@ -140,7 +140,7 @@
                         <li>New/beta: Train QSOs: key your QSOs and a bot will answer.</li>
                     </ul>
                 </div>
-                <div class="col-12 col-md-1">
+                <div class="col-12 col-md-1 float-right">
                     <button class="btn btn-info" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
                         Help
                     </button>
@@ -151,7 +151,16 @@
 
     <div class="collapse" id="collapseHelp">
         <div class="card card-body">
-            <h3>Help</h3>
+            <div class="row">
+                <div class="col-12 col-md-11">
+                    <h3>Help</h3>
+                </div>
+                <div class="col-12 col-md-1">                            
+                    <button class="btn btn-outline-info btn-sm" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHelp" aria-expanded="false" aria-controls="collapseHelp">
+                        Close
+                    </button>
+                </div>
+            </div>
             <h4>CW Generator mode</h4>
             You might need to configure the morserino to send characters via serial line first (see below)! Only Chrome, Edge and Opera are supported at the moment!
             <ul>
@@ -369,7 +378,16 @@
                 </div>
                 <div class="collapse" id="collapseQsoSettings">
                     <div class="card card-body">
-                        <h4>CW Settings</h4>
+                        <div class="row">
+                            <div class="col-12 col-md-11">
+                                <h4>CW Settings</h4>
+                            </div>
+                            <div class="col-12 col-md-1">                            
+                                <button class="btn btn-outline-info btn-sm" style="margin-top: 4px" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQsoSettings" aria-expanded="false" aria-controls="collapseQsoSettings">
+                                    Close
+                                </button>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-12 col-md-3">
                                 <label for="qsoWpm">Speed:</label>
