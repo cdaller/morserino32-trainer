@@ -447,12 +447,15 @@
                 <div class="form-group">
                     Your Input:
                     <div class="row">
-                        <div class="col-12 col-md-11">
+                        <div class="col-12 col-md-10">
                             <textarea rows="2" cols="80" id="inputTextQsoTrainer" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
                         </div>
-                        <div class="col-12 col-md-1">
+                        <div class="col-12 col-md-2">
                             <button id="inputTextQsoTrainerButton" class="btn btn-outline-primary" style="margin-top: 4px" title="Move my input to list of messages above" data-bs-togglee="tooltip">
                                 OK
+                            </button>
+                            <button id="clearInputTextQsoTrainerButton" class="btn btn-outline-danger" style="margin-top: 4px" title="Clear my input field" data-bs-togglee="tooltip">
+                                Clear
                             </button>
                         </div>
                     </div>
@@ -460,7 +463,7 @@
 
                 <div>
                     <button id="autoKeyQsoTrainerButton" class="btn btn-outline-primary" title="I am too lazy to key, please do it for me!" data-bs-toggle="tooltip">I'm lazy!</button>
-                    <button id="clearQsoTrainerButton" class="btn btn-outline-primary" title="Clear text received from Morserino (for QSO Trainer mode)." data-bs-toggle="tooltip">Clear</button>
+                    <button id="clearQsoTrainerButton" class="btn btn-outline-primary" title="Restart QSO, clear QSO data." data-bs-toggle="tooltip">Restart QSO (Clear All)</button>
                 </div>
             </div> <!-- end QSO trainer -->
         </div> <!-- end tab-content -->

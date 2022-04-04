@@ -6,7 +6,7 @@ const { convertChangesToXML } = require('diff');
 
 // some constants
 
-let VERSION = '0.4.1-beta1';
+let VERSION = '0.4.0-beta3';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
@@ -51,6 +51,7 @@ let autoKeyQsoTrainerButton = document.getElementById("autoKeyQsoTrainerButton")
 let qsoMessages = document.getElementById("qsoMessages");
 let inputTextQsoTrainer = document.getElementById("inputTextQsoTrainer");
 let inputTextQsoTrainerButton = document.getElementById("inputTextQsoTrainerButton");
+let clearInputTextQsoTrainerButton = document.getElementById("clearInputTextQsoTrainerButton");
 let qsoWpmSelect = document.getElementById("qsoWpmSelect");
 let qsoEwsSelect = document.getElementById("qsoEwsSelect");
 let qsoElsSelect = document.getElementById("qsoElsSelect");
@@ -158,6 +159,9 @@ showAllAbbreviationsButton.addEventListener('click', showAllAbbreviations);
 clearQsoTrainerButton.addEventListener('click', clearQsoTrainerFields);
 autoKeyQsoTrainerButton.addEventListener('click', autoKeyQso);
 inputTextQsoTrainerButton.addEventListener('click', moveQsoInputTextToMessages);
+clearInputTextQsoTrainerButton.addEventListener('click', function() {
+    inputTextQsoTrainer.value = '';
+});
 qsoRptWordsCheckbox.addEventListener('change', function(event) {
     console.log(event);
     qsoRptWords = event.target.checked;
