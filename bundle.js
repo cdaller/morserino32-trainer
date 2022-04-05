@@ -1336,7 +1336,7 @@ abbreviations = {
     'qtc':  {'de': 'Ich habe Nachrichten für Sie', 'en': 'I have telegrams for you'},
     'qth':  {'de': 'Mein Standort ist ...', 'en': 'My position is ...'},
     'qtr':  {'de': 'Es ist ... Uhr', 'en': 'Correct time UTC is ...'},
-    'r': {'de': 'Dezimalkomma (zwischen Zahlen), richtig, verstanden, keine Wiederholdng nötig, Romeo', 'en': 'decimal point, roger, received, Romeo' },
+    'r': {'de': 'Dezimalkomma (zwischen Zahlen), richtig, verstanden, keine Wiederholung nötig, Romeo', 'en': 'decimal point, roger, received, Romeo' },
     'rcvd': {'de': 'empfangen', 'en': 'received' },
     're': {'de': 'bezüglich ...', 'en': 'regarding ...' },
     'ref': {'de': 'Referenz ...', 'en': 'reference ...' },
