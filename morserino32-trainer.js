@@ -834,12 +834,20 @@ function generateCallSign() {
 
 function getRandomName() {
     return getRandom('frank', 'christof', 'john', 'gerhard', 'manfred', 'steve', 'yuan', 'carl', 'tommy', 
-    'andrea', 'sabine', 'karin', 'anja', 'yvonne');
+    'andrea', 'sabine', 'karin', 'anja', 'yvonne', 'bob', 'david', 'sophie', 'joseph', 'josef',
+    'sam', 'joe', 'laura', 'hank', 'nick', 'alice', 'sarah', 'patrick', 'tom', 'dan', 'alice',
+    'beth', 'liz', 'josh', 'ann', 'anna', 'robert', 'bill', 'mickey', 'alex', 'ed', 'edward',
+    'alice', 'emma', 'jolie', 'andy', 'andi', 'samuel', 'pat', 'mike', 'michael', 'daniel');
 }
 
 function getRandomQth() {
     return getRandom('graz', 'vienna', 'berlin', 'nyborg', 'paris', 'london', 'kyiv', 'tokyo', 'hamburg', 
-    'salzburg', 'linz', 'weyregg');
+    'salzburg', 'linz', 'weyregg', 'boulder', 'hagerstown', 'pittsburg', 'greenville', 
+    'charleston', 'bratislava', 'ljubljana', 'zagreb', 'budapest', 'wels', 'bolzano', 'munich',
+    'berlin', 'innsbruck', 'marseille', 'barcelona', 'zaragoza', 'madrid', 'lyon', 'geneve',
+    'toulouse', 'anvers', 'gent', 'brussels', 'cologne', 'prague', 'monaco', 'milano', 'rome', 'napoli',
+    'nice', 'split', 'sarajevo', 'florence', 'cambridge', 'liverpool', 'edinborough', 'manchester',
+    'copenhagen', 'oslo');
 }
 
 
