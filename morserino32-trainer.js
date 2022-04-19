@@ -721,8 +721,8 @@ function createAnswerElement(message) {
     return row;
 }
 
-// let answer = createQsoAnswer('cq cq cq de oe6chd o e 6 c h d');
-// console.log('answer:', answer);
+let answer = createQsoAnswer('cq cq cq de oe6chd o e 6 c h d');
+console.log('answer:', answer);
 // answer = createQsoAnswer('r r ur rst is 599');
 // console.log('answer:', answer);
 // answer = createQsoAnswer('gm yl ur rst is 568');
@@ -735,6 +735,8 @@ function createAnswerElement(message) {
 // console.log('answer:', answer);
 // answer = createQsoAnswer('gb om');
 // console.log('answer:', answer);
+answer = createQsoAnswer('my wx is cold');
+console.log('answer:', answer);
 
 function createQsoAnswer(message) {
     console.log('message:', message);
@@ -778,6 +780,18 @@ function createQsoAnswer(message) {
         textDetected = true;
         console.log('matched name, answer:', answer);
     });
+    addMessageIfMatch(message, /.*\swx\sis\s(\w+)(?:.*temp\s([-]?\d+)\s*c?)?/, answer, function(groups) { 
+        let weather = groups[0];
+        let temperature = groups[1];
+        let temperatureString = '';
+        if (temperature !== undefined) {
+            temperatureString = ' es temp ' + groups[1] + 'c';
+        }
+        answer = appendToMessage(answer, 'ok ur wx is ' + weather + temperatureString);
+        answer = appendToMessage(answer, 'my wx is ' + getRandomWx());
+        textDetected = true;
+        console.log('matched wx, answer:', answer);
+    });
     addMessageIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
         var qth = getRandomQth();
         answer = appendToMessage(answer, 'my qth is ' + qth + ' ' + qth);
@@ -789,7 +803,7 @@ function createQsoAnswer(message) {
         textDetected = true;
         console.log('matched gb, answer:', answer);
     });
-    addMessageIfMatch(message, /tu e e/, answer, function(groups) { 
+    addMessageIfMatch(message, /(tu|sk) e e/, answer, function(groups) { 
         answer = appendToMessage(answer, 'e e');
         shouldAppendEndOfMessage = false;
         textDetected = true;
@@ -850,6 +864,20 @@ function getRandomQth() {
     'copenhagen', 'oslo');
 }
 
+function getRandomWx() {
+    let wx = getRandom('sun', 'cloudy', 'rain', 'snow', 'fog', 'hot', 'cold', 'sunny', 'raining', 'snowing', 'foggy');
+    let minTemp = -20;
+    let maxTemp = 35;
+    if (wx.startsWith('hot')) {
+        minTemp = 0; // in alaska zero degrees might be hot :-)
+    }
+    if (wx.startsWith('snow')) {
+        maxTemp = 5;
+    }
+    let temp = 'temp ' + Math.round(minTemp + Math.random() * (maxTemp - minTemp)) + 'c'; // -20 to +35 degrees
+    return wx + ' ' + temp;
+}
+
 
 function randomString(length) {
     let letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -872,15 +900,19 @@ function getRandom(...strings) {
 }
 
 function autoKeyQso() {
-    let message = autoQsoMessages[autoKeyQsoIndex];
-    autoKeyQsoIndex++;
-    if (autoKeyQsoIndex >= autoQsoMessages.length) {
+    if (autoKeyQsoIndex == 0) {
         resetQsoTrainerFields();
     }
+    let message = autoQsoMessages[autoKeyQsoIndex];
     receiveTextQsoTrainer.value = message;
     //Scroll to the bottom of the text field
     receiveTextQsoTrainer.scrollTop = receiveTextQsoTrainer.scrollHeight;
     detectQso();
+
+    autoKeyQsoIndex++;
+    if (autoKeyQsoIndex >= autoQsoMessages.length) {
+        autoKeyQsoIndex = 0;
+    }
 }
 
 function generateAutoQsoMessages() {
@@ -890,7 +922,8 @@ function generateAutoQsoMessages() {
         'cq cq cq de ' + autoQsoCallsign + ' ' + spreadString(autoQsoCallsign) + ' pse k <kn> ', 
         deText + ' =\n' + getRandom('gm', 'ge') + ' = \nur rst is 599 5nn = hw ?\n' + deText + ' kn ',
         deText + ' =\nmy name is ' + name + ' ' + name + ' =\n' + deText + ' kn ',
-        deText + ' =\nmy qth is linz =\n' + deText + ' kn ',
+        deText + ' =\nmy qth is ' + getRandomQth() + ' =\n' + deText + ' kn ',
+        deText + ' =\nmy wx is ' + getRandomWx() +' =\n' + deText + ' kn ',
     ];
 }
 
