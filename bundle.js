@@ -7,7 +7,7 @@ const { convertChangesToXML } = require('diff');
 
 // some constants
 
-let VERSION = '0.4.0-beta3';
+let VERSION = '0.4.0-beta4';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
