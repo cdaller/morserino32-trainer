@@ -685,7 +685,7 @@ function createAnswerElement(message) {
         return function() {
             playCw(_message);
         }
-    })(message);
+    })(message.replace(/<br\/>/g, ' '));
     new bootstrap.Tooltip(replayButton, { trigger : 'hover' });
 
     let stopButton = createElement('Stop', 'button', 'btn btn-outline-danger btn-sm qso-answer-button');
