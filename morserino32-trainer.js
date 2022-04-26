@@ -7,7 +7,7 @@ const ReRegExp = require('reregexp').default;
 
 // some constants
 
-let VERSION = '0.4.0-beta4';
+let VERSION = '0.4.0-beta5';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
@@ -753,7 +753,7 @@ function createQsoAnswer(message) {
         autoQsoCallsign = qsoCallSign;
         autoQsoCallsignBot = qsoCallSignBot;
         generateAutoQsoMessages();
-        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + spreadString(qsoCallSignBot) + ' pse k');
+        answer = appendToMessage(answer, qsoCallSign + ' de ' + qsoCallSignBot + ' ' + qsoCallSignBot + ' pse k');
         shouldAppendEndOfMessage = false;
         isIntro = true;
         textDetected = true;
@@ -842,10 +842,6 @@ function appendToMessage(message, textToAppend) {
     }
     return message;
 }
-
-for (let i =0; i <= 100; i++) {
-    console.log(generateCallSign());
- }
 
 function generateCallSign() {
     return new ReRegExp(getRandomCallsignRegexp()).build();
@@ -940,6 +936,9 @@ function getRandomWx() {
     if (wx.startsWith('snow')) {
         maxTemp = 5;
     }
+    if (wx.startsWith('rain')) {
+        minTemp = -2;
+    }
     let temp = 'temp ' + Math.round(minTemp + Math.random() * (maxTemp - minTemp)) + 'c'; // -20 to +35 degrees
     return wx + ' ' + temp;
 }
@@ -949,15 +948,6 @@ function randomString(length) {
     let letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
     for (var s=''; s.length < length; s += letters.charAt(Math.random() * letters.length|0));
     return s;
-}
-
-function spreadString(text) {
-    let result = '';
-    for (var index = 0; index < text.length - 1; index++) {
-        result += text.charAt(index) + ' ';
-    }
-    result += text.charAt(text.length - 1);
-    return result;
 }
 
 function getRandom(...values) {
@@ -985,7 +975,7 @@ function generateAutoQsoMessages() {
     let deText = autoQsoCallsignBot + ' de ' + autoQsoCallsign;
     let name = getRandomName();
     autoQsoMessages = [
-        'cq cq cq de ' + autoQsoCallsign + ' ' + spreadString(autoQsoCallsign) + ' pse k <kn> ', 
+        'cq cq cq de ' + autoQsoCallsign + ' ' + autoQsoCallsign + ' pse k <kn> ', 
         deText + ' =\n' + getRandom('gm', 'ge') + ' = \nur rst is 599 5nn = hw ?\n' + deText + ' kn ',
         deText + ' =\nmy name is ' + name + ' ' + name + ' =\n' + deText + ' kn ',
         deText + ' =\nmy qth is ' + getRandomQth() + ' =\n' + deText + ' kn ',
