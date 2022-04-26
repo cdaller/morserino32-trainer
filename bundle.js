@@ -66,6 +66,7 @@ let autoQsoCallsignBot;
 let autoQsoMessages;
 let qsoCallSign;
 let qsoName;
+let qsoQth;
 let qsoCallSignBot;
 let autoKeyQsoIndex;
 let qsoRptWords = qsoRptWordsCheckbox.checked;
@@ -728,7 +729,7 @@ let answer = createQsoAnswer('cq cq cq de oe6chd o e 6 c h d');
 console.log('answer:', answer);
 // answer = createQsoAnswer('r r ur rst is 599');
 // console.log('answer:', answer);
-// answer = createQsoAnswer('gm yl ur rst is 568');
+// answer = createQsoAnswer('gm ur rst is 568');
 // console.log('answer:', answer);
 // answer = createQsoAnswer('foobar');
 // console.log('answer:', answer);
@@ -738,6 +739,8 @@ console.log('answer:', answer);
 // console.log('answer:', answer);
 // answer = createQsoAnswer('gb om');
 // console.log('answer:', answer);
+answer = createQsoAnswer('my name is fred == my qth is toronto');
+console.log('answer:', answer);
 answer = createQsoAnswer('my wx is cold');
 console.log('answer:', answer);
 
@@ -747,8 +750,10 @@ function createQsoAnswer(message) {
     let shouldAppendEndOfMessage = true;
     let isIntro = false;
     let textDetected = false;
+    let qthDetected = false;
+
     // CQ CQ CQ de .... 
-    addMessageIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, function(groups) { 
+    executeIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, function(groups) { 
         qsoCallSign = groups[0];
         qsoCallSignBot = generateCallSign();
         autoQsoCallsign = qsoCallSign;
@@ -764,26 +769,35 @@ function createQsoAnswer(message) {
     if (!isIntro) {
         answer = appendToMessage(answer, 'r r ' + qsoCallSign + ' de ' + qsoCallSignBot);        
     }
-    addMessageIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
+    executeIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
         answer = appendToMessage(answer, groups[0]); // do not reply with 'om' or 'yl' because we do not know if om or yl!
         textDetected = true;
         console.log('matched gm/ga/ge, answer:', answer);
     });
-    addMessageIfMatch(message, /.*rst\sis\s(\w+)/, answer, function(groups) { 
+    executeIfMatch(message, /.*rst\sis\s(\w+)/, answer, function(groups) { 
         var rst = getRandom('555', '569', '579', '589', '599');
         answer = appendToMessage(answer, 'ur rst is ' + rst + ' ' + rst);
         textDetected = true;
         console.log('matched rst, answer:', answer);
     });
-    addMessageIfMatch(message, /.*\sname\sis\s(\w+)/, answer, function(groups) { 
+    executeIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
+        qsoQth = groups[0];
+        qthDetected = true;
+        console.log('matched qth:', qsoQth);
+    });
+    executeIfMatch(message, /.*\sname\sis\s(\w+)/, answer, function(groups) { 
         qsoName = groups[0];
         var name = getRandomName();
-        answer = appendToMessage(answer, 'ok ' + qsoName);
+        if (qsoQth === '') {
+            answer = appendToMessage(answer, 'ok ' + qsoName);
+        } else {
+            answer = appendToMessage(answer, 'ok ' + qsoName + ' from ' + qsoQth);
+        }
         answer = appendToMessage(answer, 'my name is ' + name + ' ' + name);
         textDetected = true;
         console.log('matched name, answer:', answer);
     });
-    addMessageIfMatch(message, /.*\swx\sis\s(\w+)(?:.*temp\s([-]?\d+)\s*c?)?/, answer, function(groups) { 
+    executeIfMatch(message, /.*\swx\sis\s(\w+)(?:.*temp\s([-]?\d+)\s*c?)?/, answer, function(groups) { 
         let weather = groups[0];
         let temperature = groups[1];
         let temperatureString = '';
@@ -795,24 +809,24 @@ function createQsoAnswer(message) {
         textDetected = true;
         console.log('matched wx, answer:', answer);
     });
-    addMessageIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
+    if (qthDetected) {
         var qth = getRandomQth();
         answer = appendToMessage(answer, 'my qth is ' + qth + ' ' + qth);
         textDetected = true;
         console.log('matched qth, answer:', answer);
-    });
-    addMessageIfMatch(message, /.*gb\s(om|yl)/, answer, function(groups) { 
+    }
+    executeIfMatch(message, /.*gb\s(om|yl)/, answer, function(groups) { 
         answer = appendToMessage(answer, 'gb ' + qsoName + ' 73 es 55');
         textDetected = true;
         console.log('matched gb, answer:', answer);
     });
-    addMessageIfMatch(message, /(tu|sk) e e/, answer, function(groups) { 
+    executeIfMatch(message, /(tu|sk) e e/, answer, function(groups) { 
         answer = appendToMessage(answer, 'e e');
         shouldAppendEndOfMessage = false;
         textDetected = true;
         console.log('matched tu e e, answer:', answer);
     });
-    addMessageIfMatch(message, /.*test/, answer, function(groups) { 
+    executeIfMatch(message, /.*test/, answer, function(groups) { 
         answer = appendToMessage(answer, 'test back');
         textDetected = true;
         console.log('matched test, answer:', answer);
@@ -827,7 +841,7 @@ function createQsoAnswer(message) {
     return answer;
 }
 
-function addMessageIfMatch(message, regexp, answer, callback) {
+function executeIfMatch(message, regexp, answer, callback) {
     var result = message.match(regexp);
     if (result) {
         result.shift(); // remove matching string, only return groups (if any)
@@ -944,13 +958,6 @@ function getRandomWx() {
     return wx + ' ' + temp;
 }
 
-
-function randomString(length) {
-    let letters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    for (var s=''; s.length < length; s += letters.charAt(Math.random() * letters.length|0));
-    return s;
-}
-
 function getRandom(...values) {
     let randomIndex = Math.random() * values.length | 0;
     return values[randomIndex];
@@ -996,6 +1003,7 @@ function resetQsoTrainerFields() {
     qsoCallSign = '';
     qsoCallSignBot = '';
     qsoName = '';
+    qsoQth = '';
     autoKeyQsoIndex = 0;
     autoQsoCallsign = generateCallSign();
     autoQsoCallsignBot = generateCallSign();
