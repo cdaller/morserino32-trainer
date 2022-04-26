@@ -574,7 +574,8 @@ function detectQso() {
     let text = receiveTextQsoTrainer.value;
     if (text.endsWith(' kn ') || text.endsWith(' <kn> ') 
         || text.endsWith('e e ')
-        || text.endsWith(' bk ') || text.endsWith(' k ')) {
+        || text.endsWith(' bk ') || text.endsWith(' <bk> ') 
+        || text.endsWith(' k ')) {
         endOfMessageDetected = true;
         //console.log('detecteQso: end of message detected', endOfMessageDetected)
         setTimeout(detectQsoMessageEnded, QSO_WAIT_TIME_MS)
