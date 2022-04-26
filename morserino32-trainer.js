@@ -3,6 +3,7 @@
 let jsdiff = require('diff');
 let Charts = require('chart.js');
 const { convertChangesToXML } = require('diff');
+const ReRegExp = require('reregexp').default;
 
 // some constants
 
@@ -842,9 +843,73 @@ function appendToMessage(message, textToAppend) {
     return message;
 }
 
+for (let i =0; i <= 100; i++) {
+    console.log(generateCallSign());
+ }
+
 function generateCallSign() {
-    // TODO: use more realistic call sign generator!
-    return randomString(5);
+    return new ReRegExp(getRandomCallsignRegexp()).build();
+}
+
+function getRandomCallsignRegexp() {
+    return getRandom(
+        /1[ABS][0-9][A-Z]{2,3}/,
+        /2[A-Z][0-9][A-Z]{2,3}/,
+        /3D[A-Z][0-9][A-Z]{2}/,
+        /3[A-Z][0-9][A-Z]{2,3}/,
+        /4[A-Z][0-9][A-Z]{2,3}/,
+        /5[A-Z][0-9][A-Z]{2,3}/,
+        /6[A-Z][0-9][A-Z]{2,3}/,
+        /7[A-Z][0-9][A-Z]{2,3}/,
+        /8[A-Z][0-9][A-Z]{2,3}/,
+        /9[A-Z][0-9][A-Z]{2,3}/,
+        /A[A-Z][0-9][A-Z]{2,3}/,
+        /A[2-9][A-Z]{3}/,
+        /B[A-Z][0-9][A-Z]{2,3}/,
+        /B[2-9][A-Z]{3}/,
+        /C[A-Z][0-9][A-Z]{2,3}/,
+        /C[0-9][A-Z]{3}/,
+        /D[A-Z][0-9][A-Z]{2,3}/,
+        /D[0-9][A-Z]{3}/,
+        /E[A-Z][0-9][A-Z]{2,3}/,
+        /E[2-67][A-Z]{3}/,
+        /F[0-9][A-Z]{3}/,
+        /G[0-9][A-Z]{3}/,
+        /H[A-Z][0-9][A-Z]{2,3}/,
+        /H[1-9][A-Z]{3}/,
+        /I[A-Z][0-9][A-Z]{2,3}/,
+        /I[1-9][A-Z]{3}/,
+        /I[A-Z][0-9][A-Z]{2,3}/,
+        /I[1-9][A-Z]{3}/,
+        /J[A-Z][0-9][A-Z]{2,3}/,
+        /J[2-8][A-Z]{3}/,
+        // /K[0-9][A-Z]/, // special callsign in US
+        /K[0-9][A-Z]{3}/,
+        /K[A-Z][0-9][A-Z]{2,3}/,
+        /L[A-Z][0-9][A-Z]{2,3}/,
+        /L[2-8][A-Z]{3}/,
+        /M[A-Z][0-9][A-Z]{2,3}/,
+        /N[2-9][A-Z]{2,3}/,
+        // /N[0-9][A-Z]/, // special callsign in US
+        /O[A-Z][0-9][A-Z]{2,3}/,
+        /P[A-Z][0-9][A-Z]{2,3}/,
+        /P[2-9][A-Z]{3}/,
+        /R[0-9][A-Z]{2,3}/,
+        /R[A-Z][0-9][A-Z]{2}/,
+        /S[A-Z][0-9][A-Z]{2,3}/,
+        /S[02-9][A-Z]{3}/,
+        /T[A-Z][0-9][A-Z]{2,3}/,
+        /T[2-8][A-Z]{3}/,
+        /U[A-Z][0-9][A-Z]{3}/,
+        /V[A-Z][0-9][A-Z]{2,3}/,
+        /V[2-9][A-Z]{2,3}/,
+        /W[A-Z]{0,1}[0-9][A-Z]{1,2}/,
+        /X[A-Z][0-9][A-Z]{2,3}/,
+        /Y[A-Z][0-9][A-Z]{2,3}/,
+        /Y[2-9][A-Z]{3}/,
+        /Z[A-Z][0-9][A-Z]{2,3}/,
+        /Z[238][A-Z]{3}/,
+        );
 }
 
 function getRandomName() {
@@ -895,9 +960,9 @@ function spreadString(text) {
     return result;
 }
 
-function getRandom(...strings) {
-    let randomIndex = Math.random() * strings.length | 0;
-    return strings[randomIndex];
+function getRandom(...values) {
+    let randomIndex = Math.random() * values.length | 0;
+    return values[randomIndex];
 }
 
 function autoKeyQso() {
