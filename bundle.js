@@ -1420,7 +1420,7 @@ abbreviations = {
     'qra':  {'de': 'Der Name meiner Funkstelle ist...', 'en': 'name of my station is...'},
     'qrb':  {'de': 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', 'en': 'distance betwenn our stations is...'},
     'qrg': {'de': 'Deine genaue Frequenz ist ...', 'en': 'your exact frequency is ...' },
-    'qrl':  {'de': 'Ich bin beschäftigt, bitte nicht stören!, Arbeit', 'en': 'I am busy! Please, do not interfere!, Work'},
+    'qrl':  {'de': 'Ich bin beschäftigt, bitte nicht stören!, Arbeit, Ist die Frequenz frei?', 'en': 'I am busy! Please, do not interfere!, Work, Is this frequence in use?'},
     'qrm': {'de': 'man made Störungen', 'en': 'man mad interference' },
     'qrn': {'de': 'natürliche Störungen 1..nicht - 5..sehr stark', 'en': 'natural interference ...' },
     'qro':  {'de': 'Sendeleistung erhöhen', 'en': 'increase power'},
