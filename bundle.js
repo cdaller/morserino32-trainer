@@ -1230,6 +1230,7 @@ abbreviations = {
     '99': {'de': 'Verschwinde!', 'en': 'get lost!' },
     'a': {'de': 'Alpha', 'en': 'Alpha'  },
     'aa': {'de': 'alles nach...', 'en': 'all after...' },
+    'ab': {'de': 'alles vor...', 'en': 'all before...' },
     'abt': {'de': 'ungefähr', 'en': 'about' },
     'ac': {'de': 'Wechselstrom (auch Brumm)', 'en': 'alternating current' },
     'adr': {'de': 'Anschrift', 'en': 'address' },
