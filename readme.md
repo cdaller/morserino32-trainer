@@ -40,75 +40,40 @@ browserify morserino32-trainer.js -o bundle.js
 watchify morserino32-trainer.js -o bundle.js
 ```
 
-### ToDo
+## Feature Requests
 
-QSO: 
+### Play Texts
+
+* Play full QSO examples
+  * with random callsigns/QTH/etc.
+* Play other texts
+  * german
+  * english
+  * upload your own texts
+    * store them in local session so they are remembered
+* Modes
+  * User needs to type word correctly or repeat
+  * just play
+
+
+### QSO Bot
+
 * remove callsign with space (/)
-* <bk> als endezeichen (/)
-* or weg (/)
-* verabschiedung: qru/qrt -> antwort auch qru
+* <bk> as end (/)
+* real callsigns (/)
+* wx (/)
+  * wx: raining: min -2c (/)
+  * wx (is) sunny
+* good bye: QRU/QRT -> answer also with QRU
   * tu e e 
     * e e
-  * wenn gb -> dann nix kn, sondern sk e e
-    * und kein xx de yy, nur mehr e e!
+  * if gb -> then no "kn", but "sk e e"
+    * and do nto send "xx de yy", but only "e e"!
 * gm <call> from <qth>
-* rufzeichen (/)
-  * echte präfixe + 2/3/4 random, letzten 2 keine zahlen (/)
-* wx: raining: min -2c (/)
-* wx (is) sunny
 * you have to send correct xxx de yyy first!
-* wx (/)
-* rig
-* wenn nich verstehe, dann schicke ich
+* add rig description
+* if I do not understand, send
   * ur name ?
-
-### callsigns
-
-* 3Adw
-* 5Adww
-* 9Adwww
-* Dwdww
-* Dwdwww
-* Ddwww
-* E2dwww
-* EAdwww
-* EWdwww
-* Fdwww
-* Gdwww
-* I1dwww
-* IKdwww
-* INdwww
-* IZdwww
-* JAdwww
-* JHdwww
-* JMdwww
-* Kdw
-* Kdwww
-* Kwdww
-* Kwdwww
-* LYdww
-* Ndw
-* Ndwww
-* Nwdww
-* Nwdwww
-* OEdwww
-* OKdwww
-* ONdww
-* OZdwww
-* PAdwww
-* Rdww
-* Rdwww
-* RVdww
-* SPdwww
-* SQdwww
-* SVdwww
-* Uwdwww
-* Vwdww
-* Vdwww
-* WAdwww
-* Wdw
-* Wdwww
-* Wwdww
-* Xwdwww
-* YBdww
-* YDdwww
+* "I am lazy"
+  * let bot start QSO
+  * let bot continue QSO
