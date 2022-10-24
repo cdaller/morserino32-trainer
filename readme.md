@@ -42,6 +42,12 @@ watchify morserino32-trainer.js -o bundle.js
 
 ## Feature Requests
 
+### Serial Protocol with morserino
+
+* Allow full remote control from the web application
+* Speech output for visually impaired users.
+* see ()[serialtest.html] for details or better test at ()[//tegmento.org/serialtest.html]
+
 ### Play Texts
 
 * Play full QSO examples
