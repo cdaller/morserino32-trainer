@@ -46,7 +46,7 @@ watchify morserino32-trainer.js -o bundle.js
 
 * Allow full remote control from the web application
 * Speech output for visually impaired users.
-* see ()[serialtest.html] for details or better test at ()[//tegmento.org/serialtest.html]
+* see [serialtest.html](serialtest.html) for details or better test at [serialtest at tegmento](//tegmento.org/serialtest.html)
 
 ### Play Texts
 
