@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Morserino Serial Test</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff"/>
+    
+    <!-- Bootstrap CSS -->
+    <!--
+        <link href="libs/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .correct {
+            color: black;
+            background-color: lightgreen;
+        }
+
+        .wrong {
+            color: white;
+            background-color: red;
+        }
+        .missing {
+            color: black;
+            background-color: orange;
+        }
+        .bd-footer {
+            text-align: center;
+        }
+        .header {
+            box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
+            background-color: #EEEEEE;
+        }
+        .contentContainer {
+            padding: 20px;
+        }
+        contentContainer .row {
+            padding: 12px;
+        }
+        .inputContainer {
+            margin-top: 25px;
+            background-color: #f9f8f8;
+            border: 1px solid #CCCCCC;
+            padding: 12px;
+        }
+        .inputContainer button {
+            margin: 5px;
+        }
+        .savedResultContainer {
+            margin-top: 25px;
+            background-color: #f9f8f8;
+            border: 1px solid #CCCCCC;
+            padding: 12px;
+        }
+        .savedResultContainer button {
+            padding: 5px;
+            margin-top: 5px;
+        }
+        .form-group {
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+        .form-group textarea {
+            font-size: 120%;
+            padding: 5px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        .result {
+            font-family: monospace;
+            font-size: 140%;
+            text-transform: uppercase;
+        }
+        .legend {
+            font-size: 90%;
+            margin-top: 20px;
+            opacity: 0.7;
+        }
+        #receiveText {
+            background-color: #e2e3e5;
+        }
+        #receiveTextEchoTrainer {
+            background-color: #e2e3e5;
+        }
+        #mainTab {
+            padding-top: 20px;
+        }
+        #serialCommunicationDisabledInfo {
+            display: none;
+        }
+        #receiveTextQsoTrainer {
+            background-color: #e2e3e5;
+        }
+        .qso-request {
+            background-color: #e2e3e5;
+        }
+        .qso-answer {
+            background-color: #f9f8f8;
+            text-shadow: unset;
+        }
+        .qso-answer-button {
+            margin-left: 2px;
+        }
+        .qso-answer.unreadable {
+            filter:url(#wherearemyglasses);
+        }
+        .cw-settings {
+            border: 1px solid #CCCCCC;
+            box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- JavaScript Bundle with Popper -->
+    <!--
+        <script src="libs/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    
+    <div class="shadow-sm p-3 mb-2 bg-light">
+        <h1>Morserino32 Serial Test</h1>
+            <div class="row">
+                <div class="col-12 col-md-11">
+                    This page is only used to define and test the serial communication protocol to/from morserino to allow full remote control 
+                    and speech output for visually impaired users.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contentContainer">
+        <div class="row">
+            <div class="col-12 col-md-12">
+                Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
+                <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
+            </div>
+            <div class="col-12 col-md-12">
+                <div id="serialCommunicationDisabledInfo" class="alert alert-danger mt-2" >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                        <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                        <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                      </svg>
+                    Your browser does not support communication to Morserino!
+                    Please use Chrome, Edge or Opera!
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="mainTabContent">
+            <!-- serial communication test -->
+            <div class="tab-pane fade show active" id="cw-generator-tab-content" role="tabpanel" aria-labelledby="cw-generator-tab">
+                <h2>Serial Communication Test</h2>
+                <div class="inputContainer">
+        
+                    <div class="form-group">
+                        <div id="morserino_detail" class="collapse show">
+                            Received from Morserino:
+                            <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                            <!-- <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea> -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        Your Input:<br />
+                        <textarea rows="3" cols="80" id="inputText" spellcheck="false" placeholder="Type here the letters you encode from Morserino"></textarea>
+                    </div>
+        
+                    <div>
+                        <button id="sendTextButton" class="btn btn-outline-primary" title="Send Text" data-bs-toggle="tooltip">Send Text</button>
+                        <button id="clearAllButton" class="btn btn-outline-secondary" title="Clear text received from Morserino and your input" data-bs-toggle="tooltip">Clear All</button>
+                        <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino" data-bs-toggle="tooltip">Clear Received Text</button>
+                    </div>
+        
+                </div>
+
+                <div>
+                    <h3>Specification</h3>
+
+                    <h4>General</h4>
+
+                    <h5>Sending commands to morserino</h4>
+                    <ul>
+                        <li>Commands sent to the morserino start with "GET" (read values) or "PUT" (write values) and additional parameters.</li>
+                        <li>Commands are ended by a single carriage return (ascii 13) shown in the examples below as "↵"</li>
+                        <li>All write commands return a json object with one or more keywords as property names ("menu", "menus", "config", "configs").
+                            For example the command to change to a specific menu returns the selected menu as a result or an error object.</li>
+                    </ul>
+
+                    <h5>Receiving information from morserino</h5>
+                    <ul>
+                        <li>Morserino sends a message for all actions executed manually by the user on the morserino.</li>
+                        <li>It always sends a <a href="https://de.wikipedia.org/wiki/JavaScript_Object_Notation">valid json object</a>.</li>
+                        <li>Line breaks are optional.</li>
+                        <li>Different type of actions are defined (future).</li>
+                        <li>NOTE: we might need to define an end marker to know when the result object is finished???</li>
+                    </ul>
+                    
+
+                    <h4>Navigation (Menu)</h4>
+                    
+                    <ul>
+                        <li>read the current menu entry. Returns a json object "menu" containing the currently selected menu: 
+                            <pre>GET menu↵</pre>
+                        </li>
+                        <li>read all possible menu entries. This will return an object "menus" holding an array of configurations (see below): 
+                            <pre>GET menus↵</pre>
+                        </li>
+                        <li>navigate to a specific menu entry: <pre>PUT menu/path/to/menuentry↵</pre>Examples:
+                            <ul>
+                                <li><pre>PUT menu/CW Decoder↵</pre></li>
+                                <li><pre>PUT menu/Koch Trainer/Learch New Chr↵</pre></li>
+                            </ul>
+                        </li>
+                        <li>NOTE: we might need to define a key/id for the path and separate text for abbreviated paths (like "Adapt. Rand." or "Learch New Chr")</li>
+                    </ul>
+
+                    The following json object is sent from morserino on a menu change (manually or by a write command ("PUT menu/x/y/z↵"))
+                    <pre>{
+    "menu": {"name": "menu as a path separated by slash" }
+}</pre>
+                    Examples:
+                    <ul>
+                        <li><pre>{ "menu": {"name": "Koch Trainer/Echo Trainer/Adapt. Rand."} }</pre></li>
+                        <li><pre>{ "menu": {"name": "CW Encoder"} }</pre></li>
+                        <li>All menus holding an array of menu entries: <pre>GET menus↵
+{ 
+    "menus": [
+        { "name": "Koch Trainer" },
+        { "name": "Koch Trainer/Learn New Chr." },
+        { "name": "Koch Trainer/CW Generator" },
+        { "name": "Koch Trainer/Echo Trainer" },
+        { "name": "CW Encoder" } 
+    ]
+}
+</pre>
+                        </li>
+                    </ul>
+                    
+                    <h4>Configuration</h4>
+                    <ul>
+                        <li>Reads all configuration parameters from morserino. Returns a json object of an array of json objects:
+                            <pre>GET configs↵</pre>
+                        <li>Reads a songle configuration parameter from morserino:
+                            <pre>GET config/key↵</pre>
+                        </li>
+                        <li>Write a single configuration parameter. Will return the changed configuration or an error.
+                            <pre>PUT config/key/value↵</pre>
+                        </li>
+                    </ul>
+
+                    Returned object examples: 
+                    <ul>
+                        <li>Single config value (integer values): <pre>GET config/Tone Pitch Hz↵
+{ 
+    "config": {
+        "name": "Tone Pitch Hz",
+        "value": 587, 
+        "description": "Pitch of CW", 
+        "allowed-values": [587, 622, 698, 784]
+    } 
+}</pre></li>
+                        <li>Single config value (string values): <pre>GET config/External Pol.↵
+{ 
+    "config": {
+        "name": "External Pol.",
+        "value": "Normal", 
+        "description": "Polarity of external paddle", 
+        "allowed-values": ["Normal", "Reversed"]
+    } 
+}</pre></li>
+                        <li>Multiple/all config values returns a list of configuration objects (short version - only name and value): 
+                            <pre>GET configs↵
+{ "configs": [{"name": "key1", "value": "value1"},{"name": "key2", "value": "value2"} }</pre>
+                        </li>
+                    </ul>
+                </div>
+            </div> <!-- serial communication test -->
+
+        </div> <!-- end tab-content -->
+    </div>
+
+    <script type="text/javascript" src="serialtest.js"></script>
+</body>
+
+<footer class="bd-footer py-3 mt-2 bg-dark text-white">
+    Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
+    <!--
+        - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
+    -->
+        - V<span id="versionSpan">0.1.0</span>
+</footer>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+      <filter id="wherearemyglasses" x="0" y="0">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
+      </filter>
+    </defs>
+  </svg>
+
+</html>
