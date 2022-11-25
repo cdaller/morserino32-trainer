@@ -1353,6 +1353,7 @@ abbreviations = {
     'k': {'de': 'Kommen ..., Kilo', 'en': 'come, Kilo' },
     'ka': {'de': 'Spruchanfang', 'en': 'message begins' },
     'key': {'de': 'Morsetaste', 'en': 'key' },
+    'khz': {'de': 'Kilo Herz', 'en': 'kilo herz' },
     'km': {'de': 'Kilometer', 'en': 'kilometers' },
     'kn': {'de': 'kommen, nur eine bestimmte Station', 'en': '"Over to you, only the station named should respond (e.g. W7PTH DE W1AW KN)"' },
     'knw': {'de': 'wissen', 'en': 'know' },
