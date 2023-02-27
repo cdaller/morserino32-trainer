@@ -11,6 +11,9 @@ const MORSERINO_END = ' +';
 const MODE_SERIAL_TEST = 'serial-test';
 let mode = MODE_SERIAL_TEST;
 
+// speech
+const speechSynth = window.speechSynthesis;
+
 
 // define the elements
 let receiveText = document.getElementById("receiveText");
@@ -193,6 +196,7 @@ async function connect() {
 async function writeToStream(line) {
     const writer = outputStream.getWriter();
     writer.write(line);
+    writer.write('\n');
     writer.releaseLock();
 }
 
@@ -223,13 +227,15 @@ async function disconnect() {
 function clickSend() {
     //send the message
     console.log('sending:', inputText.value)
-    writeToStream(inputText.value)
+    writeToStream(inputText.value);
     //and clear the input field, so it's clear it has been sent
     //sendText.value = '';
 }
 
 //Read the incoming data
 async function readLoop() {
+    var json = '';
+    var inJson = false;
     while (true) {
         const { value, done } = await reader.read();
         if (done === true) {
@@ -238,9 +244,75 @@ async function readLoop() {
         // when recieved something add it to the textarea
         if (mode == MODE_SERIAL_TEST) {
             receiveText.value += value;
+
+            if (!inJson && value.startsWith('{')) {
+                inJson = true;
+            } 
+            if (inJson) {
+                json = json + value;
+                var braceCount = countChar(json, '{') - countChar(json, '}');
+                console.log('value', value);
+                console.log('json', "'" + json + "'");
+                if (braceCount == 0) {
+                    jsonParsed(JSON.parse(json));
+                    json = '';
+                    inJson = false;
+                }
+            }
+        
             //Scroll to the bottom of the text field
             receiveText.scrollTop = receiveText.scrollHeight;
         }
     }
+}
+
+class JsonState {
+    constructor() {
+        this.json = '';
+        this.inJson = false;
+    }
+}
+
+
+function jsonParsed(json) {
+    console.log('json parsed', json);
+    const keys = Object.keys(json);
+    if (keys && keys.length > 0) {
+        const key = keys[0];
+        const value = json[key];
+        switch(key) {
+            case 'menu':
+                speak(value['name']);
+                break;
+            case 'control':
+                speak(value['name'] + ' ' + value['value']);
+                break;
+            case 'activate':
+                speak(value['state']);
+                break;
+            default:
+            console.log('unhandled json key', key);
+        }
+    } else {
+        console.log('cannot handle json', json);
+    }
+}
+
+function countChar(text, char) {
+    return text.split(char).length - 1;
+} 
+
+function speak(text) {
+    console.log('speak', text);
+
+    if (speechSynth.speaking) {
+        console.error("speechSynthesis.speaking");
+        speechSynth.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.pitch = 1;
+    utterance.rate = 1;
+    speechSynth.speak(utterance);
 }
 

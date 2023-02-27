@@ -73,7 +73,6 @@
         .form-group textarea {
             font-size: 120%;
             padding: 5px;
-            text-transform: uppercase;
             width: 100%;
         }
         .result {
@@ -192,7 +191,7 @@
                     <h5>Sending commands to morserino</h4>
                     <ul>
                         <li>Commands sent to the morserino start with "GET" (read values) or "PUT" (write values) and additional parameters.</li>
-                        <li>Commands are ended by a single carriage return (ascii 13) shown in the examples below as "↵"</li>
+                        <li>Commands are ended by a single carriage return ('\n' or ascii 10) shown in the examples below as "↵"</li>
                         <li>All write commands return a json object with one or more keywords as property names ("menu", "menus", "config", "configs").
                             For example the command to change to a specific menu returns the selected menu as a result or an error object.</li>
                     </ul>
@@ -265,7 +264,8 @@
 { 
     "config": {
         "name": "Tone Pitch Hz",
-        "value": 587, 
+        "value": 587,
+        "valueType": "number",
         "description": "Pitch of CW", 
         "allowed-values": [587, 622, 698, 784]
     } 
@@ -275,10 +275,24 @@
     "config": {
         "name": "External Pol.",
         "value": "Normal", 
+        "valueType": "string",
         "description": "Polarity of external paddle", 
         "allowed-values": ["Normal", "Reversed"]
     } 
 }</pre></li>
+                        <li>Min/Max number values (predefined steps): <pre>GET config/CurtisB DahT%↵
+    { 
+        "config": {
+            "name": "CurtisB DahT%",
+            "value": 50, 
+            "valueType": "number",
+            "description": "Timing in CurtisB mode for dahs, in percent", 
+            "min": 0,
+            "max": 100,
+            "step": 5
+        } 
+    }</pre></li>
+    
                         <li>Multiple/all config values returns a list of configuration objects (short version - only name and value): 
                             <pre>GET configs↵
 { "configs": [{"name": "key1", "value": "value1"},{"name": "key2", "value": "value2"} }</pre>
