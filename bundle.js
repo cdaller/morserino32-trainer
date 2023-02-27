@@ -6,6 +6,9 @@ let Charts = require('chart.js');
 const { convertChangesToXML } = require('diff');
 const ReRegExp = require('reregexp').default;
 
+// speech
+const speechSynth = window.speechSynthesis;
+
 // some constants
 
 let VERSION = '0.4.0-beta5';
@@ -1191,11 +1194,18 @@ function clickSend() {
 
 //Read the incoming data
 async function readLoop() {
+    const jsonState = new JsonState(jsonParsed);
+
     while (true) {
         const { value, done } = await reader.read();
         if (done === true) {
             break;
         }
+
+        if (jsonState.handleInput(value)) {
+            continue;
+        }
+
         // when recieved something add it to the textarea
         if (mode == MODE_CW_GENERATOR) {
             receiveText.value += value;
@@ -1216,6 +1226,80 @@ async function readLoop() {
         }
     }
 }
+
+class JsonState {
+    constructor(callbackFunction) {
+        this.json = '';
+        this.inJson = false;
+        this.callback = callbackFunction;
+    }
+
+    handleInput(value) {
+        if (!this.inJson && value.startsWith('{')) {
+            this.inJson = true;
+        } 
+        if (this.inJson) {
+            this.json = this.json + value;
+            var braceCount = countChar(this.json, '{') - countChar(this.json, '}');
+            console.log('value', value);
+            console.log('json', "'" + this.json + "'");
+            if (braceCount == 0) {
+                this.callback(JSON.parse(this.json));
+                this.json = '';
+                this.inJson = false;
+            }
+            return true;
+        }
+        return false;
+    }
+}
+
+function jsonParsed(json) {
+    console.log('json parsed', json);
+    const keys = Object.keys(json);
+    if (keys && keys.length > 0) {
+        const key = keys[0];
+        const value = json[key];
+        switch(key) {
+            case 'menu':
+                speak(value['name']);
+                break;
+            case 'control':
+                speak(value['name'] + ' ' + value['value']);
+                break;
+            case 'activate':
+                speak(value['state']);
+                break;
+            default:
+            console.log('unhandled json key', key);
+        }
+    } else {
+        console.log('cannot handle json', json);
+    }
+}
+
+function countChar(text, char) {
+    return text.split(char).length - 1;
+} 
+
+function speak(text) {
+    console.log('speak', text);
+    if (!speechSynth) {
+        console.log('no speech synthesis available!');
+        return;
+    }
+
+    if (speechSynth.speaking) {
+        console.error("speechSynthesis.speaking");
+        speechSynth.cancel();
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.pitch = 1;
+    utterance.rate = 1;
+    speechSynth.speak(utterance);
+}
+
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk
 // and cw abbreviations CW-Schule graz

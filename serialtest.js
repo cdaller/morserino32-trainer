@@ -234,8 +234,7 @@ function clickSend() {
 
 //Read the incoming data
 async function readLoop() {
-    var json = '';
-    var inJson = false;
+    const jsonState = new JsonState(jsonParsed);
     while (true) {
         const { value, done } = await reader.read();
         if (done === true) {
@@ -245,21 +244,8 @@ async function readLoop() {
         if (mode == MODE_SERIAL_TEST) {
             receiveText.value += value;
 
-            if (!inJson && value.startsWith('{')) {
-                inJson = true;
-            } 
-            if (inJson) {
-                json = json + value;
-                var braceCount = countChar(json, '{') - countChar(json, '}');
-                console.log('value', value);
-                console.log('json', "'" + json + "'");
-                if (braceCount == 0) {
-                    jsonParsed(JSON.parse(json));
-                    json = '';
-                    inJson = false;
-                }
-            }
-        
+            jsonState.handleInput(value);
+
             //Scroll to the bottom of the text field
             receiveText.scrollTop = receiveText.scrollHeight;
         }
@@ -267,9 +253,27 @@ async function readLoop() {
 }
 
 class JsonState {
-    constructor() {
+    constructor(callbackFunction) {
         this.json = '';
         this.inJson = false;
+        this.callback = callbackFunction;
+    }
+
+    handleInput(value) {
+        if (!this.inJson && value.startsWith('{')) {
+            this.inJson = true;
+        } 
+        if (this.inJson) {
+            this.json = this.json + value;
+            var braceCount = countChar(this.json, '{') - countChar(this.json, '}');
+            console.log('value', value);
+            console.log('json', "'" + this.json + "'");
+            if (braceCount == 0) {
+                this.callback(JSON.parse(this.json));
+                this.json = '';
+                this.inJson = false;
+            }
+        }
     }
 }
 
