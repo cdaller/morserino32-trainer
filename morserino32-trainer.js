@@ -1238,11 +1238,11 @@ class JsonState {
         } 
         if (this.inJson) {
             this.json = this.json + value;
-            var braceCount = countChar(this.json, '{') - countChar(this.json, '}');
+            var braceCount = this.countChar(this.json, '{') - this.countChar(this.json, '}');
             //console.log('value', value);
             //console.log('json', "'" + this.json + "'");
             if (braceCount == 0) {
-                this.callback(JSON.parse(this.json));
+                this.callback(speech, JSON.parse(this.json));
                 this.json = '';
                 this.inJson = false;
             }
@@ -1250,35 +1250,12 @@ class JsonState {
         }
         return false;
     }
+    
+    countChar(text, char) {
+        return text.split(char).length - 1;
+    } 
+    
 }
-
-function jsonParsed(json) {
-    // console.log('json parsed', json);
-    const keys = Object.keys(json);
-    if (keys && keys.length > 0) {
-        const key = keys[0];
-        const value = json[key];
-        switch(key) {
-            case 'menu':
-                speech.speak(value['name']);
-                break;
-            case 'control':
-                speech.speak(value['name'] + ' ' + value['value']);
-                break;
-            case 'activate':
-                speech.speak(value['state']);
-                break;
-            default:
-            console.log('unhandled json key', key);
-        }
-    } else {
-        console.log('cannot handle json', json);
-    }
-}
-
-function countChar(text, char) {
-    return text.split(char).length - 1;
-} 
 
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk
