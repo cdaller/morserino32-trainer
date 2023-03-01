@@ -1,5 +1,6 @@
 
-
+// speech synthesis
+const speech = new Speech('en'); // see speech.js
 
 // some constants
 
@@ -10,10 +11,6 @@ const MORSERINO_END = ' +';
 
 const MODE_SERIAL_TEST = 'serial-test';
 let mode = MODE_SERIAL_TEST;
-
-// speech
-const speechSynth = window.speechSynthesis;
-
 
 // define the elements
 let receiveText = document.getElementById("receiveText");
@@ -286,13 +283,13 @@ function jsonParsed(json) {
         const value = json[key];
         switch(key) {
             case 'menu':
-                speak(value['name']);
+                speech.speak(value['name']);
                 break;
             case 'control':
-                speak(value['name'] + ' ' + value['value']);
+                speech.speak(value['name'] + ' ' + value['value']);
                 break;
             case 'activate':
-                speak(value['state']);
+                speech.speak(value['state']);
                 break;
             default:
             console.log('unhandled json key', key);
@@ -306,17 +303,4 @@ function countChar(text, char) {
     return text.split(char).length - 1;
 } 
 
-function speak(text) {
-    console.log('speak', text);
-
-    if (speechSynth.speaking) {
-        console.error("speechSynthesis.speaking");
-        speechSynth.cancel();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 1;
-    utterance.rate = 1;
-    speechSynth.speak(utterance);
-}
 

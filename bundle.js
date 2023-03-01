@@ -3,15 +3,14 @@
 
 let jsdiff = require('diff');
 let Charts = require('chart.js');
-const { convertChangesToXML } = require('diff');
 const ReRegExp = require('reregexp').default;
 
 // speech
-const speechSynth = window.speechSynthesis;
+const speech = new Speech('en'); // see speech.js
 
 // some constants
 
-let VERSION = '0.4.0-beta5';
+let VERSION = '0.5.0-beta5';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
@@ -1241,8 +1240,8 @@ class JsonState {
         if (this.inJson) {
             this.json = this.json + value;
             var braceCount = countChar(this.json, '{') - countChar(this.json, '}');
-            console.log('value', value);
-            console.log('json', "'" + this.json + "'");
+            //console.log('value', value);
+            //console.log('json', "'" + this.json + "'");
             if (braceCount == 0) {
                 this.callback(JSON.parse(this.json));
                 this.json = '';
@@ -1255,20 +1254,20 @@ class JsonState {
 }
 
 function jsonParsed(json) {
-    console.log('json parsed', json);
+    // console.log('json parsed', json);
     const keys = Object.keys(json);
     if (keys && keys.length > 0) {
         const key = keys[0];
         const value = json[key];
         switch(key) {
             case 'menu':
-                speak(value['name']);
+                speech.speak(value['name']);
                 break;
             case 'control':
-                speak(value['name'] + ' ' + value['value']);
+                speech.speak(value['name'] + ' ' + value['value']);
                 break;
             case 'activate':
-                speak(value['state']);
+                speech.speak(value['state']);
                 break;
             default:
             console.log('unhandled json key', key);
@@ -1281,24 +1280,6 @@ function jsonParsed(json) {
 function countChar(text, char) {
     return text.split(char).length - 1;
 } 
-
-function speak(text) {
-    console.log('speak', text);
-    if (!speechSynth) {
-        console.log('no speech synthesis available!');
-        return;
-    }
-
-    if (speechSynth.speaking) {
-        console.error("speechSynthesis.speaking");
-        speechSynth.cancel();
-    }
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 1;
-    utterance.rate = 1;
-    speechSynth.speak(utterance);
-}
 
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk
