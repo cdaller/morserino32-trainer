@@ -4,8 +4,9 @@ let jsdiff = require('diff');
 let Charts = require('chart.js');
 const ReRegExp = require('reregexp').default;
 
-// speech
+// speech & m3 protocol handler
 const speech = new Speech('en'); // see speech.js
+const m32Protocolhandler = new M32ProtocolHandler(speech);
 
 // some constants
 
@@ -1184,7 +1185,6 @@ async function disconnect() {
 
 //Read the incoming data
 async function readLoop() {
-    const m32JsonObject = new M32JsonObject(speech);
 
     while (true) {
         const { value, done } = await reader.read();
@@ -1192,7 +1192,7 @@ async function readLoop() {
             break;
         }
 
-        if (m32JsonObject.handleInput(value)) {
+        if (m32Protocolhandler.handleInput(value)) {
             continue;
         }
 
@@ -1217,37 +1217,6 @@ async function readLoop() {
     }
 }
 
-class M32JsonObject {
-    constructor(callbackFunction) {
-        this.json = '';
-        this.inJson = false;
-        this.callback = callbackFunction;
-    }
-
-    handleInput(value) {
-        if (!this.inJson && value.startsWith('{')) {
-            this.inJson = true;
-        } 
-        if (this.inJson) {
-            this.json = this.json + value;
-            var braceCount = this.countChar(this.json, '{') - this.countChar(this.json, '}');
-            //console.log('value', value);
-            //console.log('json', "'" + this.json + "'");
-            if (braceCount == 0) {
-                this.callback.handleM32Object(JSON.parse(this.json));
-                this.json = '';
-                this.inJson = false;
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    countChar(text, char) {
-        return text.split(char).length - 1;
-    } 
-    
-}
 
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk

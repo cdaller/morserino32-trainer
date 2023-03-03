@@ -1,6 +1,7 @@
 
 // speech synthesis
 const speech = new Speech('en'); // see speech.js
+const m32ProtocolHandler = new M32ProtocolHandler(speech);
 
 // some constants
 
@@ -231,7 +232,6 @@ function clickSend() {
 
 //Read the incoming data
 async function readLoop() {
-    const m32JsonObject = new M32JsonObject(speech);
     while (true) {
         const { value, done } = await reader.read();
         if (done === true) {
@@ -241,42 +241,10 @@ async function readLoop() {
         if (mode == MODE_SERIAL_TEST) {
             receiveText.value += value;
 
-            m32JsonObject.handleInput(value);
+            m32ProtocolHandler.handleInput(value);
 
             //Scroll to the bottom of the text field
             receiveText.scrollTop = receiveText.scrollHeight;
         }
     }
 }
-
-class M32JsonObject {
-    constructor(callbackFunction) {
-        this.json = '';
-        this.inJson = false;
-        this.callback = callbackFunction;
-    }
-
-    handleInput(value) {
-        if (!this.inJson && value.startsWith('{')) {
-            this.inJson = true;
-        } 
-        if (this.inJson) {
-            this.json = this.json + value;
-            var braceCount = this.countChar(this.json, '{') - this.countChar(this.json, '}');
-            //console.log('value', value);
-            //console.log('json', "'" + this.json + "'");
-            if (braceCount == 0) {
-                this.callback.handleM32Object(JSON.parse(this.json));
-                this.json = '';
-                this.inJson = false;
-            }
-            return true;
-        }
-        return false;
-    }
-    
-    countChar(text, char) {
-        return text.split(char).length - 1;
-    } 
-}
-

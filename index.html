@@ -118,6 +118,9 @@
             border: 1px solid #CCCCCC;
             box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
         }
+        .m32-protocol-enabled {
+            visibility: hidden;
+        }
     </style>
 </head>
 
@@ -282,9 +285,12 @@
 
     <div class="contentContainer">
         <div class="row">
-            <div class="col-12 col-md-12">
+            <div class="col-11 col-md-11">
                 Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
                 <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
+            </div>
+            <div class="col-1 col-md-1 m32-protocol-enabled">
+                <span id="m32Speed" class="badge bg-info">17 wpm</span>
             </div>
             <div class="col-12 col-md-12">
                 <div id="serialCommunicationDisabledInfo" class="alert alert-danger mt-2" >
@@ -531,8 +537,9 @@
     </div>
 
     <script type="text/javascript" src="libs/jscwlib-0.2.2.js"></script>
-    <script type="text/javascript" src="speech.js"></script>
-    <script type="text/javascript" src="bundle.js"></script>
+    <script type="text/javascript" src="js/m32protocol.js"></script>
+    <script type="text/javascript" src="js/speech.js"></script>
+    <script type="text/javascript" src="js/bundle.js"></script>
     <!--
         Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
         Further investigation needed on this topic.
