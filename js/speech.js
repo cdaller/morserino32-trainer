@@ -12,7 +12,7 @@ class Speech {
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
-            console.log("cancel speechSynthesis speaking");
+            console.log("cancel previous speech synthesis");
             this.speechSynth.cancel();
         }
 
@@ -62,8 +62,11 @@ class Speech {
                 case 'activate':
                     this.speak(value['state']);
                     break;
+                case 'error':
+                    this.speak(value['message']);
+                    break;
                 default:
-                console.log('unhandled json key', key);
+                    console.log('unhandled json key', key);
             }
         } else {
             console.log('cannot handle json', json);

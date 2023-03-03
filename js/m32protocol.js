@@ -1,8 +1,16 @@
 class M32ProtocolHandler {
-    constructor(callbackFunction) {
+    constructor(callbackFunctions) {
         this.json = '';
         this.inJson = false;
-        this.callback = callbackFunction;
+        this.callbacks = callbackFunctions;
+        this.m32ProtocolSupported = false;
+        this.waitForResponse = false;
+        this.useAllCallbacks = false;
+    }
+
+    commandSent(useAllCallbacks = true) {
+        this.useAllCallbacks = useAllCallbacks;
+        this.waitForResponse = true;
     }
 
     // returns true if input was handled by m32 protocol, false if plain text was detected
@@ -16,9 +24,20 @@ class M32ProtocolHandler {
             //console.log('value', value);
             //console.log('json', "'" + this.json + "'");
             if (braceCount == 0) {
-                this.callback.handleM32Object(JSON.parse(this.json));
+                if (this.useAllCallbacks) {
+                    // use all callbacks:
+                    this.callbacks.forEach(callback => {
+                        callback.handleM32Object(JSON.parse(this.json));
+                    }); 
+                } else {
+                    // use only first callback
+                    this.callbacks[0].handleM32Object(JSON.parse(this.json));
+                }
                 this.json = '';
                 this.inJson = false;
+                this.m32ProtocolSupported = true;
+                this.waitForResponse = false;
+                this.useAllCallbacks = true; // for next object
             }
             return true;
         }

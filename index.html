@@ -118,8 +118,11 @@
             border: 1px solid #CCCCCC;
             box-shadow: 0 0.5em 1.5em rgb(0 0 0 / 10%);
         }
-        .m32-protocol-enabled {
+        .m32-protocol {
             visibility: hidden;
+        }
+        .m32-protocol-enabled {
+            visibility: visible;
         }
     </style>
 </head>
@@ -289,7 +292,7 @@
                 Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
                 <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
             </div>
-            <div class="col-1 col-md-1 m32-protocol-enabled">
+            <div class="col-1 col-md-1 m32-protocol">
                 <span id="m32Speed" class="badge bg-info">17 wpm</span>
             </div>
             <div class="col-12 col-md-12">
@@ -538,6 +541,7 @@
 
     <script type="text/javascript" src="libs/jscwlib-0.2.2.js"></script>
     <script type="text/javascript" src="js/m32protocol.js"></script>
+    <script type="text/javascript" src="js/m32protocol-ui-handler.js"></script>
     <script type="text/javascript" src="js/speech.js"></script>
     <script type="text/javascript" src="js/bundle.js"></script>
     <!--
@@ -563,10 +567,10 @@
 </body>
 
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
-    Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
+    Made with ♥ by Christof Dallermassl <span style="opacity: 0.75">OE6CHD</span> and <a href="https://43bits.com">43bits</a> - <a href="https://github.com/cdaller/morserino32-trainer" target="_blank">GitHub Repo</a>
     <!--
+        - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
     -->
-    - <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Ftegmento.org&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=visits&edge_flat=false"/>
     - V<span id="versionSpan">0.1.0</span>
 </footer>
 

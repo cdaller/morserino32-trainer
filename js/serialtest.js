@@ -1,7 +1,7 @@
 
 // speech synthesis
 const speech = new Speech('en'); // see speech.js
-const m32ProtocolHandler = new M32ProtocolHandler(speech);
+const m32ProtocolHandler = new M32ProtocolHandler([speech]);
 
 // some constants
 
@@ -190,6 +190,7 @@ async function connect() {
         statusBar.innerText = e;
     }
 }
+
 //Write to the Serial port
 async function writeToStream(line) {
     const writer = outputStream.getWriter();

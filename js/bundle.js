@@ -7,7 +7,7 @@ const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
 const speech = new Speech('en'); // see speech.js
-const m32Protocolhandler = new M32ProtocolHandler(speech);
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandUIHandler(), speech]);
 
 // some constants
 
@@ -1141,7 +1141,10 @@ async function connect() {
         outputStream = encoder.writable;
 
         reader = inputStream.getReader();
+
         readLoop();
+
+        initM32Protocol();
 
         inputText.focus();
     } catch (e) {
@@ -1154,10 +1157,13 @@ async function connect() {
         statusBar.innerText = e;
     }
 }
+
 //Write to the Serial port
 async function writeToStream(line) {
+    console.log('send command', line);
     const writer = outputStream.getWriter();
     writer.write(line);
+    writer.write('\n');
     writer.releaseLock();
 }
 
@@ -1216,6 +1222,24 @@ async function readLoop() {
             detectQso();
         }
     }
+}
+
+function initM32Protocol() {
+    sendM32Command('PUT device/protocol/on', false);
+    //sendM32Command('GET device');
+    sendM32Command('GET control/speed', true);
+    sendM32Command('GET control/volume', false);
+}
+
+const timer = ms => new Promise(res => setTimeout(res, ms))
+
+async function sendM32Command(command, useAllCallbacks = true) {
+    while(m32Protocolhandler.waitForResponse) {
+        console.log('waiting for response');
+        await timer(50);
+    };
+    writeToStream(command);
+    m32Protocolhandler.commandSent(useAllCallbacks);
 }
 
 
