@@ -6,8 +6,8 @@ let Charts = require('chart.js');
 const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
-const speech = new Speech('en'); // see speech.js
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandUIHandler(), speech]);
+const m32State = new M32State();
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler(), new Speech('en')]);
 
 // some constants
 
@@ -74,7 +74,6 @@ let qsoCallSignBot;
 let autoKeyQsoIndex;
 let qsoRptWords = qsoRptWordsCheckbox.checked;
 clearQsoTrainerFields();
-
 
 // after page is loaded, set version string from javascript:
 document.addEventListener("DOMContentLoaded", function() {
@@ -357,7 +356,14 @@ function saveResult() {
     }
     let receivedText = trimReceivedText(receiveText.value);
     let input = inputText.value.trim();
-    let result = {text: receivedText, input: input, percentage: lastPercentage, date: Date.now(), ignoreWhitespace: ignoreWhitespace};
+    let result = {
+        text: receivedText, 
+        input: input, 
+        percentage: lastPercentage, 
+        date: Date.now(), 
+        ignoreWhitespace: ignoreWhitespace,
+        speedWpm: m32State.speedWpm
+    };
     storedResults.push(result);
     let storedResultsText = JSON.stringify(storedResults);
     localStorage.setItem(STORAGE_KEY, storedResultsText);
@@ -390,7 +396,8 @@ function showSavedResults(savedResults) {
             let textCell = createElement(null, 'td', null);
             textCell.replaceChildren(...cellContent);
             cells.push(textCell);
-            cells.push(createElement((result.percentage ? ' (' + result.percentage + '%)' : ''), 'td', null));
+            cells.push(createElement((result.percentage ? result.percentage + '%' : ''), 'td', null));
+            cells.push(createElement((result.speedWpm ? result.speedWpm + 'wpm' : ''), 'td', null));
             cells.push(createElement((result.date ? ' ' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : ''), 'td', null));
 
             let loadElement = createElement('Load', 'button', 'btn btn-outline-primary');
@@ -423,6 +430,7 @@ function showSavedResults(savedResults) {
         let headerRow = createElementWithChildren('tr', 
           createElement('Received/Input/Comparison', 'th', null), 
           createElement('Success', 'th', null),
+          createElement('Speed', 'th', null),
           createElement('Date/Time', 'th', null),
           createElement('', 'th', null),
         );

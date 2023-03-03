@@ -1,16 +1,20 @@
-class M32CommandUIHandler {
-
+// class represents the state of the morserino
+class M32State {
     constructor() {
-        this.m32ProtocolEnabled = false;
+        this.speedWpm = null;
+    }
+}
+
+// handling state changes on the morserino
+class M32CommandStateHandler {
+
+    constructor(m32State) {
+        this.m32State = m32State;
     }
 
     // callback method for a full json object received
     handleM32Object(jsonObject) {
-        console.log('uiHandler.handleM32Object', jsonObject);
-        if (!this.m32ProtocolEnabled) {
-            this.m32ProtocolEnabled = true;
-            this.enableAllM32ProtocolElements();
-        }
+        console.log('uiState.handleM32Object', jsonObject);
         const keys = Object.keys(jsonObject);
         if (keys && keys.length > 0) {
             const key = keys[0];
@@ -22,19 +26,21 @@ class M32CommandUIHandler {
                     if (controlKey === 'speed') {
                         this.receivedM32Speed(controlValue);
                     }
-                    break;            }
+                    break;
+                case 'error':
+                    console.log('M32 Error:', value['message']);
+                    break;
+                //default:
+                    //console.log('unhandled json key', key);
+            }
         } else {
             console.log('cannot handle json', json);
         }
     }
     
-    enableAllM32ProtocolElements() {
-        console.log('enable all m32 protocol elements');
-        document.querySelectorAll('.m32-protocol').forEach(element => element.classList.add('m32-protocol-enabled'))
-    }
 
     receivedM32Speed(speed) {
-        document.getElementById("m32Speed").textContent = speed + ' wpm';
+        this.m32State.speedWpm = Number(speed);
     }
 }
 

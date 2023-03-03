@@ -1,7 +1,6 @@
 
-// speech synthesis
-const speech = new Speech('en'); // see speech.js
-const m32ProtocolHandler = new M32ProtocolHandler([speech]);
+// speech synthesis as callback for m32 responses:
+const m32ProtocolHandler = new M32ProtocolHandler([new Speech('en')]);
 
 // some constants
 
