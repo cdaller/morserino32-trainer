@@ -231,7 +231,7 @@ function clickSend() {
 
 //Read the incoming data
 async function readLoop() {
-    const jsonState = new JsonState(jsonParsed);
+    const m32JsonObject = new M32JsonObject(speakJsonObject);
     while (true) {
         const { value, done } = await reader.read();
         if (done === true) {
@@ -249,7 +249,7 @@ async function readLoop() {
     }
 }
 
-class JsonState {
+class M32JsonObject {
     constructor(callbackFunction) {
         this.json = '';
         this.inJson = false;
@@ -279,5 +279,4 @@ class JsonState {
         return text.split(char).length - 1;
     } 
 }
-
 

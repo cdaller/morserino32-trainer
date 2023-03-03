@@ -1183,17 +1183,9 @@ async function disconnect() {
     port = null;
 }
 
-//When the send button is pressed
-function clickSend() {
-    //send the message
-    writeToStream(sendText.value)
-    //and clear the input field, so it's clear it has been sent
-    sendText.value = '';
-}
-
 //Read the incoming data
 async function readLoop() {
-    const jsonState = new JsonState(jsonParsed);
+    const m32JsonObject = new M32JsonObject(speakJsonObject);
 
     while (true) {
         const { value, done } = await reader.read();
@@ -1201,7 +1193,7 @@ async function readLoop() {
             break;
         }
 
-        if (jsonState.handleInput(value)) {
+        if (m32JsonObject.handleInput(value)) {
             continue;
         }
 
@@ -1226,7 +1218,7 @@ async function readLoop() {
     }
 }
 
-class JsonState {
+class M32JsonObject {
     constructor(callbackFunction) {
         this.json = '';
         this.inJson = false;

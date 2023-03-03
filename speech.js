@@ -45,7 +45,7 @@ class Speech {
 
 }
 
-function jsonParsed(speech, json) {
+function speakJsonObject(speech, json) {
     // console.log('json parsed', json);
     const keys = Object.keys(json);
     if (keys && keys.length > 0) {
