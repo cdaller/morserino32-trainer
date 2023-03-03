@@ -1184,7 +1184,7 @@ async function disconnect() {
 
 //Read the incoming data
 async function readLoop() {
-    const m32JsonObject = new M32JsonObject(speakJsonObject);
+    const m32JsonObject = new M32JsonObject(speech);
 
     while (true) {
         const { value, done } = await reader.read();
@@ -1234,7 +1234,7 @@ class M32JsonObject {
             //console.log('value', value);
             //console.log('json', "'" + this.json + "'");
             if (braceCount == 0) {
-                this.callback(speech, JSON.parse(this.json));
+                this.callback.handleM32Object(JSON.parse(this.json));
                 this.json = '';
                 this.inJson = false;
             }
