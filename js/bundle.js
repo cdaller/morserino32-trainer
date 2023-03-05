@@ -93,23 +93,45 @@ let savedResultChart = new Chart(ctx, {
     type: 'line',
             data: {
                 labels: [],
-                datasets: [{
+                datasets: [
+                {
                     label: 'Score',
                     data: [],
                     borderColor: '#0d6efd', // same color as blue buttons
-                    tension: 0.3
-                }]
+                    tension: 0.3,
+                    yAxisID: 'y',
+                }, 
+                {
+                    label: "Speed wpm",
+                    data: [],
+                    borderColor: 'red', 
+                    yAxisID: 'y1',
+                }
+                ]
             },
             options: {
                 scales: {
                     y: {
                         ticks: {
-                            // Include a dollar sign in the ticks
                             callback: function(value, index, ticks) {
                                 return value + '%';
                             }
                         },
-                        beginAtZero: true
+                        beginAtZero: true,
+                    },
+                    y1: {
+                        position: 'right',
+                        ticks: {
+                            callback: function(value, index, ticks) {
+                                return value + ' wpm';
+                            }
+                        },
+                        beginAtZero: false,
+                        suggestedMin: 10,
+                        suggestedMax: 25,
+                        grid: {
+                            display: false
+                        }
                     }
                 },
                 plugins: {
@@ -118,7 +140,7 @@ let savedResultChart = new Chart(ctx, {
                         text: 'Score',
                     },
                     legend: {
-                        display: false,
+                        display: true,
                     },
                     tooltip: {
                         callbacks: {
@@ -459,15 +481,24 @@ function removeStoredResult(index) {
 function drawSavedResultGraph(savedResults) {
     console.log('Drawing stored result graph');
     let percentageValues = [];
+    let speedWpm = [];
     let labels = [];
     savedResults.forEach((result, index) => {
         let date = new Date(result.date);
         var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
         labels.push(dateString);
         percentageValues.push(result.percentage);
+        //console.log('speedwpm', index, result.speedWpm);
+        speedWpm.push(result.speedWpm);
     });
     savedResultChart.data.labels = labels;
     savedResultChart.data.datasets[0].data = percentageValues;
+    savedResultChart.data.datasets[1].data = speedWpm;
+    if (!speedWpm.some(x => x)) {
+        // if no speed info available, do not show speed axis and values
+        savedResultChart.options.scales.y1.display = false;
+        savedResultChart.options.plugins.legend.display = false;
+    }
     savedResultChart.update();
 }
 
