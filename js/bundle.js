@@ -7,7 +7,8 @@ const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
 const m32State = new M32State();
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler(), new Speech('en')]);
+const speechSynthesisHandler = new Speech('en');
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler(), speechSynthesisHandler]);
 
 // some constants
 
@@ -29,6 +30,9 @@ const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
 let receiveText = document.getElementById("receiveText");
 let inputText = document.getElementById("inputText");
 let connectButton = document.getElementById("connectButton");
+let voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
+let voiceOutputEnabled = true;
+
 let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");
 let ignoreWhitespaceCheckbox = document.getElementById("ignoreWhitespaceCheckbox");
 let autoHideCheckbox = document.getElementById("autoHideCheckbox");
@@ -171,6 +175,7 @@ showSavedResults(JSON.parse(localStorage.getItem(STORAGE_KEY)));
 
 // couple the elements to the Events
 connectButton.addEventListener('click', clickConnect)
+voiceOutputCheckbox.addEventListener('change', clickVoiceOutputReceived);
 
 showReceivedCheckbox.addEventListener('change', clickShowReceived);
 ignoreWhitespaceCheckbox.addEventListener('change', clickIgnoreWhitespace);
@@ -247,6 +252,11 @@ async function clickConnect() {
         //otherwise connect
         await connect();
     }
+}
+
+function clickVoiceOutputReceived() {
+    voiceOutputEnabled = voiceOutputCheckbox.checked;
+    saveSettings();
 }
 
 // ------------------------------ cw generator code ------------------------------
@@ -1054,29 +1064,39 @@ function resetQsoTrainerFields() {
 
 function loadSettings() {
     let storedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_SETTINGS));
-    if (storedSettings && 'cwPlayerWpm' in storedSettings) {
-        cwPlayerWpm = storedSettings.cwPlayerWpm;
-    } else {
-        cwPlayerWpm = 15;
+    if (storedSettings) {
+
+        if ('cwPlayerWpm' in storedSettings) {
+            cwPlayerWpm = storedSettings.cwPlayerWpm;
+        } else {
+            cwPlayerWpm = 15;
+        }
+        if ('cwPlayerEws' in storedSettings) {
+            cwPlayerEws = storedSettings.cwPlayerEws;
+        } else {
+            cwPlayerEws = 0;
+        }
+        if ('cwPlayerEls' in storedSettings) {
+            cwPlayerEls = storedSettings.cwPlayerEls;
+        } else {
+            cwPlayerEls = 2;
+        }
+        if ('qsoRptWords' in storedSettings) {
+            qsoRptWords = storedSettings.qsoRptWords;
+        } else {
+            qsoRptWords = false;
+        }
+        if ('voiceOutputEnabled' in storedSettings) {
+            voiceOutputEnabled = storedSettings.voiceOutputEnabled;
+        } else {
+            voiceOutputEnabled = true;
+        }
     }
-    if (storedSettings && 'cwPlayerEws' in storedSettings) {
-        cwPlayerEws = storedSettings.cwPlayerEws;
-    } else {
-        cwPlayerEws = 0;
-    }
-    if (storedSettings && 'cwPlayerEls' in storedSettings) {
-        cwPlayerEls = storedSettings.cwPlayerEls;
-    } else {
-        cwPlayerEls = 2;
-    }
-    if (storedSettings && 'qsoRptWords' in storedSettings) {
-        qsoRptWords = storedSettings.qsoRptWords;
-    } else {
-        qsoRptWords = false;
-    }
+
     setCwPlayerSettings();
     setCwSettingsInUIInput();
     setCwSettingsInUILabels();
+    setVoiceOutputEnabledSettings();
 }
 
 function saveSettings() {
@@ -1085,7 +1105,9 @@ function saveSettings() {
         'cwPlayerEws': cwPlayerEws, 
         'cwPlayerEls': cwPlayerEls,
         'qsoRptWords': qsoRptWords,
+        'voiceOutputEnabled': voiceOutputEnabled,
     };
+    console.log(storedSettings);
     localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(storedSettings));
 }
 
@@ -1112,6 +1134,11 @@ function setCwPlayerSettings() {
     cwPlayer.setEws(cwPlayerEws);
     let eff = cwPlayerWpm / cwPlayerEls;
     cwPlayer.setEff(eff);
+}
+
+function setVoiceOutputEnabledSettings() {
+    voiceOutputCheckbox.checked = voiceOutputEnabled;
+    speechSynthesisHandler.enabled = voiceOutputEnabled;
 }
 
 

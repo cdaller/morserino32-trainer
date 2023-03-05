@@ -264,6 +264,7 @@
                 </div>
             </div>
             <ul>
+                <li>2023-03-05: New Morserino V5.beta sends state (menu, speed, etc.) via serial protocol. Use information as voice ouput and other things. More to come...</li>
                 <li>2022-04-26: add News/Changes for better overview what's going on</li>
                 <li>2022-04-26: QSO Trainer: add more realistic call signs, add &lt;bk&gt; as end of message, more realistic weather</li>
                 <li>2022-04-19: QSO Trainer: add wx detection and response</li>
@@ -288,14 +289,28 @@
 
     <div class="contentContainer">
         <div class="row">
-            <div class="col-11 col-md-11">
+            <div class="col-6">
                 Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
                 <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
             </div>
-            <div class="col-1 col-md-1 m32-protocol">
-                <span id="m32Speed" class="badge bg-dark">17 wpm</span>
+            <div class="col-2 form-check form-switch m32-protocol">
+                <input class="form-check-input" type="checkbox" checked id="voiceOutputCheckbox">
+                <label class="form-check-label" for="showReceivedCheckbox">Voice Output</label>
             </div>
-            <div class="col-12 col-md-12">
+            
+            <div class="col-4 m32-protocol container" id="m32state">
+                <div class="row" >
+                    <div class="col text-end">
+                        <span id="m32Menu" class="badge bg-dark"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col text-end">
+                        <span id="m32Speed" class="badge bg-dark">17 wpm</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
                 <div id="serialCommunicationDisabledInfo" class="alert alert-danger mt-2" >
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
                         <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>

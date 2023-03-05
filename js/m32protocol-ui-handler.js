@@ -16,6 +16,9 @@ class M32CommandUIHandler {
             const key = keys[0];
             const value = jsonObject[key];
             switch(key) {
+                case 'menu':
+                    this.receivedM32Menu(value['name']);
+                    break;
                 case 'control':
                     var controlKey = value['name'];
                     var controlValue = value['value'];
@@ -36,5 +39,10 @@ class M32CommandUIHandler {
     receivedM32Speed(speed) {
         document.getElementById("m32Speed").textContent = speed + ' wpm';
     }
+
+    receivedM32Menu(menu) {
+        document.getElementById("m32Menu").textContent = menu;
+    }
+
 }
 

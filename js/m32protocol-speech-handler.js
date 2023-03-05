@@ -6,6 +6,7 @@ class Speech {
         this.speechSynth = window.speechSynthesis;
         this.language = language;
         this.voice = null;
+        this.enabled = true;
     }
 
     speak(text) {
