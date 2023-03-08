@@ -6,8 +6,8 @@ const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
 const m32State = new M32State();
-const speechSynthesisHandler = new Speech('en');
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler(), speechSynthesisHandler]);
+const speechSynthesisHandler = new M32CommandSpeechHandler('en');
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler('en'), speechSynthesisHandler]);
 
 // some constants
 
@@ -29,7 +29,7 @@ const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
 let receiveText = document.getElementById("receiveText");
 let inputText = document.getElementById("inputText");
 let connectButton = document.getElementById("connectButton");
-let voiceOutputCheckbox = document.getElementyById("voiceOutputCheckbox");
+let voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
 let voiceOutputEnabled = true;
 
 let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");

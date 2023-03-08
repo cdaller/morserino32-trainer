@@ -1,7 +1,8 @@
 class M32CommandUIHandler {
 
-    constructor() {
+    constructor(language = 'en') {
         this.m32ProtocolEnabled = false;
+        this.language = language;
     }
 
     // callback method for a full json object received
@@ -41,7 +42,9 @@ class M32CommandUIHandler {
     }
 
     receivedM32Menu(menu) {
-        document.getElementById("m32Menu").textContent = menu;
+        var menues = menu.split('/');
+        var textToDisplay = menues.map((menu) => translateMenu(menu, this.language)).join('/');
+        document.getElementById("m32Menu").textContent = textToDisplay;
     }
 
 }

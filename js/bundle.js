@@ -7,8 +7,8 @@ const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
 const m32State = new M32State();
-const speechSynthesisHandler = new Speech('en');
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler(), speechSynthesisHandler]);
+const speechSynthesisHandler = new M32CommandSpeechHandler('en');
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler('en'), speechSynthesisHandler]);
 
 // some constants
 

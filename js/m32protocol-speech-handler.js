@@ -1,8 +1,8 @@
 // all functions for speech synthesis
 
-class Speech {
+class M32CommandSpeechHandler {
 
-    constructor(language) {
+    constructor(language = 'en') {
         this.speechSynth = window.speechSynthesis;
         this.language = language;
         this.voice = null;
@@ -54,7 +54,7 @@ class Speech {
             switch(key) {
                 case 'menu':
                     var menues = value['name'].split('/');
-                    var textToSpeak = menues.map((menu) => this.translateMenu(menu, this.language)).join(' ');
+                    var textToSpeak = menues.map((menu) => translateMenu(menu, this.language)).join(' ');
                     this.speak(textToSpeak);
                     break;
                 case 'control':
@@ -72,31 +72,6 @@ class Speech {
         } else {
             console.log('cannot handle json', json);
         }
-    }
-
-    translateMenu(menuName, language) {
-        var translation = this.menuTranslations[menuName];
-        if (!translation) {
-            return menuName;
-        }
-        translation = translation[language];
-        if (!translation) {
-            return menuName;
-        }
-        return translation;
-    };
-    
-    menuTranslations = {
-        'CW Abbrevs': {'en': 'CW Abbreviations'},
-        'Learn New Chr': {'en': 'Learn new Character'},
-        'LoRa Trx': {'en': 'LORA Transceiver'},
-        'WiFi Trx': {'en': 'WiFi Transceiver'},
-        'Ext Trx': {'en': 'External Transceiver'},
-        'Disp MAC Addr': {'en': 'Display Mac Address'},
-        'Config Wifi': {'en': 'Configure Wifi'},
-        'Update Firmw': {'en': 'Update Firmware'},
-    }
-    
-    
+    }    
 }
 
