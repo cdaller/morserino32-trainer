@@ -63,6 +63,9 @@ class M32CommandSpeechHandler {
                 case 'activate':
                     this.speak(value['state']);
                     break;
+                case 'config':
+                    this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['value'], this.language));
+                    break;
                 case 'error':
                     this.speak(value['message']);
                     break;

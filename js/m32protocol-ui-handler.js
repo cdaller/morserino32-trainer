@@ -45,6 +45,10 @@ class M32CommandUIHandler {
         var menues = menu.split('/');
         var textToDisplay = menues.map((menu) => translateMenu(menu, this.language)).join('/');
         document.getElementById("m32Menu").textContent = textToDisplay;
+        // FIXME: does not work - use event to publish this?
+        // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
+        //     openTabForMode(MODE_ECHO_TRAINER);
+        // }
     }
 
 }

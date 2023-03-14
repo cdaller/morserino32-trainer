@@ -549,7 +549,7 @@ function tabEventListener(event) {
     } else if (event.target.id === 'qso-trainer-tab') {
         mode = MODE_QSO_TRAINER;
     }
-  }
+}
 
 
 // ------------------------ echo trainer code ------------------------
