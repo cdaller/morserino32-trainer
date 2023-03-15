@@ -1298,25 +1298,31 @@ async function readLoop() {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function initM32Protocol() {
     sendM32Command('PUT device/protocol/on', false);
+    sleep(1000);
     //sendM32Command('GET device');
-    sendM32Command('GET control/speed', true);
-    sendM32Command('GET control/volume', false);
+    //sendM32Command('GET control/speed');
+    sendM32Command('GET control/volume');
 }
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
-async function sendM32Command(command, useAllCallbacks = true) {
+async function sendM32Command(command, waitForResponse = true) {
+    console.log('sending command, wait', waitForResponse);
     while(m32Protocolhandler.waitForResponse) {
-        //console.log('waiting for response');
+        console.log('waiting for response');
         await timer(50);
     };
     writeToStream(command);
-    m32Protocolhandler.commandSent(useAllCallbacks);
+    if (waitForResponse) {
+        m32Protocolhandler.commandSent();
+    }
 }
-
-
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk
 // and cw abbreviations CW-Schule graz

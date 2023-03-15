@@ -8,6 +8,7 @@ class M32ProtocolHandler {
     }
 
     commandSent() {
+        console.log("set waitForResponse");
         this.waitForResponse = true;
     }
 
