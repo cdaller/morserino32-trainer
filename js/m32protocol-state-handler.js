@@ -27,6 +27,9 @@ class M32CommandStateHandler {
                         this.receivedM32Speed(controlValue);
                     }
                     break;
+                case 'device':
+                    console.log('M32 Device:', value);
+                    break;
                 case 'error':
                     console.log('M32 Error:', value['message']);
                     break;

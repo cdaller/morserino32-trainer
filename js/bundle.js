@@ -265,6 +265,7 @@ async function clickConnect() {
 function clickVoiceOutputReceived() {
     voiceOutputEnabled = voiceOutputCheckbox.checked;
     saveSettings();
+    setVoiceOutputEnabledSettings();
 }
 
 // ------------------------------ cw generator code ------------------------------
@@ -1303,7 +1304,8 @@ function sleep(ms) {
 }
 
 function initM32Protocol() {
-    sendM32Command('PUT device/protocol/on', false);
+    //sendM32Command('PUT device/protocol/off', false); // force device info on next PUT
+    sendM32Command('PUT device/protocol/on');
     sleep(1000);
     //sendM32Command('GET device');
     //sendM32Command('GET control/speed');

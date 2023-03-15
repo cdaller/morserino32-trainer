@@ -10,6 +10,9 @@ class M32CommandSpeechHandler {
     }
 
     speak(text) {
+        if (!this.enabled) {
+            return;
+        }
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
