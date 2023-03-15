@@ -33,7 +33,10 @@ class M32CommandSpeechHandler {
         var voice;
         //voices.forEach(v => console.log(v));
         if (language === 'en') {
-            voice = voices.find(voice => voice.lang.startsWith(language));
+            voice = voices.find(voice => voice.voiceURI === 'Google UK English Male');
+            if (!voice) {
+                voice = voices.find(voice => voice.lang.startsWith(language));
+            }
         } else if (language === 'de') {
             voice = voices.find(voice => voice.lang.startsWith(language) && voice.voiceURI.startsWith('Google'));
         } else {
@@ -42,6 +45,10 @@ class M32CommandSpeechHandler {
         //console.log('selected voice', voice);
         this.voice = voice;
         return voice;
+    }
+
+    setLanguage(language) {
+        this.language = language;
     }
 
     // callback method for a full json object received

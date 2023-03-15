@@ -5,9 +5,11 @@ let Charts = require('chart.js');
 const ReRegExp = require('reregexp').default;
 
 // speech & m3 protocol handler
+var m32Language = 'en';
 const m32State = new M32State();
-const speechSynthesisHandler = new M32CommandSpeechHandler('en');
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), new M32CommandUIHandler('en'), speechSynthesisHandler]);
+const speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
+const commandUIHandler = new M32CommandUIHandler(m32Language);
+const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), commandUIHandler, speechSynthesisHandler]);
 
 // some constants
 
@@ -239,6 +241,12 @@ if (urlParams.get('debug') !== null) {
     receiveTextQsoTrainer.addEventListener('focus', function(event) {
         event.target.blur();
     });
+}
+let paramM32Language = urlParams.get('m32language');
+if (paramM32Language) {
+    console.log('setting m32language to ', paramM32Language);
+    speechSynthesisHandler.setLanguage(paramM32Language);
+    commandUIHandler.setLanguage(paramM32Language);
 }
 
 //When the connectButton is pressed
@@ -1300,7 +1308,7 @@ const timer = ms => new Promise(res => setTimeout(res, ms))
 
 async function sendM32Command(command, useAllCallbacks = true) {
     while(m32Protocolhandler.waitForResponse) {
-        console.log('waiting for response');
+        //console.log('waiting for response');
         await timer(50);
     };
     writeToStream(command);

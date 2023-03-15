@@ -31,6 +31,10 @@ class M32CommandUIHandler {
             console.log('cannot handle json', json);
         }
     }
+
+    setLanguage(language) {
+        this.language = language;
+    }
     
     enableAllM32ProtocolElements() {
         console.log('enable all m32 protocol elements');
