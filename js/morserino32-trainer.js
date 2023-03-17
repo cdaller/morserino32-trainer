@@ -242,7 +242,7 @@ if (urlParams.get('debug') !== null) {
         event.target.blur();
     });
 }
-let paramM32Language = urlParams.get('m32language');
+let paramM32Language = urlParams.get('language');
 if (paramM32Language) {
     console.log('setting m32language to ', paramM32Language);
     speechSynthesisHandler.setLanguage(paramM32Language);
@@ -1307,8 +1307,9 @@ function initM32Protocol() {
     sendM32Command('PUT device/protocol/on');
     sleep(1000);
     //sendM32Command('GET device');
-    //sendM32Command('GET control/speed');
-    sendM32Command('GET control/volume');
+    sendM32Command('GET control/speed');
+    //sendM32Command('GET control/volume');
+    sendM32Command('GET menu');
 }
 
 const timer = ms => new Promise(res => setTimeout(res, ms))
