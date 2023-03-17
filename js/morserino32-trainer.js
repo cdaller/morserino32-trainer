@@ -1331,7 +1331,7 @@ async function sendM32Command(command, waitForResponse = true) {
 abbreviations = {
     '33': {'de': 'Grüße unter Funkerinnen', 'en': 'female ham greeting' },
     '44': {'de': 'Melde mich via Telefon, WFF Gruß', 'en': 'answer by wire, call on telephone, WFF greetings' },
-    '55': {'de': 'Viel Erfolg', 'en': '-' },
+    '55': {'de': 'Viel Erfolg', 'en': 'Good Luck' },
     '5nn': {'de': '599', 'en': '599' },
     '72': {'de': 'Viele Grüße QRP', 'en': 'Best regards QRP' },
     '73': {'de': 'Viele Grüße', 'en': 'Best regards' },
