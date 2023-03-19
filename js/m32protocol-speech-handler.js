@@ -74,7 +74,10 @@ class M32CommandSpeechHandler {
                     this.speak(value['state']);
                     break;
                 case 'config':
-                    this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['value'], this.language));
+                    // distinguish between navigation in configuration and manual request of config (returning mapped values):
+                    if (!value['isMapped']) {
+                        this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['value'], this.language));
+                    }
                     break;
                 case 'error':
                     this.speak(value['message']);

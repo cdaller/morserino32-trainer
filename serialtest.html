@@ -165,8 +165,10 @@
                     <div class="form-group">
                         <div id="morserino_detail" class="collapse show">
                             Received from Morserino:
-                            <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
-                            <!-- <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea> -->
+                            <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea> 
+                            <!-- 
+                                <textarea readonly onfocus="this.blur()" rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
+                            -->
                         </div>
                     </div>
                     
@@ -198,24 +200,45 @@
 
                     <h5>Receiving information from morserino</h5>
                     <ul>
-                        <li>Morserino sends a message for all actions executed manually by the user on the morserino.</li>
+                        <li>Morserino sends a message for all actions executed manually by the user on the morserino (navigate to another menu, change of speed, etc.).</li>
                         <li>It always sends a <a href="https://de.wikipedia.org/wiki/JavaScript_Object_Notation">valid json object</a>.</li>
                         <li>Line breaks are optional.</li>
                         <li>Different type of actions are defined (future).</li>
                         <li>NOTE: we might need to define an end marker to know when the result object is finished???</li>
                     </ul>
                     
+                    <h4>Enable Morserino32 Protocol</h4>
+
+                    Bidirectional communiation must be enabled by the following command:
+                    <pre>PUT device/protocol/on↵</pre> 
+                    enables the bidirectional protocol and returns the device info:
+                    <pre>{"device":{"hardware":"2nd edition","firmware":"5.0 beta","protocol":"0.9"}}</pre>
+                    It can also be disabled again
+                    <pre>PUT device/protocol/off↵</pre>
+
+                    <h4>Error Feedback</h4>
+                    In case of an error object is returned from Morserino:
+                    <pre>{"error":{"name":"INVALID Value xxx"}}</pre>
+
+                    <h4>Device Info</h4>
+
+                    Returns information about morserino device (hardware, firmware, protocol version):
+                    <pre>GET device↵</pre> returns 
+                    <pre>{"device":{"hardware":"2nd edition","firmware":"5.0 beta","protocol":"0.9"}}</pre>
 
                     <h4>Navigation (Menu)</h4>
+                    This returns the state of the currently selected menu.
                     
                     <ul>
                         <li>read the current menu entry. Returns a json object "menu" containing the currently selected menu: 
                             <pre>GET menu↵</pre>
+                            Submenues are separated by a slash:
+                            <pre>{"menu":{"name":"Koch Trainer/CW Generator/Random"}}</pre>
                         </li>
-                        <li>read all possible menu entries. This will return an object "menus" holding an array of configurations (see below): 
+                        <li>NOT YET IMPLEMENTED: read all possible menu entries. This will return an object "menus" holding an array of configurations (see below): 
                             <pre>GET menus↵</pre>
                         </li>
-                        <li>navigate to a specific menu entry: <pre>PUT menu/path/to/menuentry↵</pre>Examples:
+                        <li>NOT YET IMPLEMENTED: navigate to a specific menu entry: <pre>PUT menu/path/to/menuentry↵</pre>Examples:
                             <ul>
                                 <li><pre>PUT menu/CW Decoder↵</pre></li>
                                 <li><pre>PUT menu/Koch Trainer/Learch New Chr↵</pre></li>
@@ -232,7 +255,7 @@
                     <ul>
                         <li><pre>{ "menu": {"name": "Koch Trainer/Echo Trainer/Adapt. Rand."} }</pre></li>
                         <li><pre>{ "menu": {"name": "CW Encoder"} }</pre></li>
-                        <li>All menus holding an array of menu entries: <pre>GET menus↵
+                        <li>NOT YET IMPLEMENTED: All menus holding an array of menu entries: <pre>GET menus↵
 { 
     "menus": [
         { "name": "Koch Trainer" },
@@ -245,57 +268,68 @@
 </pre>
                         </li>
                     </ul>
+
+                    <h4>Activate</h4>
+                    When the user triggers an action (like starting CW Decoder) the following message is sent by Morserino:
+                    <pre>{"activate":{"state":"ON"}}</pre>
+                    The following values are possible (not all are yet implemented): EXIT, ON, SET, CANCELLED, RECALLED, CLEARED
+                    <ul>
                     
+                    <h4>Controls</h4>                
+                    <ul>
+                        <li>speed: speed in wpm: 5 - 60)
+                            <pre>GET control/speed↵</pre> returns the information about the currently used speed (wpm):
+                            <pre>{"control":{"name":"speed","value":46,"minimum":5,"maximum":60}}</pre>
+                            <pre>PUT control/speed/20↵</pre> also returns the result
+                            <pre>{"control":{"name":"speed","value":17}}</pre>
+                        </li>
+                        <li>volume: speaker volume: 0-19
+                            <pre>GET control/volume↵</pre>
+                            <pre>PUT control/volume/10↵</pre>
+                        </li>
+                        <li>Get all Controls
+                            <pre>GET controls↵</pre> returns
+                            <pre>{"controls":[{"name":"speed","value":17},{"name":"volume","value":19}]}</pre>
+                        </li>
+                    </ul>                    
                     <h4>Configuration</h4>
                     <ul>
-                        <li>Reads all configuration parameters from morserino. Returns a json object of an array of json objects:
+                        <li>Reads all configuration parameters from morserino as a list of configuration objects: only name, value and if the value is mapped to a string, it is also returned: 
                             <pre>GET configs↵</pre>
-                        <li>Reads a songle configuration parameter from morserino:
+                        <li>Reads a single detailed configuration parameter from morserino (key is case insensitive) or an error if an invalid key was sent:
+                            "name" (String),  "value" (numeric), "description" (String), "minimum" (numeric),  "maximum" (numeric), "step" (numeric), "isMapped" (bool), 
+                            and String[] for the mappings, if applicable
                             <pre>GET config/key↵</pre>
                         </li>
-                        <li>Write a single configuration parameter. Will return the changed configuration or an error.
+                        <li>Write a single configuration parameter. Will return the changed configuration or an error. The value is always numeric (?)
                             <pre>PUT config/key/value↵</pre>
                         </li>
                     </ul>
 
                     Returned object examples: 
                     <ul>
-                        <li>Single config value (integer values): <pre>GET config/Tone Pitch Hz↵
+                        <li>
+                            <pre>GET config/Serial Ouput↵
 { 
     "config": {
-        "name": "Tone Pitch Hz",
-        "value": 587,
-        "valueType": "number",
-        "description": "Pitch of CW", 
-        "allowed-values": [587, 622, 698, 784]
-    } 
+        "name":"Serial Output",
+        "value":7,
+        "description":"Select what is sent to the serial (USB) port",
+        "minimum":0,
+        "maximum":5,
+        "step":1,
+        "isMapped":true,
+        "mapped values":["Nothing","Keyed","Decoded","Keyed+Decoded","Generated","All"]
+    }
 }</pre></li>
-                        <li>Single config value (string values): <pre>GET config/External Pol.↵
-{ 
-    "config": {
-        "name": "External Pol.",
-        "value": "Normal", 
-        "valueType": "string",
-        "description": "Polarity of external paddle", 
-        "allowed-values": ["Normal", "Reversed"]
-    } 
-}</pre></li>
-                        <li>Min/Max number values (predefined steps): <pre>GET config/CurtisB DahT%↵
-    { 
-        "config": {
-            "name": "CurtisB DahT%",
-            "value": 50, 
-            "valueType": "number",
-            "description": "Timing in CurtisB mode for dahs, in percent", 
-            "min": 0,
-            "max": 100,
-            "step": 5
-        } 
-    }</pre></li>
     
-                        <li>Multiple/all config values returns a list of configuration objects (short version - only name and value): 
+                        <li>Multiple/all config values returns a list of configuration objects (short version - 
+                            only name and value and if the value is mapped to a string, it is also returned): 
                             <pre>GET configs↵
-{ "configs": [{"name": "key1", "value": "value1"},{"name": "key2", "value": "value2"} }</pre>
+{ "configs": [
+  {"name": "key1", "value": value1, "displayed": "Config Title"},
+  {"name": "key2", "value": value2, "displayed": "Config Title2"}
+]}</pre>
                         </li>
                     </ul>
                 </div>
