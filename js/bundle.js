@@ -10,7 +10,12 @@ var m32Language = 'en';
 const m32State = new M32State();
 const speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
 const commandUIHandler = new M32CommandUIHandler(m32Language);
-const m32Protocolhandler = new M32ProtocolHandler([new M32CommandStateHandler(m32State), commandUIHandler, speechSynthesisHandler]);
+const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
+const m32Protocolhandler = new M32ProtocolHandler([
+    new M32CommandStateHandler(m32State), 
+    commandUIHandler, 
+    speechSynthesisHandler,
+    configHandler]);
 
 // some constants
 
@@ -24,6 +29,7 @@ const MORSERINO_END = ' +';
 const MODE_ECHO_TRAINER = 'echo-trainer';
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_QSO_TRAINER = 'qso-trainer';
+const MODE_M32_CONFIG = 'm32-config';
 let mode = MODE_CW_GENERATOR;
 
 const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
@@ -545,6 +551,8 @@ function openTabForMode(mode) {
         document.getElementById('echo-trainer-tab').click();
     } else if (mode === MODE_QSO_TRAINER) {
         document.getElementById('qso-trainer-tab').click();
+    } else if (mode === MODE_M32_CONFIG) {
+        document.getElementById('m32-config-tab').click();
     } else {
         console.log('Unknown mode: ', mode);
     }
@@ -558,7 +566,10 @@ function tabEventListener(event) {
         mode = MODE_ECHO_TRAINER;
     } else if (event.target.id === 'qso-trainer-tab') {
         mode = MODE_QSO_TRAINER;
-    }
+    } else if (event.target.id === 'm32-config-tab') {
+        mode = MODE_M32_CONFIG;
+        sendM32Command('GET configs');
+     }
 }
 
 

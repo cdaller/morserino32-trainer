@@ -7,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff"/>
-    
+
     <!-- Bootstrap CSS -->
     <!--
         <link href="libs/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
@@ -325,13 +325,28 @@
         <!-- tabs -->
         <ul class="nav nav-tabs" id="mainTab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="cw-generator-tab" data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" type="button" role="tab" aria-controls="cw-generator-tab-content" aria-selected="true">CW Generator / CW Keyer</button>
+                <button class="nav-link active" id="cw-generator-tab" 
+                        data-bs-toggle="tab" data-bs-target="#cw-generator-tab-content" 
+                        type="button" role="tab" aria-controls="cw-generator-tab-content" 
+                        aria-selected="true">CW Generator / CW Keyer</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="echo-trainer-tab" data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" type="button" role="tab" aria-controls="echo-trainer-tab-content" aria-selected="false">Echo Trainer</button>
+                <button class="nav-link" id="echo-trainer-tab" 
+                        data-bs-toggle="tab" data-bs-target="#echo-trainer-tab-content" 
+                        type="button" role="tab" aria-controls="echo-trainer-tab-content" 
+                        aria-selected="false">Echo Trainer</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="qso-trainer-tab" data-bs-toggle="tab" data-bs-target="#qso-trainer-tab-content" type="button" role="tab" aria-controls="qso-trainer-tab-content" aria-selected="false">QSO Trainer (beta!)</button>
+                <button class="nav-link" id="qso-trainer-tab" 
+                        data-bs-toggle="tab" data-bs-target="#qso-trainer-tab-content" 
+                        type="button" role="tab" aria-controls="qso-trainer-tab-content" 
+                        aria-selected="false">QSO Trainer (beta!)</button>
+            </li>
+            <li class="nav-item m32-protocol-xxx" role="presentation">
+                <button class="nav-link" id="m32-config-tab" data-bs-toggle="tab" 
+                        data-bs-target="#m32-config-tab-content" type="button" 
+                        role="tab" aria-controls="m32-config-tab-content" 
+                        aria-selected="false">M32 Config</button>
             </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
@@ -551,6 +566,15 @@
                     <button id="clearQsoTrainerButton" class="btn btn-outline-primary" title="Restart QSO, clear QSO data." data-bs-toggle="tooltip">Restart QSO (Clear All)</button>
                 </div>
             </div> <!-- end QSO trainer -->
+
+            <!-- start m32 config -->
+            <div class="tab-pane fade" id="m32-config-tab-content" role="tabpanel" aria-labelledby="m32-config-tab">
+                <h2>M32 Configuration</h2>
+
+                <div id="m32-config"></div>
+
+            </div> <!-- end m32 config -->
+            
         </div> <!-- end tab-content -->
     </div>
 
@@ -560,27 +584,29 @@
     <script type="text/javascript" src="js/m32protocol-ui-handler.js"></script>
     <script type="text/javascript" src="js/m32protocol-state-handler.js"></script>
     <script type="text/javascript" src="js/m32protocol-speech-handler.js"></script>
+    <script type="text/javascript" src="js/m32protocol-config-handler.js"></script>
     <script type="text/javascript" src="js/bundle.js"></script>
+
     <!--
         Service worker disabled for the moment, as old bundle.js are used quite often instead of the new ones!
         Further investigation needed on this topic.
+        <script>
+            if ('serviceWorker' in navigator) {
+                // unregister previously created service worker
+                // sw had the effect of serving old javascript files, so unregister it for the moment!
+                navigator.serviceWorker.getRegistrations()
+                .then(function(registrations) {
+                    for(let registration of registrations) {
+                        registration.unregister();
+                    }
+                });
+                
+                // register service worker
+                // navigator.serviceWorker.register('sw.js')
+                //     .then(function () { console.log("Service worker registered"); });
+            }
+        </script>
     -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            // unregister previously created service worker
-            // sw had the effect of serving old javascript files, so unregister it for the moment!
-            navigator.serviceWorker.getRegistrations()
-            .then(function(registrations) {
-                for(let registration of registrations) {
-                registration.unregister();
-                }
-            });
-
-            // register service worker
-            // navigator.serviceWorker.register('sw.js')
-            //     .then(function () { console.log("Service worker registered"); });
-        }
-    </script>
 </body>
 
 <footer class="bd-footer py-3 mt-2 bg-dark text-white">
