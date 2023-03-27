@@ -1,6 +1,9 @@
 
 // speech synthesis as callback for m32 responses:
-const m32ProtocolHandler = new M32ProtocolHandler([new M32CommandSpeechHandler('en'), new M32CommandStateHandler(new M32State())]);
+const m32ProtocolHandler = new M32ProtocolHandler([
+    new M32CommandSpeechHandler('en'), 
+    new M32CommandStateHandler(new M32State()),
+    new M32CommandConfigHandler(null)]);
 
 // some constants
 
