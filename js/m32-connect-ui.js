@@ -1,11 +1,11 @@
 'use strict';
 
 const log  = require ('loglevel');
-const { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
+const { EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
 const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
 
 class M32ConnectUI {
-    constructor(m32Storage) {
+    constructor(m32CommunicationService, m32Storage) {
         this.m32Storage = m32Storage;
         this.m32Storage.addEventListener(EVENT_SETTINGS_CHANGED, this.settingsChanged.bind(this));
 
@@ -13,7 +13,7 @@ class M32ConnectUI {
         this.voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
         this.statusBar = document.getElementById("statusBar");
         this.voiceOutputEnabled = true;
-        this.m32CommunicationService = new M32CommunicationService(this.connected);
+        this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECTED, this.connected);
         this.m32CommunicationService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));

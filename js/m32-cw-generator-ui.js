@@ -8,7 +8,6 @@ const { createSpanElement } = require('./dom-utils')
 const { MORSERINO_START, MORSERINO_END } = require('./m32protocol')
 const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
 
-
 class M32CwGeneratorUI {
 
     constructor(m32CommunicationService) {
@@ -44,16 +43,18 @@ class M32CwGeneratorUI {
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
-
+        
+        this.activeMode = true;
     }
 
     textReceived(value) {
-        this.receiveText.value += value;
-        //Scroll to the bottom of the text field
-        this.receiveText.scrollTop = this.receiveText.scrollHeight;
-        this.compareTexts();
-        this.applyAutoHide();    
-
+        if (this.activeMode) {
+            this.receiveText.value += value;
+            //Scroll to the bottom of the text field
+            this.receiveText.scrollTop = this.receiveText.scrollHeight;
+            this.compareTexts();
+            this.applyAutoHide();    
+        }
     }
 
     applyAutoHide() {
@@ -158,6 +159,23 @@ class M32CwGeneratorUI {
 
     saveResult() {
         // TODO
+    }
+
+    modeSelected(mode) {
+        this.activeMode = mode === 'cw-generator';
+        log.debug("cw generator active", this.activeMode, mode);
+    }
+
+    setDebug(debug) {
+        if (debug) {
+            this.receiveText.readOnly = false;
+            this.receiveText.onfocus = null;
+        } else {
+            this.receiveText.readOnly = true;
+            this.receiveText.addEventListener('focus', function(event) {
+                event.target.blur();
+            });
+        }
     }
 }
 

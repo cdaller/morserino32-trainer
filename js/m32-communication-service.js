@@ -33,11 +33,11 @@ class M32CommunicationService {
         var m32Language = 'en';
         const m32State = new M32State();
         this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
-        const commandUIHandler = new M32CommandUIHandler(m32Language);
+        this.commandUIHandler = new M32CommandUIHandler(m32Language);
         const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
         this.m32Protocolhandler = new M32ProtocolHandler([
             new M32CommandStateHandler(m32State), 
-            commandUIHandler, 
+            this.commandUIHandler, 
             this.speechSynthesisHandler,
             configHandler]);
     }
@@ -54,6 +54,11 @@ class M32CommunicationService {
     enableVoiceOutput(enabled) {
         log.debug("speech synthesis, enable voice output", enabled);
         this.speechSynthesisHandler.enabled = enabled;
+    }
+
+    setLanguage(language) {
+        this.speechSynthesisHandler.language = language;
+        this.commandUIHandler.language = language;
     }
 
 // navigator.serial.addEventListener('connect', e => {
