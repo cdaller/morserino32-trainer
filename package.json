@@ -11,6 +11,10 @@
   "dependencies": {
     "chart.js": "^3.7.0",
     "diff": "^5.0.0",
+    "loglevel": "^1.8.1",
     "reregexp": "^1.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.37.0"
   }
 }
