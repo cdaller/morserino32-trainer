@@ -2,7 +2,6 @@
 
 
 let Charts = require('chart.js');
-const ReRegExp = require('reregexp').default;
 let log = require("loglevel");
 log.setDefaultLevel(log.levels.DEBUG);
 log.debug("m32main start");
@@ -14,6 +13,7 @@ const { M32CwGeneratorUI } = require('./m32-cw-generator-ui');
 const { M32Storage } = require('./m32-storage');
 const { EchoTrainerUI } = require('./m32-echo-trainer-ui');
 const { M32CommunicationService } = require('./m32-communication-service');
+const { QsoTrainerUI } = require('./m32-qso-trainer');
 
 // let m32Protocolhandler;
 
@@ -49,6 +49,7 @@ class M32Main {
         this.m32ConnectUI = new M32ConnectUI(m32CommunicationService, m32Storage);
         this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
+        this.qsoTrainerUI = new QsoTrainerUI(m32Storage, M32CommunicationService);
 
         m32Storage.loadSettings();
 
@@ -57,7 +58,7 @@ class M32Main {
         this.eventEmitter = new events.EventEmitter();
         this.eventEmitter.addListener(EVENT_MODE_SELECTED, this.echoTrainerUI.modeSelected.bind(this.echoTrainerUI));
         this.eventEmitter.addListener(EVENT_MODE_SELECTED, this.m32CwGeneratorUI.modeSelected.bind(this.m32CwGeneratorUI));
-
+        this.eventEmitter.addListener(EVENT_MODE_SELECTED, this.qsoTrainerUI.modeSelected.bind(this.qsoTrainerUI));
 
         // enable bootstrap tooltips everywhere:    
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
