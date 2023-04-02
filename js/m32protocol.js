@@ -1,5 +1,9 @@
 'use strict';
 
+const MORSERINO_START = 'vvv<ka> ';
+const MORSERINO_END = ' +';
+
+
 class M32ProtocolHandler {
     constructor(callbackFunctions) {
         this.json = '';
@@ -45,4 +49,4 @@ class M32ProtocolHandler {
     } 
 }
 
-module.exports = { M32ProtocolHandler }
+module.exports = { M32ProtocolHandler, MORSERINO_START, MORSERINO_END }
