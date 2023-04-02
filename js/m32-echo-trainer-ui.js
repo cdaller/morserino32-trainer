@@ -72,8 +72,8 @@ class EchoTrainerUI {
     }
 
     showAllAbbreviations() {
-        Object.entries(this.abbreviations).forEach(([k,v]) => {
-            this.addAbbreviationToList(k, -1);
+        Object.keys(this.abbreviations).forEach((key) => {
+            this.addAbbreviationToList(key, -1);
         })
     }
     
