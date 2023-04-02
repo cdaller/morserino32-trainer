@@ -1,3 +1,9 @@
+'use strict';
+
+let log = require("loglevel");
+
+const { M32Translations } = require('./m32protocol-i18n');
+
 // all functions for speech synthesis
 
 class M32CommandSpeechHandler {
@@ -7,6 +13,7 @@ class M32CommandSpeechHandler {
         this.language = language;
         this.voice = null;
         this.enabled = true;
+        this.m32Translations = new M32Translations();
     }
 
     speak(text) {
@@ -16,7 +23,7 @@ class M32CommandSpeechHandler {
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
-            console.log("cancel previous speech synthesis");
+            log.debug("cancel previous speech synthesis");
             this.speechSynth.cancel();
         }
 
@@ -56,15 +63,15 @@ class M32CommandSpeechHandler {
 
     // callback method for a full json object received
     handleM32Object(jsonObject) {
-        console.log('speech.handleM32Object', jsonObject);
+        log.debug('speech.handleM32Object', jsonObject);
         const keys = Object.keys(jsonObject);
         if (keys && keys.length > 0) {
             const key = keys[0];
             const value = jsonObject[key];
             switch(key) {
                 case 'menu':
-                    var menues = value['name'].split('/');
-                    var textToSpeak = menues.map((menu) => translateMenu(menu, this.language)).join(' ');
+                    var menues = value['content'].split('/');
+                    var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language)).join(' ');
                     this.speak(textToSpeak);
                     break;
                 case 'control':
@@ -76,7 +83,7 @@ class M32CommandSpeechHandler {
                 case 'config':
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
                     if (!value['isMapped']) {
-                        this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['value'], this.language));
+                        this.speak(this.m32Translations.translateConfig(value['name'], this.language) + ' is ' + this.m32Translations.translateConfig(value['displayed'], this.language));
                     }
                     break;
                 case 'error':
@@ -86,8 +93,9 @@ class M32CommandSpeechHandler {
                     console.log('unhandled json key', key);
             }
         } else {
-            console.log('cannot handle json', json);
+            log.info('cannot handle json', jsonObject);
         }
     }    
 }
 
+module.exports = { M32CommandSpeechHandler }

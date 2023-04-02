@@ -1,3 +1,5 @@
+'use strict';
+
 // class represents the state of the morserino
 class M32Config {
     constructor() {
@@ -11,7 +13,7 @@ class M32CommandConfigHandler {
     constructor(configElement) {
         this.configElement = configElement;
     }
-
+    
     // callback method for a full json object received
     handleM32Object(jsonObject) {
         console.log('configHandler.handleM32Object', jsonObject);
@@ -26,7 +28,7 @@ class M32CommandConfigHandler {
                         console.log(value.length);
                         let elements = [];
                         for (let index = 0; index < value.length; index++) {
-                            let element = createSpanElement(value[index]['name']);
+                            let element = createSpanElement(value[index]['name'], null);
                             elements.push(element);
                         }
                         this.configElement.replaceChildren(...elements);
@@ -34,10 +36,10 @@ class M32CommandConfigHandler {
                     break;
             }
         } else {
-            console.log('cannot handle json', json);
+            console.log('cannot handle json', jsonObject);
         }
     }
-    
-
 }
+
+module.exports = { M32CommandConfigHandler, M32Config }
 
