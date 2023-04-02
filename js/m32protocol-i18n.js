@@ -32,6 +32,13 @@ function translate(key, language, i18nMap) {
 
 menuTranslations = {
     'koch trainer': {de: 'Koch Trainer'},
+        // koch lessons
+        '13 char .': {en: '13 char dot'},
+        '21 char ,': {en: '21 char comma'},
+        '24 char /': {en: '24 char slash'},
+        '32 char ?': {en: '32 char questionmark'},
+        '41 char -': {en: '41 char minus'},
+        '51 char :': {en: '51 char colon'},
       'cw generator': {de: 'CW Generator'},
         'random': {de: 'Zufall'},
         'cw abbrevs': {en: 'CW Abbreviations', de: 'CW Abkürzungen'},
@@ -81,11 +88,4 @@ configTranslations = {
     // values
     'custom chars':  {en: 'Custom Characters'},
     'bc1: r e a':  {en: 'BC1: r. e. a'},
-    // koch lessons
-    '13 .': {en: '13 dot'},
-    '21 ,': {en: '21 comma'},
-    '24 /': {en: '24 slash'},
-    '32 ?': {en: '32 questionmark'},
-    '41 -': {en: '41 minus'},
-    '51 :': {en: '51 colon'},
 }

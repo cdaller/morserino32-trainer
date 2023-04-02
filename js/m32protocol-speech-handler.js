@@ -63,7 +63,7 @@ class M32CommandSpeechHandler {
             const value = jsonObject[key];
             switch(key) {
                 case 'menu':
-                    var menues = value['name'].split('/');
+                    var menues = value['content'].split('/');
                     var textToSpeak = menues.map((menu) => translateMenu(menu, this.language)).join(' ');
                     this.speak(textToSpeak);
                     break;
@@ -76,7 +76,7 @@ class M32CommandSpeechHandler {
                 case 'config':
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
                     if (!value['isMapped']) {
-                        this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['value'], this.language));
+                        this.speak(translateConfig(value['name'], this.language) + ' is ' + translateConfig(value['displayed'], this.language));
                     }
                     break;
                 case 'error':

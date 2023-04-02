@@ -18,7 +18,7 @@ class M32CommandUIHandler {
             const value = jsonObject[key];
             switch(key) {
                 case 'menu':
-                    this.receivedM32Menu(value['name']);
+                    this.receivedM32Menu(value['content']);
                     break;
                 case 'control':
                     var controlKey = value['name'];
