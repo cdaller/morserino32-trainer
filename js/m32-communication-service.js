@@ -52,6 +52,7 @@ class M32CommunicationService {
     }
 
     enableVoiceOutput(enabled) {
+        log.debug("speech synthesis, enable voice output", enabled);
         this.speechSynthesisHandler.enabled = enabled;
     }
 

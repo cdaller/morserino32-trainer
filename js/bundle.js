@@ -1,4 +1,27 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+function createSpanElement(value, clasz) {
+    return createElement(value, 'span', clasz);
+}
+
+function createElement(value, tag, classes) {
+    let element = document.createElement(tag);
+    if (classes) {
+        classes.split(' ').forEach(clasz => {
+            element.classList.add(clasz);    
+        });
+    }
+    element.innerHTML = value;
+    return element;
+}
+
+function createElementWithChildren(tag, ...children) {
+    let element = document.createElement(tag);
+    element.replaceChildren(...children);
+    return element;
+}
+
+module.exports = { createSpanElement, createElement, createElementWithChildren}
+},{}],2:[function(require,module,exports){
 'use strict';
 
 let log = require("loglevel");
@@ -14,8 +37,9 @@ var { M32CommandUIHandler} = require('./m32protocol-ui-handler');
 const EVENT_M32_CONNECTED = "m32-connected";
 const EVENT_M32_DISCONNECTED = "m32-disconnected";
 const EVENT_M32_CONNECTION_ERROR = "m32-connection-error";
+const EVENT_M32_TEXT_RECEIVED = "m32-text-received";
 
-class M32ConnectService {
+class M32CommunicationService {
 
     constructor() {
         //Define outputstream, inputstream and port so they can be used throughout the sketch
@@ -32,15 +56,14 @@ class M32ConnectService {
             // speech & m3 protocol handler
         var m32Language = 'en';
         const m32State = new M32State();
-        const speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
+        this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
         const commandUIHandler = new M32CommandUIHandler(m32Language);
         const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
         this.m32Protocolhandler = new M32ProtocolHandler([
             new M32CommandStateHandler(m32State), 
             commandUIHandler, 
-            speechSynthesisHandler,
+            this.speechSynthesisHandler,
             configHandler]);
-
     }
 
     addEventListener(eventType, callback) {
@@ -50,6 +73,11 @@ class M32ConnectService {
 
     isConnected() {
         return this.port !== null;
+    }
+
+    enableVoiceOutput(enabled) {
+        log.debug("speech synthesis, enable voice output", enabled);
+        this.speechSynthesisHandler.enabled = enabled;
     }
 
 // navigator.serial.addEventListener('connect', e => {
@@ -166,6 +194,8 @@ class M32ConnectService {
 
             log.debug("other values received", value);
 
+            this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, value);
+
             // // when recieved something add it to the textarea
             // if (mode == MODE_CW_GENERATOR) {
             //     receiveText.value += value;
@@ -213,51 +243,63 @@ class M32ConnectService {
         }
     }
 
-    // disableSerialCommunication() {
-    //     connectButton.disabled = true;
-    //     document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
-    // }
-
     connected() {
         log.debug("Connected Test");
     }
 }
 
-module.exports = { M32ConnectService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECTION_ERROR }
+module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED }
 
-},{"./m32protocol":10,"./m32protocol-config-handler":5,"./m32protocol-speech-handler":7,"./m32protocol-state-handler":8,"./m32protocol-ui-handler":9,"events":15,"loglevel":13}],2:[function(require,module,exports){
+},{"./m32protocol":12,"./m32protocol-config-handler":7,"./m32protocol-speech-handler":9,"./m32protocol-state-handler":10,"./m32protocol-ui-handler":11,"events":17,"loglevel":15}],3:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
-const { M32ConnectService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-connect-service');
+const { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
+const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
 
 class M32ConnectUI {
-    constructor() {
+    constructor(m32Storage) {
+        this.m32Storage = m32Storage;
+        this.m32Storage.addEventListener(EVENT_SETTINGS_CHANGED, this.settingsChanged.bind(this));
+
         this.connectButton = document.getElementById("connectButton");
         this.voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
         this.statusBar = document.getElementById("statusBar");
         this.voiceOutputEnabled = true;
-        this.m32ConnectService = new M32ConnectService(this.connected);
-        this.m32ConnectService.addEventListener(EVENT_M32_CONNECTED, this.connected);
-        this.m32ConnectService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
-        this.m32ConnectService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
+        this.m32CommunicationService = new M32CommunicationService(this.connected);
+        this.m32CommunicationService.addEventListener(EVENT_M32_CONNECTED, this.connected);
+        this.m32CommunicationService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
+        this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
+        this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+
+        // check if serial communication is available at all:
+        let serialCommunicationavailable = navigator.serial !== undefined;        
+        if (!serialCommunicationavailable) {
+            this.disableSerialCommunication();
+        }  
     }
 
     //When the connectButton is pressed
     async clickConnect() {
-        if (this.m32ConnectService.isConnected()) {
+        if (this.m32CommunicationService.isConnected()) {
             log.debug("disconnecting")
             //if already connected, disconnect
-            this.m32ConnectService.disconnect();
+            this.m32CommunicationService.disconnect();
 
         } else {
             log.debug("connecting")
             //otherwise connect
-            await this.m32ConnectService.connect();
+            await this.m32CommunicationService.connect();
         }
     }
+
+    disableSerialCommunication() {
+        this.connectButton.disabled = true;
+        document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
+    }
+
 
     connected = () => {
         log.debug("Connect-UI, connected");
@@ -277,16 +319,40 @@ class M32ConnectUI {
         this.statusBar.innerText = message;
     }
 
+    clickVoiceOutputReceived() {
+        // saveSettings
+        log.debug("voice output changed", this.m32Storage.settings);
+        this.voiceOutputEnabled = this.voiceOutputCheckbox.checked;
+        this.m32Storage.settings.voiceOutputEnabled = this.voiceOutputEnabled;
+        this.m32CommunicationService.enableVoiceOutput(this.voiceOutputEnabled);
+        this.m32Storage.saveSettings();
+    }
+
+    settingsChanged(settings) {
+        log.debug("settings changed event", settings);
+        this.voiceOutputEnabled = settings.voiceOutputEnabled;
+        this.voiceOutputCheckbox.checked = this.voiceOutputEnabled;
+        this.m32CommunicationService.enableVoiceOutput(this.voiceOutputEnabled);
+    }
 }
 
 module.exports = { M32ConnectUI }
 
-},{"./m32-connect-service":1,"loglevel":13}],3:[function(require,module,exports){
+},{"./m32-communication-service":2,"./m32-storage":5,"loglevel":15}],4:[function(require,module,exports){
 'use strict';
+
+const log  = require ('loglevel');
+let jsdiff = require('diff');
+
+const { createSpanElement } = require('./dom-utils')
+
+const { MORSERINO_START, MORSERINO_END } = require('./m32protocol')
+const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
+
 
 class M32CwGeneratorUI {
 
-    constructor() {
+    constructor(m32CommunicationService) {
 
         // define the elements
         this.receiveText = document.getElementById("receiveText");
@@ -307,14 +373,213 @@ class M32CwGeneratorUI {
         this.lastPercentage;
         this.ignoreWhitespace = false;
         this.ignoreWhitespaceCheckbox.checked = this.ignoreWhitespace;
+
+        this.showReceivedCheckbox.addEventListener('change', this.clickShowReceived.bind(this));
+        this.ignoreWhitespaceCheckbox.addEventListener('change', this.clickIgnoreWhitespace.bind(this));
+        this.clearAllButton.addEventListener('click', this.clearTextFields.bind(this));
+        this.clearReceivedButton.addEventListener('click', this.clearReceivedTextField.bind(this));
+        this.compareTextsButton.addEventListener('click', this.compareTexts.bind(this));
+        this.saveButton.addEventListener('click', this.saveResult.bind(this));
+
+        this.inputText.oninput = this.compareTexts.bind(this);
+
+        this.m32CommunicationService = m32CommunicationService;
+        this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
+
+    }
+
+    textReceived(value) {
+        this.receiveText.value += value;
+        //Scroll to the bottom of the text field
+        this.receiveText.scrollTop = this.receiveText.scrollHeight;
+        this.compareTexts();
+        this.applyAutoHide();    
+
+    }
+
+    applyAutoHide() {
+        if (!this.autoHideCheckbox.checked) {
+            return;
+        }
+        let text = this.receiveText.value;
+        if (!text || text.length < MORSERINO_START.length) {
+            return;
+        }
+        text = text.trim();
+        if (this.showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && !text.endsWith(MORSERINO_END)) {
+            this.showReceivedCheckbox.checked = false;
+            this.showReceivedCheckbox.dispatchEvent(new Event('change'));
+            log.debug('auto hiding text');
+        }
+        if (!this.showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && text.endsWith(MORSERINO_END)) {
+            this.showReceivedCheckbox.checked = true;
+            this.showReceivedCheckbox.dispatchEvent(new Event('change'));
+            log.debug('auto unhiding text');
+        }
+    }
+
+
+    clickShowReceived() {
+        let shouldShow = this.showReceivedCheckbox.checked;
+        log.debug('should show: ', shouldShow);
+        if (shouldShow) {
+            document.getElementById('morserino_detail').classList.add('show');
+            this.resultComparison.classList.add('show');
+        } else {
+            document.getElementById('morserino_detail').classList.remove('show');
+            this.resultComparison.classList.remove('show');
+        }
+    }
+    
+    clickIgnoreWhitespace() {
+        this.ignoreWhitespace = this.ignoreWhitespaceCheckbox.checked;
+        log.debug('ignore whitespace: ', this.ignoreWhitespace);
+        this.compareTexts();
+    }
+
+    clearTextFields() {
+        this.inputText.value = '';
+        this.clearReceivedTextField();
+    }
+    
+    clearReceivedTextField() {
+        this.receiveText.value = '';
+        this.inputComparator.innerHTML = '';
+        this.correctPercentage.innerHTML = '';
+    }
+
+    compareTexts() {
+        let received = this.trimReceivedText(this.receiveText.value).toLowerCase();
+        let input = this.inputText.value.trim().toLowerCase();
+    
+        let [elements, correctCount, totalCount] = this.createHtmlForComparedText(received, input, this.ignoreWhitespace);
+    
+        this.inputComparator.replaceChildren(...elements);
+        this.lastPercentage = received.length > 0 ? Math.round(correctCount / totalCount * 100) : 0;
+        
+        this.correctPercentage.innerText = 'Score: ' + correctCount + '/' + totalCount + ' correct (' + this.lastPercentage + '%)';
+    }
+
+    trimReceivedText(text) {
+        text = text.trim();
+        if (text.toLowerCase().startsWith(MORSERINO_START)) {
+            text = text.substring(MORSERINO_START.length);
+        }
+        if (text.endsWith(' +')) {
+            text = text.substring(0, text.length - MORSERINO_END.length);
+        }
+        return text;
+    }
+    
+    // ------------------------------ compare text and create nice comparison html -------------------------------
+    createHtmlForComparedText(received, input, ignoreWhitespace) {
+        let elements = [];
+        let correctCount = 0;
+
+        if (ignoreWhitespace) {
+            received = received.replace(/\s/g,'');
+            input = input.replace(/\s/g,'');
+        }
+
+        let diff = jsdiff.diffChars(received, input);
+        diff.forEach(function (part) {
+            // green for additions, red for deletions
+            // grey for common parts
+            if (part.added) {
+                elements.push(createSpanElement(part.value, 'wrong'))
+            } else if (part.removed) {
+                elements.push(createSpanElement(part.value, 'missing'))
+            } else {
+                correctCount += part.value.length;
+                elements.push(createSpanElement(part.value, 'correct'))
+            }
+        });
+        return [elements, correctCount, received.length];
+    }
+
+    saveResult() {
+        // TODO
     }
 }
 
 module.exports = { M32CwGeneratorUI };
-},{}],4:[function(require,module,exports){
+},{"./dom-utils":1,"./m32-communication-service":2,"./m32protocol":12,"diff":14,"loglevel":15}],5:[function(require,module,exports){
 'use strict';
 
-let jsdiff = require('diff');
+const log  = require ('loglevel');
+
+var events = require('events');
+
+const STORAGE_KEY = 'morserino-trainer';
+const STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
+
+const EVENT_SETTINGS_CHANGED = "settings-changed";
+
+
+class M32Settings {
+    constructor() {
+        this.cwPlayerWpm = 15;
+        this.cwPlayerEws = 0;
+        this.cwPlayerEls = 2;
+        this.qsoRptWords = false;
+        this.voiceOutputEnabled = true;
+    }
+
+    loadFromStoredSettings(storedSettings) {
+        if (storedSettings) {
+    
+            if ('cwPlayerWpm' in storedSettings) {
+                this.cwPlayerWpm = storedSettings.cwPlayerWpm;
+            }
+            if ('cwPlayerEws' in storedSettings) {
+                this.cwPlayerEws = storedSettings.cwPlayerEws;
+            }
+            if ('cwPlayerEls' in storedSettings) {
+                this.cwPlayerEls = storedSettings.cwPlayerEls;
+            }
+            if ('qsoRptWords' in storedSettings) {
+                this.qsoRptWords = storedSettings.qsoRptWords;
+            }
+            if ('voiceOutputEnabled' in storedSettings) {
+                this.voiceOutputEnabled = storedSettings.voiceOutputEnabled;
+            }
+        }
+    }
+}
+
+class M32Storage {
+
+    constructor() {
+        this.settings = new M32Settings();
+        this.eventEmitter = new events.EventEmitter();
+    }
+
+    addEventListener(eventType, callback) {
+        this.eventEmitter.addListener(eventType, callback);
+    }
+
+    loadSettings() {
+        let storedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_SETTINGS));
+        this.settings.loadFromStoredSettings(storedSettings);
+        this.eventEmitter.emit(EVENT_SETTINGS_CHANGED, this.settings);
+    
+        // setCwPlayerSettings();
+        // setCwSettingsInUIInput();
+        // setCwSettingsInUILabels();
+        // setVoiceOutputEnabledSettings();
+    }
+    
+    saveSettings() {
+        log.debug("save settings", this.settings);
+        localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(this.settings));
+    }
+}
+
+module.exports = { M32Settings, M32Storage, EVENT_SETTINGS_CHANGED }
+
+},{"events":17,"loglevel":15}],6:[function(require,module,exports){
+'use strict';
+
 let Charts = require('chart.js');
 const ReRegExp = require('reregexp').default;
 let log = require("loglevel");
@@ -323,16 +588,13 @@ log.debug("m32main start");
 
 const { M32ConnectUI } = require('./m32-connect-ui');
 const { M32CwGeneratorUI } = require('./m32-cw-generator-ui');
+const { M32Storage } = require('./m32-storage');
 
 // let m32Protocolhandler;
 
 // some constants
 let VERSION = '0.5.0-beta5';
-let STORAGE_KEY = 'morserino-trainer';
-let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
-const MORSERINO_START = 'vvv<ka> ';
-const MORSERINO_END = ' +';
 
 const MODE_ECHO_TRAINER = 'echo-trainer';
 const MODE_CW_GENERATOR = 'cw-generator';
@@ -351,13 +613,25 @@ document.addEventListener('DOMContentLoaded', function() {
 function initM32Main() {
     log.debug("initM32");
 
+    let m32Storage = new M32Storage();
 
-    let m32ConnectUI = new M32ConnectUI();    
-    //let m32CwGeneratorUI = new M32CwGeneratorUI();
+    let m32ConnectUI = new M32ConnectUI(m32Storage);    
+    let m32CwGeneratorUI = new M32CwGeneratorUI(m32ConnectUI.m32CommunicationService);
+
+    m32Storage.loadSettings();
+
+    document.getElementById("versionSpan").textContent = VERSION;
+
+    // enable bootstrap tooltips everywhere:    
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        // eslint-disable-next-line no-undef
+        return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
+    });    
 }
 
 module.exports = { initM32Main };
-},{"./m32-connect-ui":2,"./m32-cw-generator-ui":3,"chart.js":11,"diff":12,"loglevel":13,"reregexp":14}],5:[function(require,module,exports){
+},{"./m32-connect-ui":3,"./m32-cw-generator-ui":4,"./m32-storage":5,"chart.js":13,"loglevel":15,"reregexp":16}],7:[function(require,module,exports){
 'use strict';
 
 // class represents the state of the morserino
@@ -404,7 +678,7 @@ class M32CommandConfigHandler {
 module.exports = { M32CommandConfigHandler, M32Config }
 
 
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -511,7 +785,7 @@ class M32Translations {
 }
 
 module.exports = { M32Translations }
-},{"loglevel":13}],7:[function(require,module,exports){
+},{"loglevel":15}],9:[function(require,module,exports){
 'use strict';
 
 let log = require("loglevel");
@@ -614,7 +888,7 @@ class M32CommandSpeechHandler {
 
 module.exports = { M32CommandSpeechHandler }
 
-},{"./m32protocol-i18n":6,"loglevel":13}],8:[function(require,module,exports){
+},{"./m32protocol-i18n":8,"loglevel":15}],10:[function(require,module,exports){
 'use strict';
 
 // class represents the state of the morserino
@@ -669,7 +943,7 @@ class M32CommandStateHandler {
 module.exports = { M32State, M32CommandStateHandler }
 
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict'
 
 let log = require("loglevel");
@@ -740,8 +1014,12 @@ class M32CommandUIHandler {
 module.exports = { M32CommandUIHandler } 
 
 
-},{"./m32protocol-i18n":6,"loglevel":13}],10:[function(require,module,exports){
+},{"./m32protocol-i18n":8,"loglevel":15}],12:[function(require,module,exports){
 'use strict';
+
+const MORSERINO_START = 'vvv<ka> ';
+const MORSERINO_END = ' +';
+
 
 class M32ProtocolHandler {
     constructor(callbackFunctions) {
@@ -788,9 +1066,9 @@ class M32ProtocolHandler {
     } 
 }
 
-module.exports = { M32ProtocolHandler }
+module.exports = { M32ProtocolHandler, MORSERINO_START, MORSERINO_END }
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*!
  * Chart.js v3.7.0
  * https://www.chartjs.org
@@ -14042,7 +14320,7 @@ return Chart;
 
 }));
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -15626,7 +15904,7 @@ return Chart;
 
 })));
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*
 * loglevel - https://github.com/pimterry/loglevel
 *
@@ -15925,7 +16203,7 @@ return Chart;
     return defaultLogger;
 }));
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -17699,7 +17977,7 @@ var RegexpGroup = (function (_super) {
 }(RegexpPart));
 exports.RegexpGroup = RegexpGroup;
 
-},{}],15:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18198,4 +18476,4 @@ function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
   }
 }
 
-},{}]},{},[4]);
+},{}]},{},[6]);

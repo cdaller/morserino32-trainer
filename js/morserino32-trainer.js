@@ -70,12 +70,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
-let serialCommunicationavailable = navigator.serial !== undefined;
-//console.log("serial communication available", serialCommunicationavailable);
-if (!serialCommunicationavailable) {
-    disableSerialCommunication();
-} 
-
 // --------------- chart template -----------------
 let ctx = document.getElementById('savedResultChart');
 let savedResultChart = new Chart(ctx, {
@@ -150,25 +144,11 @@ let savedResultChart = new Chart(ctx, {
 
     });
 
-// enable bootstrap tooltips everywhere:    
-var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
-});    
 
 showSavedResults(JSON.parse(localStorage.getItem(STORAGE_KEY)));
 
 // couple the elements to the Events
-voiceOutputCheckbox.addEventListener('change', clickVoiceOutputReceived);
 
-showReceivedCheckbox.addEventListener('change', clickShowReceived);
-ignoreWhitespaceCheckbox.addEventListener('change', clickIgnoreWhitespace);
-clearAllButton.addEventListener('click', clearTextFields);
-clearReceivedButton.addEventListener('click', clearReceivedTextField);
-compareTextsButton.addEventListener('click', compareTexts);
-saveButton.addEventListener('click', saveResult);
-
-inputText.oninput = compareTexts;
 clearEchoTrainerButton.addEventListener('click', clearEchoTrainerFields);
 showAllAbbreviationsButton.addEventListener('click', showAllAbbreviations);
 
@@ -240,125 +220,11 @@ function clickVoiceOutputReceived() {
 }
 
 // ------------------------------ cw generator code ------------------------------
-function clickShowReceived() {
-    let shouldShow = showReceivedCheckbox.checked;
-    console.log('should show: ', shouldShow);
-    if (shouldShow) {
-        document.getElementById('morserino_detail').classList.add('show');
-        resultComparison.classList.add('show');
-    } else {
-        document.getElementById('morserino_detail').classList.remove('show');
-        resultComparison.classList.remove('show');
-    }
-}
 
-function clickIgnoreWhitespace() {
-    ignoreWhitespace = ignoreWhitespaceCheckbox.checked;
-    console.log('ignore whitespace: ', ignoreWhitespace);
-    compareTexts();
-}
 
-function applyAutoHide() {
-    if (!autoHideCheckbox.checked) {
-        return;
-    }
-    let text = receiveText.value;
-    if (!text || text.length < MORSERINO_START.length) {
-        return;
-    }
-    text = text.trim();
-    if (showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && !text.endsWith(MORSERINO_END)) {
-        showReceivedCheckbox.checked = false;
-        showReceivedCheckbox.dispatchEvent(new Event('change'));
-        console.log('auto hiding text');
-    }
-    if (!showReceivedCheckbox.checked && text.startsWith(MORSERINO_START) && text.endsWith(MORSERINO_END)) {
-        showReceivedCheckbox.checked = true;
-        showReceivedCheckbox.dispatchEvent(new Event('change'));
-        console.log('auto unhiding text');
-    }
-}
 
-// ------------------------------ compare text and create nice comparison html -------------------------------
-function compareTexts() {
-    let received = trimReceivedText(receiveText.value).toLowerCase();
-    let input = inputText.value.trim().toLowerCase();
 
-    let [elements, correctCount, totalCount] = createHtmlForComparedText(received, input, ignoreWhitespace);
 
-    inputComparator.replaceChildren(...elements);
-    lastPercentage = received.length > 0 ? Math.round(correctCount / totalCount * 100) : 0;
-    
-    correctPercentage.innerText = 'Score: ' + correctCount + '/' + totalCount + ' correct (' + lastPercentage + '%)';
-}
-
-function createHtmlForComparedText(received, input, ignoreWhitespace) {
-    let elements = [];
-    let correctCount = 0;
-
-    if (ignoreWhitespace) {
-        received = received.replace(/\s/g,'');
-        input = input.replace(/\s/g,'');
-    }
-
-    let diff = jsdiff.diffChars(received, input);
-    diff.forEach(function (part) {
-        // green for additions, red for deletions
-        // grey for common parts
-        if (part.added) {
-            elements.push(createSpanElement(part.value, 'wrong'))
-        } else if (part.removed) {
-            elements.push(createSpanElement(part.value, 'missing'))
-        } else {
-            correctCount += part.value.length;
-            elements.push(createSpanElement(part.value, 'correct'))
-        }
-    });
-    return [elements, correctCount, received.length];
-}
-
-function trimReceivedText(text) {
-    text = text.trim();
-    if (text.toLowerCase().startsWith(MORSERINO_START)) {
-        text = text.substring(MORSERINO_START.length);
-    }
-    if (text.endsWith(' +')) {
-        text = text.substring(0, text.length - MORSERINO_END.length);
-    }
-    return text;
-}
-
-function createSpanElement(value, clasz) {
-    return createElement(value, 'span', clasz);
-}
-
-function createElement(value, tag, classes) {
-    let element = document.createElement(tag);
-    if (classes) {
-        classes.split(' ').forEach(clasz => {
-            element.classList.add(clasz);    
-        });
-    }
-    element.innerHTML = value;
-    return element;
-}
-
-function createElementWithChildren(tag, ...children) {
-    let element = document.createElement(tag);
-    element.replaceChildren(...children);
-    return element;
-}
-
-function clearTextFields() {
-    inputText.value = '';
-    clearReceivedTextField();
-}
-
-function clearReceivedTextField() {
-    receiveText.value = '';
-    inputComparator.innerHTML = '';
-    correctPercentage.innerHTML = '';
-}
 
 // ------------------------------ handle save(d) result(s) -------------------------------
 function saveResult() {
@@ -1121,10 +987,6 @@ function setCwPlayerSettings() {
     cwPlayer.setEff(eff);
 }
 
-function setVoiceOutputEnabledSettings() {
-    voiceOutputCheckbox.checked = voiceOutputEnabled;
-    speechSynthesisHandler.enabled = voiceOutputEnabled;
-}
 
 
 testCwSettingsPlayButton.addEventListener('click', function() {

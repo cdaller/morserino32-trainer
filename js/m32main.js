@@ -8,13 +8,12 @@ log.debug("m32main start");
 
 const { M32ConnectUI } = require('./m32-connect-ui');
 const { M32CwGeneratorUI } = require('./m32-cw-generator-ui');
+const { M32Storage } = require('./m32-storage');
 
 // let m32Protocolhandler;
 
 // some constants
 let VERSION = '0.5.0-beta5';
-let STORAGE_KEY = 'morserino-trainer';
-let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
 
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -34,8 +33,12 @@ document.addEventListener('DOMContentLoaded', function() {
 function initM32Main() {
     log.debug("initM32");
 
-    let m32ConnectUI = new M32ConnectUI();    
-    let m32CwGeneratorUI = new M32CwGeneratorUI(m32ConnectUI.m32ConnectService);
+    let m32Storage = new M32Storage();
+
+    let m32ConnectUI = new M32ConnectUI(m32Storage);    
+    let m32CwGeneratorUI = new M32CwGeneratorUI(m32ConnectUI.m32CommunicationService);
+
+    m32Storage.loadSettings();
 
     document.getElementById("versionSpan").textContent = VERSION;
 
@@ -45,7 +48,6 @@ function initM32Main() {
         // eslint-disable-next-line no-undef
         return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
     });    
-
 }
 
 module.exports = { initM32Main };
