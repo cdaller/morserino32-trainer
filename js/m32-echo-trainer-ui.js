@@ -301,7 +301,7 @@ class EchoTrainerUI {
             'px': {de: 'Präfix, Landeskenner', en: 'prefix, country code' },
             'q': {de: 'Quebec', en: 'Quebec'  },
             'qra':  {de: 'Der Name meiner Funkstelle ist...', en: 'name of my station is...'},
-            'qrb':  {de: 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', en: 'distance betwenn our stations is...'},
+            'qrb':  {de: 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', en: 'distance between our stations is...'},
             'qrg': {de: 'Deine genaue Frequenz ist ...', en: 'your exact frequency is ...' },
             'qrl':  {de: 'Ich bin beschäftigt, bitte nicht stören!, Arbeit, Ist die Frequenz frei?', en: 'I am busy! Please, do not interfere!, Work, Is this frequence in use?'},
             'qrm': {de: 'man made Störungen', en: 'man mad interference' },
