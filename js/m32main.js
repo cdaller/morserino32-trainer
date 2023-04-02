@@ -1,6 +1,5 @@
 'use strict';
 
-let jsdiff = require('diff');
 let Charts = require('chart.js');
 const ReRegExp = require('reregexp').default;
 let log = require("loglevel");
@@ -17,8 +16,6 @@ let VERSION = '0.5.0-beta5';
 let STORAGE_KEY = 'morserino-trainer';
 let STORAGE_KEY_SETTINGS = 'morserino-trainer-settings';
 
-const MORSERINO_START = 'vvv<ka> ';
-const MORSERINO_END = ' +';
 
 const MODE_ECHO_TRAINER = 'echo-trainer';
 const MODE_CW_GENERATOR = 'cw-generator';
@@ -37,9 +34,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function initM32Main() {
     log.debug("initM32");
 
-
     let m32ConnectUI = new M32ConnectUI();    
-    //let m32CwGeneratorUI = new M32CwGeneratorUI();
+    let m32CwGeneratorUI = new M32CwGeneratorUI(m32ConnectUI.m32ConnectService);
+
+    document.getElementById("versionSpan").textContent = VERSION;
+
+    // enable bootstrap tooltips everywhere:    
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        // eslint-disable-next-line no-undef
+        return new bootstrap.Tooltip(tooltipTriggerEl, { trigger : 'hover' });
+    });    
+
 }
 
 module.exports = { initM32Main };

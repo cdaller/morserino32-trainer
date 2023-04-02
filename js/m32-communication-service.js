@@ -13,8 +13,9 @@ var { M32CommandUIHandler} = require('./m32protocol-ui-handler');
 const EVENT_M32_CONNECTED = "m32-connected";
 const EVENT_M32_DISCONNECTED = "m32-disconnected";
 const EVENT_M32_CONNECTION_ERROR = "m32-connection-error";
+const EVENT_M32_TEXT_RECEIVED = "m32-text-received";
 
-class M32ConnectService {
+class M32CommunicationService {
 
     constructor() {
         //Define outputstream, inputstream and port so they can be used throughout the sketch
@@ -31,15 +32,14 @@ class M32ConnectService {
             // speech & m3 protocol handler
         var m32Language = 'en';
         const m32State = new M32State();
-        const speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
+        this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
         const commandUIHandler = new M32CommandUIHandler(m32Language);
         const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
         this.m32Protocolhandler = new M32ProtocolHandler([
             new M32CommandStateHandler(m32State), 
             commandUIHandler, 
-            speechSynthesisHandler,
+            this.speechSynthesisHandler,
             configHandler]);
-
     }
 
     addEventListener(eventType, callback) {
@@ -49,6 +49,10 @@ class M32ConnectService {
 
     isConnected() {
         return this.port !== null;
+    }
+
+    enableVoiceOutput(enabled) {
+        this.speechSynthesisHandler.enabled = enabled;
     }
 
 // navigator.serial.addEventListener('connect', e => {
@@ -165,6 +169,8 @@ class M32ConnectService {
 
             log.debug("other values received", value);
 
+            this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, value);
+
             // // when recieved something add it to the textarea
             // if (mode == MODE_CW_GENERATOR) {
             //     receiveText.value += value;
@@ -212,14 +218,9 @@ class M32ConnectService {
         }
     }
 
-    // disableSerialCommunication() {
-    //     connectButton.disabled = true;
-    //     document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
-    // }
-
     connected() {
         log.debug("Connected Test");
     }
 }
 
-module.exports = { M32ConnectService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECTION_ERROR }
+module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED }

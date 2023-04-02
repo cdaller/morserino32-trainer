@@ -1,7 +1,7 @@
 'use strict';
 
 const log  = require ('loglevel');
-const { M32ConnectService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-connect-service');
+const { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
 
 class M32ConnectUI {
     constructor() {
@@ -9,12 +9,19 @@ class M32ConnectUI {
         this.voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
         this.statusBar = document.getElementById("statusBar");
         this.voiceOutputEnabled = true;
-        this.m32ConnectService = new M32ConnectService(this.connected);
+        this.m32ConnectService = new M32CommunicationService(this.connected);
         this.m32ConnectService.addEventListener(EVENT_M32_CONNECTED, this.connected);
         this.m32ConnectService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
         this.m32ConnectService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
+        this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+
+        // check if serial communication is available at all:
+        let serialCommunicationavailable = navigator.serial !== undefined;        
+        if (!serialCommunicationavailable) {
+            this.disableSerialCommunication();
+        }  
     }
 
     //When the connectButton is pressed
@@ -30,6 +37,12 @@ class M32ConnectUI {
             await this.m32ConnectService.connect();
         }
     }
+
+    disableSerialCommunication() {
+        this.connectButton.disabled = true;
+        document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
+    }
+
 
     connected = () => {
         log.debug("Connect-UI, connected");
@@ -48,6 +61,14 @@ class M32ConnectUI {
         this.connectButton.innerText = 'Connect'
         this.statusBar.innerText = message;
     }
+
+    clickVoiceOutputReceived() {
+        log.debug("voice output changed")
+        this.voiceOutputEnabled = this.voiceOutputCheckbox.checked;
+        this.m32ConnectService.enableVoiceOutput(this.voiceOutputEnabled);
+        // FIXME: saveSettings
+    }
+    
 
 }
 
