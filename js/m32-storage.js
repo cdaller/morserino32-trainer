@@ -60,7 +60,6 @@ class M32Storage {
         // setCwPlayerSettings();
         // setCwSettingsInUIInput();
         // setCwSettingsInUILabels();
-        // setVoiceOutputEnabledSettings();
     }
     
     saveSettings() {
