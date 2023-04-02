@@ -2,7 +2,7 @@
   "name": "morserino-trainer",
   "version": "1.0.0",
   "description": "",
-  "main": "morserino-trainer.js",
+  "main": "js/m32main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,6 +15,5 @@
     "reregexp": "^1.5.0"
   },
   "devDependencies": {
-    "eslint": "^8.37.0"
   }
 }
