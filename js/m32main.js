@@ -49,7 +49,7 @@ class M32Main {
         this.m32ConnectUI = new M32ConnectUI(m32CommunicationService, m32Storage);
         this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
-        this.qsoTrainerUI = new QsoTrainerUI(m32Storage, M32CommunicationService);
+        this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
 
         m32Storage.loadSettings();
 
