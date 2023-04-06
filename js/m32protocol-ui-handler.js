@@ -50,13 +50,19 @@ class M32CommandUIHandler {
     }
 
     receivedM32Speed(speed) {
-        document.getElementById("m32Speed").textContent = speed + ' wpm';
+        let speedElement = document.getElementById("m32Speed");
+        if (speedElement) {
+            speedElement.textContent = speed + ' wpm';
+        }
     }
 
     receivedM32Menu(menu) {
         var menues = menu.split('/');
         var textToDisplay = menues.map((menu) => this.m32translations.translateMenu(menu, this.language)).join('/');
-        document.getElementById("m32Menu").textContent = textToDisplay;
+        var menuElement = document.getElementById("m32Menu");
+        if (menuElement) {
+            menuElement.textContent = textToDisplay;
+        }
         // FIXME: does not work - use event to publish this?
         // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
         //     openTabForMode(MODE_ECHO_TRAINER);

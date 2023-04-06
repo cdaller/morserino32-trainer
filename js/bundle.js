@@ -41,13 +41,16 @@ const EVENT_M32_TEXT_RECEIVED = "m32-text-received";
 
 class M32CommunicationService {
 
-    constructor() {
+    constructor(autoInitM32Protocol = true, sendCommandsAsText = false) {
         //Define outputstream, inputstream and port so they can be used throughout the sketch
         this.outputStream;
         this.inputStream;
         this.port = null;
         this.inputDone;
         this.outputDone;
+
+        this.autoInitM32Protocol = autoInitM32Protocol;
+        this.sendCommandsAsText = sendCommandsAsText;
 
         this.timer = ms => new Promise(res => setTimeout(res, ms))
 
@@ -99,7 +102,7 @@ class M32CommunicationService {
 //     connectButton.innerText = 'Connect';
 // });
 
-//Connect to the Arduino
+//Connect to Morserino
     async connect() {
         log.debug("connecting to morserino");
 
@@ -137,7 +140,9 @@ class M32CommunicationService {
 
             this.readLoop();
 
-            this.initM32Protocol();
+            if (this.autoInitM32Protocol) {
+                this.initM32Protocol();
+            }
 
         } catch (e) {
             let msg = e;
@@ -194,7 +199,9 @@ class M32CommunicationService {
             }
 
             if (this.m32Protocolhandler.handleInput(value)) {
-                continue;
+                if (!this.sendCommandsAsText) {   
+                    continue;
+                }
             }
 
             log.debug("other values received", value);
@@ -278,7 +285,9 @@ class M32ConnectUI {
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
-        this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+        if (this.voiceOutputCheckbox) {
+            this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+        }
 
         // check if serial communication is available at all:
         let serialCommunicationavailable = navigator.serial !== undefined;        
@@ -2240,8 +2249,13 @@ class M32CommandSpeechHandler {
                 case 'control':
                     this.speak(value['name'] + ' ' + value['value']);
                     break;
+                /*    
                 case 'activate':
                     this.speak(value['state']);
+                    break;
+                */
+                case 'message':
+                    this.speak(value['content']);
                     break;
                 case 'config':
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
@@ -2371,13 +2385,19 @@ class M32CommandUIHandler {
     }
 
     receivedM32Speed(speed) {
-        document.getElementById("m32Speed").textContent = speed + ' wpm';
+        let speedElement = document.getElementById("m32Speed");
+        if (speedElement) {
+            speedElement.textContent = speed + ' wpm';
+        }
     }
 
     receivedM32Menu(menu) {
         var menues = menu.split('/');
         var textToDisplay = menues.map((menu) => this.m32translations.translateMenu(menu, this.language)).join('/');
-        document.getElementById("m32Menu").textContent = textToDisplay;
+        var menuElement = document.getElementById("m32Menu");
+        if (menuElement) {
+            menuElement.textContent = textToDisplay;
+        }
         // FIXME: does not work - use event to publish this?
         // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
         //     openTabForMode(MODE_ECHO_TRAINER);

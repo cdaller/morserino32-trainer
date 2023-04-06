@@ -19,7 +19,9 @@ class M32ConnectUI {
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
-        this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+        if (this.voiceOutputCheckbox) {
+            this.voiceOutputCheckbox.addEventListener('change', this.clickVoiceOutputReceived.bind(this));
+        }
 
         // check if serial communication is available at all:
         let serialCommunicationavailable = navigator.serial !== undefined;        

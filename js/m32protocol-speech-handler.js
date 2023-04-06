@@ -77,8 +77,13 @@ class M32CommandSpeechHandler {
                 case 'control':
                     this.speak(value['name'] + ' ' + value['value']);
                     break;
+                /*    
                 case 'activate':
                     this.speak(value['state']);
+                    break;
+                */
+                case 'message':
+                    this.speak(value['content']);
                     break;
                 case 'config':
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):

@@ -17,13 +17,16 @@ const EVENT_M32_TEXT_RECEIVED = "m32-text-received";
 
 class M32CommunicationService {
 
-    constructor() {
+    constructor(autoInitM32Protocol = true, sendCommandsAsText = false) {
         //Define outputstream, inputstream and port so they can be used throughout the sketch
         this.outputStream;
         this.inputStream;
         this.port = null;
         this.inputDone;
         this.outputDone;
+
+        this.autoInitM32Protocol = autoInitM32Protocol;
+        this.sendCommandsAsText = sendCommandsAsText;
 
         this.timer = ms => new Promise(res => setTimeout(res, ms))
 
@@ -75,7 +78,7 @@ class M32CommunicationService {
 //     connectButton.innerText = 'Connect';
 // });
 
-//Connect to the Arduino
+//Connect to Morserino
     async connect() {
         log.debug("connecting to morserino");
 
@@ -113,7 +116,9 @@ class M32CommunicationService {
 
             this.readLoop();
 
-            this.initM32Protocol();
+            if (this.autoInitM32Protocol) {
+                this.initM32Protocol();
+            }
 
         } catch (e) {
             let msg = e;
@@ -170,7 +175,9 @@ class M32CommunicationService {
             }
 
             if (this.m32Protocolhandler.handleInput(value)) {
-                continue;
+                if (!this.sendCommandsAsText) {   
+                    continue;
+                }
             }
 
             log.debug("other values received", value);
