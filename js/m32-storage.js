@@ -66,6 +66,17 @@ class M32Storage {
         log.debug("save settings", this.settings);
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(this.settings));
     }
+
+    getSavedResults() {
+        let savedResults = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return savedResults;
+    }
+    
+    saveResults(storedResults) {
+        let storedResultsText = JSON.stringify(storedResults);
+        localStorage.setItem(STORAGE_KEY, storedResultsText);
+        log.debug('Saving result to localStorage', storedResultsText);
+    }
 }
 
 module.exports = { M32Settings, M32Storage, EVENT_SETTINGS_CHANGED }

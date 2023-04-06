@@ -349,14 +349,14 @@ module.exports = { M32ConnectUI }
 const log  = require ('loglevel');
 let jsdiff = require('diff');
 
-const { createSpanElement } = require('./dom-utils')
+const { createElement, createSpanElement, createElementWithChildren, trimReceivedText } = require('./dom-utils')
 
 const { MORSERINO_START, MORSERINO_END } = require('./m32protocol')
 const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
 
 class M32CwGeneratorUI {
 
-    constructor(m32CommunicationService) {
+    constructor(m32CommunicationService, m32Storage) {
 
         // define the elements
         this.receiveText = document.getElementById("receiveText");
@@ -391,6 +391,11 @@ class M32CwGeneratorUI {
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
         
         this.activeMode = true;
+
+        this.m32Storage = m32Storage;
+
+        this.showSavedResults(this.m32Storage.getSavedResults());
+
     }
 
     textReceived(value) {
@@ -503,10 +508,6 @@ class M32CwGeneratorUI {
         return [elements, correctCount, received.length];
     }
 
-    saveResult() {
-        // TODO
-    }
-
     modeSelected(mode) {
         this.activeMode = mode === 'cw-generator';
         log.debug("cw generator active", this.activeMode, mode);
@@ -522,6 +523,129 @@ class M32CwGeneratorUI {
                 event.target.blur();
             });
         }
+    }
+
+    // ------------------------------ handle save(d) result(s) -------------------------------
+    saveResult() {
+        let storedResults = this.m32Storage.getSavedResults();
+        if (!storedResults) {
+            storedResults = [];
+        }
+        let receivedText = trimReceivedText(this.receiveText.value);
+        let input = this.inputText.value.trim();
+        let result = {
+            text: receivedText, 
+            input: input, 
+            percentage: this.lastPercentage, 
+            date: Date.now(), 
+            ignoreWhitespace: this.ignoreWhitespace,
+            speedWpm: this.m32State.speedWpm
+        };
+        storedResults.push(result);
+        this.m32Storage.saveResults(storedResults);
+        this.showSavedResults(storedResults);
+    }
+
+
+    showSavedResults(savedResults) {
+        var that = this;
+
+        let resultElement = document.getElementById('savedResults');
+
+
+        if (savedResults) {
+            let tableElement = createElement(null, 'table', 'table');
+            let elements = savedResults
+                            .map((result, index) => {
+                let date = new Date(result.date);
+                let rowElement = createElement(null, 'tr', null);
+                let cells = [];
+
+                let cellContent = [];
+                cellContent.push(createSpanElement(result.text, null));
+                cellContent.push(createElement(null, 'br', null));
+                if (result.input) {
+                    cellContent.push(createSpanElement(result.input, null));
+                    cellContent.push(createElement(null, 'br', null));
+                    let ignoreWhitespace = result.ignoreWhitespace || false;
+                    let [comparedElements, correctCount] = this.createHtmlForComparedText(result.text, result.input, ignoreWhitespace);
+                    cellContent.push(...comparedElements);
+                }
+
+                let textCell = createElement(null, 'td', null);
+                textCell.replaceChildren(...cellContent);
+                cells.push(textCell);
+                cells.push(createElement((result.percentage ? result.percentage + '%' : ''), 'td', null));
+                cells.push(createElement((result.speedWpm ? result.speedWpm + 'wpm' : ''), 'td', null));
+                cells.push(createElement((result.date ? ' ' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() : ''), 'td', null));
+
+                let loadElement = createElement('Load', 'button', 'btn btn-outline-primary');
+                loadElement.setAttribute('type', 'button');
+                loadElement.setAttribute('data-toggle', 'tooltip');
+                loadElement.setAttribute('title', 'Load text into input field for CW Keyer mode.')
+                loadElement.onclick = ( function(_text) { 
+                    return function() { 
+                        that.inputText.value = _text;
+                        document.getElementsByClassName('inputContainer')[0].scrollIntoView();
+                    }
+                })(result.text);
+                // eslint-disable-next-line no-undef
+                new bootstrap.Tooltip(loadElement, { trigger : 'hover' });
+
+                let removeElement = createElement('Remove', 'button', 'btn btn-outline-danger');
+                removeElement.setAttribute('type', 'button');
+                removeElement.setAttribute('title', 'Remove result from saved results.')
+                removeElement.onclick = ( function(_index) { 
+                    return function() { 
+                        that.removeStoredResult(_index); 
+                    }
+                })(index);
+                // eslint-disable-next-line no-undef
+                new bootstrap.Tooltip(removeElement, { trigger : 'hover' });
+
+                let buttonCell = createElement(null, 'td', null);
+                buttonCell.replaceChildren(loadElement, createElement(null, 'br', null), removeElement);
+                cells.push(buttonCell);
+
+                rowElement.replaceChildren(...cells);
+                return rowElement;
+            });
+            elements = elements.reverse(); // order by date desc
+
+            let headerRow = createElementWithChildren('tr', 
+            createElement('Received/Input/Comparison', 'th', null), 
+            createElement('Success', 'th', null),
+            createElement('Speed', 'th', null),
+            createElement('Date/Time', 'th', null),
+            createElement('', 'th', null),
+            );
+
+            let tableElements = [];
+            tableElements.push(createElementWithChildren('thead', headerRow));
+            tableElements.push(createElementWithChildren('tbody', ...elements));
+            tableElement.replaceChildren(...tableElements);
+
+            resultElement.replaceChildren(tableElement);  
+
+            this.drawSavedResultGraph(savedResults);
+        }
+        this.showHideSavedResultGraph(savedResults);
+    }
+
+    removeStoredResult(index) {
+        let savedResults = this.m32Storage.getSavedResults();
+        // remove element index from array:
+        savedResults = savedResults.slice(0,index).concat(savedResults.slice(index + 1));
+        this.m32Storage.saveResults(savedResults);
+        this.showSavedResults(savedResults);
+    }
+
+    drawSavedResultGraph(savedResults) {
+        // TODO
+    }
+
+    showHideSavedResultGraph(savedResults) {
+        // TODO
     }
 }
 
@@ -1613,6 +1737,17 @@ class M32Storage {
         log.debug("save settings", this.settings);
         localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(this.settings));
     }
+
+    getSavedResults() {
+        let savedResults = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return savedResults;
+    }
+    
+    saveResults(storedResults) {
+        let storedResultsText = JSON.stringify(storedResults);
+        localStorage.setItem(STORAGE_KEY, storedResultsText);
+        log.debug('Saving result to localStorage', storedResultsText);
+    }
 }
 
 module.exports = { M32Settings, M32Storage, EVENT_SETTINGS_CHANGED }
@@ -1648,8 +1783,6 @@ const MODE_M32_CONFIG = 'm32-config';
 
 const EVENT_MODE_SELECTED = "mode-selected";
 
-const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
-
 // init all UI after page is loaded:
 document.addEventListener('DOMContentLoaded', function() {
     new M32Main();
@@ -1667,7 +1800,7 @@ class M32Main {
         let m32CommunicationService = new M32CommunicationService();
 
         this.m32ConnectUI = new M32ConnectUI(m32CommunicationService, m32Storage);
-        this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService);
+        this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService, m32Storage);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
 

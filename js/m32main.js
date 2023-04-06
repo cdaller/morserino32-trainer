@@ -28,8 +28,6 @@ const MODE_M32_CONFIG = 'm32-config';
 
 const EVENT_MODE_SELECTED = "mode-selected";
 
-const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
-
 // init all UI after page is loaded:
 document.addEventListener('DOMContentLoaded', function() {
     new M32Main();
@@ -47,7 +45,7 @@ class M32Main {
         let m32CommunicationService = new M32CommunicationService();
 
         this.m32ConnectUI = new M32ConnectUI(m32CommunicationService, m32Storage);
-        this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService);
+        this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService, m32Storage);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
 
