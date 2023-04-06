@@ -29,7 +29,7 @@ class M32CommunicationService {
 
         this.eventEmitter = new events.EventEmitter();
 
-            // speech & m3 protocol handler
+        // speech & m3 protocol handler
         var m32Language = 'en';
         const m32State = new M32State();
         this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
@@ -229,4 +229,5 @@ class M32CommunicationService {
     }
 }
 
-module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED }
+module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, 
+    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED }

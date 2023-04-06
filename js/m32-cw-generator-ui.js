@@ -3,7 +3,7 @@
 const log  = require ('loglevel');
 let jsdiff = require('diff');
 
-const { createElement, createSpanElement, createElementWithChildren, trimReceivedText } = require('./dom-utils')
+const { createElement, createSpanElement, createElementWithChildren } = require('./dom-utils')
 
 const { MORSERINO_START, MORSERINO_END } = require('./m32protocol')
 const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
@@ -43,13 +43,14 @@ class M32CwGeneratorUI {
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
+        this.m32State = this.m32CommunicationService.m32State; // FIXME: use event to publish change in m32State
         
         this.activeMode = true;
 
+        this.savedResultChart = this.createSavedResultChart();
+
         this.m32Storage = m32Storage;
-
         this.showSavedResults(this.m32Storage.getSavedResults());
-
     }
 
     textReceived(value) {
@@ -185,7 +186,7 @@ class M32CwGeneratorUI {
         if (!storedResults) {
             storedResults = [];
         }
-        let receivedText = trimReceivedText(this.receiveText.value);
+        let receivedText = this.trimReceivedText(this.receiveText.value);
         let input = this.inputText.value.trim();
         let result = {
             text: receivedText, 
@@ -193,7 +194,7 @@ class M32CwGeneratorUI {
             percentage: this.lastPercentage, 
             date: Date.now(), 
             ignoreWhitespace: this.ignoreWhitespace,
-            speedWpm: this.m32State.speedWpm
+            speedWpm: this.m32State ? this.m32State.speedWpm : null
         };
         storedResults.push(result);
         this.m32Storage.saveResults(storedResults);
@@ -222,6 +223,7 @@ class M32CwGeneratorUI {
                     cellContent.push(createSpanElement(result.input, null));
                     cellContent.push(createElement(null, 'br', null));
                     let ignoreWhitespace = result.ignoreWhitespace || false;
+                    // eslint-disable-next-line no-unused-vars
                     let [comparedElements, correctCount] = this.createHtmlForComparedText(result.text, result.input, ignoreWhitespace);
                     cellContent.push(...comparedElements);
                 }
@@ -295,11 +297,120 @@ class M32CwGeneratorUI {
     }
 
     drawSavedResultGraph(savedResults) {
-        // TODO
+        console.log('Drawing stored result graph');
+        let percentageValues = [];
+        let speedWpm = [];
+        let labels = [];
+        // eslint-disable-next-line no-unused-vars
+        savedResults.forEach((result, index) => {
+            let date = new Date(result.date);
+            var dateString = date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+            labels.push(dateString);
+            percentageValues.push(result.percentage);
+            //console.log('speedwpm', index, result.speedWpm);
+            speedWpm.push(result.speedWpm);
+        });
+        this.savedResultChart.data.labels = labels;
+        this.savedResultChart.data.datasets[0].data = percentageValues;
+        this.savedResultChart.data.datasets[1].data = speedWpm;
+        if (!speedWpm.some(x => x)) {
+            // if no speed info available, do not show speed axis and values
+            this.savedResultChart.options.scales.y1.display = false;
+            this.savedResultChart.options.plugins.legend.display = false;
+        }
+        this.savedResultChart.update();
+    }
+    
+    showHideSavedResultGraph(savedResults) {
+        let canvasElement = document.getElementById('savedResultChart');
+        if (savedResults && savedResults.length > 0) {
+            console.log('showing graph');
+            canvasElement.style.display = 'block';
+        } else {
+            console.log('hiding graph');
+            canvasElement.style.display = 'none';
+        }
     }
 
-    showHideSavedResultGraph(savedResults) {
-        // TODO
+    // ------------------------------ chart -------------------------------
+    createSavedResultChart() {
+        let ctx = document.getElementById('savedResultChart');
+        // eslint-disable-next-line no-undef
+        return new Chart(ctx, {
+            type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                        {
+                            label: 'Score',
+                            data: [],
+                            borderColor: '#0d6efd', // same color as blue buttons
+                            tension: 0.3,
+                            yAxisID: 'y',
+                        }, 
+                        {
+                            label: "Speed wpm",
+                            data: [],
+                            borderColor: 'red', 
+                            yAxisID: 'y1',
+                        }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                ticks: {
+                                    // eslint-disable-next-line no-unused-vars
+                                    callback: function(value, index, ticks) {
+                                        return value + '%';
+                                    }
+                                },
+                                beginAtZero: true,
+                            },
+                            y1: {
+                                position: 'right',
+                                ticks: {
+                                    // eslint-disable-next-line no-unused-vars
+                                    callback: function(value, index, ticks) {
+                                        return value + ' wpm';
+                                    }
+                                },
+                                beginAtZero: false,
+                                suggestedMin: 10,
+                                suggestedMax: 25,
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Score',
+                            },
+                            legend: {
+                                display: true,
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        var label = context.dataset.label || '';        
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            label += context.parsed.y + '%';
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        }
+                    },
+
+            });
+
+
     }
 }
 
