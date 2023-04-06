@@ -981,6 +981,7 @@ class QsoTrainerUI {
         this.qsoRptWordsCheckbox = document.getElementById("qsoRptWordsCheckbox");
         this.testCwSettingsPlayButton = document.getElementById("testCwSettingsPlayButton");
         this.testCwSettingsStopButton = document.getElementById("testCwSettingsStopButton");
+        this.testCwSettingsText = document.getElementById("testCwSettingsText");
 
         this.autoQsoCallsign;
         this.autoQsoCallsignBot;
@@ -993,7 +994,8 @@ class QsoTrainerUI {
         this.qsoRptWords = this.qsoRptWordsCheckbox.checked;
         this.clearQsoTrainerFields();
 
-        this.cwPlayer = new jscw();
+        // eslint-disable-next-line no-undef
+        this.cwPlayer = new jscw(); // FIXME: create later???
         this.cwPlayerWpm; // wpm
         this.cwPlayerEws; // extended word spacing
         this.cwPlayerEls; // extended letter spacing: effective speed
@@ -1004,26 +1006,26 @@ class QsoTrainerUI {
         this.clearInputTextQsoTrainerButton.addEventListener('click', function() {
             this.inputTextQsoTrainer.value = '';
         });
-        this.qsoRptWordsCheckbox.addEventListener('change', function(event) {
+        this.qsoRptWordsCheckbox.addEventListener('change', event => {
             console.log(event);
             this.qsoRptWords = event.target.checked;
             console.log('qsoRptWords', this.qsoRptWords);
             this.setCwSettingsInUILabels();
             this.saveSettings();
         });
-        this.qsoWpmSelect.addEventListener('change', function(event) {
+        this.qsoWpmSelect.addEventListener('change', event => {
             this.cwPlayerWpm = event.target.value;
             this.setCwPlayerSettings();
             this.setCwSettingsInUILabels();
             this.saveSettings();
         });
-        this.qsoEwsSelect.addEventListener('change', function(event) {
+        this.qsoEwsSelect.addEventListener('change', event => {
             this.cwPlayerEws = event.target.value;
             this.setCwPlayerSettings();
             this.setCwSettingsInUILabels();
             this.saveSettings();
         });
-        this.qsoElsSelect.addEventListener('change', function(event) {
+        this.qsoElsSelect.addEventListener('change', event => {
             this.cwPlayerEls = event.target.value;
             this.setCwPlayerSettings();
             this.setCwSettingsInUILabels();
@@ -1040,10 +1042,10 @@ class QsoTrainerUI {
             this.cwPlayerIsPlaying = false;
         }
 
-        this.testCwSettingsPlayButton.addEventListener('click', function() {
+        this.testCwSettingsPlayButton.addEventListener('click', () => {
             this.playCw(this.testCwSettingsText.value);
         });
-        this.testCwSettingsStopButton.addEventListener('click', function() {
+        this.testCwSettingsStopButton.addEventListener('click', () => {
             this.cwPlayer.stop();
         });
         
@@ -1075,7 +1077,7 @@ class QsoTrainerUI {
             || text.endsWith(' k ')) {
             this.endOfMessageDetected = true;
             //console.log('detecteQso: end of message detected', endOfMessageDetected)
-            setTimeout(this.detectQsoMessageEnded, QSO_WAIT_TIME_MS)
+            setTimeout(() => { this.detectQsoMessageEnded() }, QSO_WAIT_TIME_MS);
         }
     }
 
@@ -1158,6 +1160,8 @@ class QsoTrainerUI {
 
     createAnswerElement(message) {
 
+        var that = this;
+
         let answerElement = createElement(message, 'p', 'qso-answer unreadable')
 
         let showButton = createElement('Show', 'button', 'btn btn-outline-primary btn-sm qso-answer-button');
@@ -1179,9 +1183,10 @@ class QsoTrainerUI {
         replayButton.setAttribute('type', 'button');
         replayButton.setAttribute('data-toggle', 'tooltip');
         replayButton.setAttribute('title', 'Replay cw code.')
+        // https://stackoverflow.com/questions/19624113/how-can-i-use-a-class-method-as-onclick-handler-in-javascript
         replayButton.onclick = ( function(_message) { 
             return function() {
-                this.playCw(_message);
+                that.playCw(_message);
             }
         })(message.replace(/<br\/>/g, ' '));
         // eslint-disable-next-line no-undef
@@ -1193,7 +1198,7 @@ class QsoTrainerUI {
         stopButton.setAttribute('title', 'Stop cw player.')
         stopButton.onclick = ( function() { 
             return function() { 
-                this.cwPlayer.stop();
+                that.cwPlayer.stop();
             }
         })();
         let pauseButton = createElement('Pause', 'button', 'btn btn-outline-warning btn-sm qso-answer-button');
@@ -1202,7 +1207,7 @@ class QsoTrainerUI {
         pauseButton.setAttribute('title', 'Pause cw player.')
         pauseButton.onclick = ( function() { 
             return function() { 
-                this.cwPlayer.pause();
+                that.cwPlayer.pause();
             }
         })();
         
@@ -1230,7 +1235,7 @@ class QsoTrainerUI {
         let qthDetected = false;
     
         // CQ CQ CQ de .... 
-        this.executeIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*cq.*\s+de\s+(\w+)/, answer, (groups) => { 
             this.qsoCallSign = groups[0];
             this.qsoCallSignBot = this.generateCallSign();
             this.autoQsoCallsign = this.qsoCallSign;
@@ -1246,23 +1251,24 @@ class QsoTrainerUI {
         if (!isIntro) {
             answer = this.appendToMessage(answer, 'r r ' + this.qsoCallSign + ' de ' + this.qsoCallSignBot);        
         }
-        this.executeIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*(gm|ga|ge)\s(om|yl)/, answer, (groups) => { 
             answer = this.appendToMessage(answer, groups[0]); // do not reply with 'om' or 'yl' because we do not know if om or yl!
             textDetected = true;
             console.log('matched gm/ga/ge, answer:', answer);
         });
-        this.executeIfMatch(message, /.*rst\sis\s(\w+)/, answer, function(groups) { 
+        // eslint-disable-next-line no-unused-vars
+        this.executeIfMatch(message, /.*rst\sis\s(\w+)/, answer, (groups) => { 
             var rst = this.getRandom('555', '569', '579', '589', '599');
             answer = this.appendToMessage(answer, 'ur rst is ' + rst + ' ' + rst);
             textDetected = true;
             console.log('matched rst, answer:', answer);
         });
-        this.executeIfMatch(message, /.*qth\sis\s(\w+)/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*qth\sis\s(\w+)/, answer, (groups) => { 
             this.qsoQth = groups[0];
             qthDetected = true;
             console.log('matched qth:', this.qsoQth);
         });
-        this.executeIfMatch(message, /.*\sname\sis\s(\w+)/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*\sname\sis\s(\w+)/, answer, (groups) => { 
             this.qsoName = groups[0];
             var name = this.getRandomName();
             if (this.qsoQth === '') {
@@ -1274,7 +1280,7 @@ class QsoTrainerUI {
             textDetected = true;
             console.log('matched name, answer:', answer);
         });
-        this.executeIfMatch(message, /.*\swx\sis\s(\w+)(?:.*temp\s([-]?\d+)\s*c?)?/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*\swx\sis\s(\w+)(?:.*temp\s([-]?\d+)\s*c?)?/, answer, (groups) => { 
             let weather = groups[0];
             let temperature = groups[1];
             let temperatureString = '';
@@ -1293,20 +1299,20 @@ class QsoTrainerUI {
             console.log('matched qth, answer:', answer);
         }
         // eslint-disable-next-line no-unused-vars
-        this.executeIfMatch(message, /.*gb\s(om|yl)/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*gb\s(om|yl)/, answer, (groups) => { 
             answer = this.appendToMessage(answer, 'gb ' + this.qsoName + ' 73 es 55');
             textDetected = true;
             console.log('matched gb, answer:', answer);
         });
         // eslint-disable-next-line no-unused-vars
-        this.executeIfMatch(message, /(tu|sk) e e/, answer, function(groups) { 
+        this.executeIfMatch(message, /(tu|sk) e e/, answer, (groups) => { 
             answer = this.appendToMessage(answer, 'e e');
             shouldAppendEndOfMessage = false;
             textDetected = true;
             console.log('matched tu e e, answer:', answer);
         });
         // eslint-disable-next-line no-unused-vars
-        this.executeIfMatch(message, /.*test/, answer, function(groups) { 
+        this.executeIfMatch(message, /.*test/, answer, (groups) => { 
             answer = this.appendToMessage(answer, 'test back');
             textDetected = true;
             console.log('matched test, answer:', answer);
@@ -1663,7 +1669,7 @@ class M32Main {
         this.m32ConnectUI = new M32ConnectUI(m32CommunicationService, m32Storage);
         this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
-        this.qsoTrainerUI = new QsoTrainerUI(m32Storage, M32CommunicationService);
+        this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
 
         m32Storage.loadSettings();
 
