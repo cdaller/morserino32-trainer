@@ -1,3 +1,5 @@
+'use strict';
+
 class M32ProtocolHandler {
     constructor(callbackFunctions) {
         this.json = '';
@@ -41,5 +43,6 @@ class M32ProtocolHandler {
     countChar(text, char) {
         return text.split(char).length - 1;
     } 
-    
 }
+
+module.exports = { M32ProtocolHandler }

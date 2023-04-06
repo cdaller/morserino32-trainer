@@ -1,13 +1,21 @@
+'use strict'
+
+let log = require("loglevel");
+
+const { M32Translations } = require('./m32protocol-i18n');
+
+
 class M32CommandUIHandler {
 
     constructor(language = 'en') {
         this.m32ProtocolEnabled = false;
         this.language = language;
+        this.m32translations = new M32Translations();
     }
 
     // callback method for a full json object received
     handleM32Object(jsonObject) {
-        console.log('uiHandler.handleM32Object', jsonObject);
+        log.debug('uiHandler.handleM32Object', jsonObject);
         if (!this.m32ProtocolEnabled) {
             this.m32ProtocolEnabled = true;
             this.enableAllM32ProtocolElements();
@@ -28,7 +36,7 @@ class M32CommandUIHandler {
                     }
                     break;            }
         } else {
-            console.log('cannot handle json', json);
+            console.debug('cannot handle json', jsonObject);
         }
     }
 
@@ -37,7 +45,7 @@ class M32CommandUIHandler {
     }
     
     enableAllM32ProtocolElements() {
-        console.log('enable all m32 protocol elements');
+        log.debug('enable all m32 protocol elements');
         document.querySelectorAll('.m32-protocol').forEach(element => element.classList.add('m32-protocol-enabled'))
     }
 
@@ -47,7 +55,7 @@ class M32CommandUIHandler {
 
     receivedM32Menu(menu) {
         var menues = menu.split('/');
-        var textToDisplay = menues.map((menu) => translateMenu(menu, this.language)).join('/');
+        var textToDisplay = menues.map((menu) => this.m32translations.translateMenu(menu, this.language)).join('/');
         document.getElementById("m32Menu").textContent = textToDisplay;
         // FIXME: does not work - use event to publish this?
         // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
@@ -56,4 +64,6 @@ class M32CommandUIHandler {
     }
 
 }
+
+module.exports = { M32CommandUIHandler } 
 

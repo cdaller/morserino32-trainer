@@ -34,28 +34,6 @@ let mode = MODE_CW_GENERATOR;
 const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
 
 // define the elements
-let receiveText = document.getElementById("receiveText");
-let inputText = document.getElementById("inputText");
-let connectButton = document.getElementById("connectButton");
-let voiceOutputCheckbox = document.getElementById("voiceOutputCheckbox");
-let voiceOutputEnabled = true;
-
-let showReceivedCheckbox = document.getElementById("showReceivedCheckbox");
-let ignoreWhitespaceCheckbox = document.getElementById("ignoreWhitespaceCheckbox");
-let autoHideCheckbox = document.getElementById("autoHideCheckbox");
-let statusBar = document.getElementById("statusBar");
-let clearAllButton = document.getElementById("clearAllButton");
-let clearReceivedButton = document.getElementById("clearReceivedButton");
-let saveButton = document.getElementById("saveButton");
-
-let resultComparison = document.getElementById("resultComparison");
-let inputComparator = document.getElementById("inputComparator");
-let correctPercentage = document.getElementById("correctPercentage");
-let compareTextsButton = document.getElementById("compareTextsButton");
-
-let lastPercentage;
-let ignoreWhitespace = false;
-ignoreWhitespaceCheckbox.checked = ignoreWhitespace;
 
 let receiveTextEchoTrainer = document.getElementById("receiveTextEchoTrainer");
 let clearEchoTrainerButton = document.getElementById("clearEchoTrainerButton");
@@ -181,7 +159,6 @@ var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
 showSavedResults(JSON.parse(localStorage.getItem(STORAGE_KEY)));
 
 // couple the elements to the Events
-connectButton.addEventListener('click', clickConnect)
 voiceOutputCheckbox.addEventListener('change', clickVoiceOutputReceived);
 
 showReceivedCheckbox.addEventListener('change', clickShowReceived);
@@ -255,17 +232,6 @@ if (paramM32Language) {
     commandUIHandler.setLanguage(paramM32Language);
 }
 
-//When the connectButton is pressed
-async function clickConnect() {
-    if (port) {
-        //if already connected, disconnect
-        disconnect();
-
-    } else {
-        //otherwise connect
-        await connect();
-    }
-}
 
 function clickVoiceOutputReceived() {
     voiceOutputEnabled = voiceOutputCheckbox.checked;
@@ -1168,174 +1134,6 @@ testCwSettingsStopButton.addEventListener('click', function() {
     cwPlayer.stop();
 });
 
-
-// ------------------------ serial communication code ------------------------
-
-function disableSerialCommunication() {
-    connectButton.disabled = true;
-    document.getElementById('serialCommunicationDisabledInfo').style.display = 'block';
-}
-
-//Define outputstream, inputstream and port so they can be used throughout the sketch
-var outputStream, inputStream, port;
-// navigator.serial.addEventListener('connect', e => {
-//     console.log('connect event triggered')
-//     statusBar.innerText = `Connected to ${e.port}`;
-//     statusBar.className = 'badge bg-success';
-//     connectButton.innerText = 'Disconnect';
-// });
-
-// navigator.serial.addEventListener('disconnect', e => {
-//     console.log('disconnect event triggered')
-//     statusBar.innerText = `Disconnected`;
-//     statusBar.className = 'badge bg-danger';
-//     connectButton.innerText = 'Connect';
-// });
-
-//Connect to the Arduino
-async function connect() {
-
-    const baudRate = 115200;
-
-    //Optional filter to only see relevant boards
-    const filter = {
-        // morserino32
-        // Product ID: 0xea60
-        // Vendor ID: 0x10c4  (Silicon Laboratories, Inc.)
-        usbVendorId: 0x10c4
-    };
-
-    //Try to connect to the Serial port
-    try {
-        port = await navigator.serial.requestPort(/*{ filters: [filter] }*/);
-        // Continue connecting to |port|.
-
-        // - Wait for the port to open.
-        await port.open({ baudRate: baudRate });
-
-        statusBar.innerText = `Connected`;
-        statusBar.className = 'badge bg-success';
-        connectButton.innerText = 'Disconnect';
-
-        let decoder = new TextDecoderStream();
-        inputDone = port.readable.pipeTo(decoder.writable);
-        inputStream = decoder.readable;
-
-        const encoder = new TextEncoderStream();
-        outputDone = encoder.readable.pipeTo(port.writable);
-        outputStream = encoder.writable;
-
-        reader = inputStream.getReader();
-
-        readLoop();
-
-        initM32Protocol();
-
-        inputText.focus();
-    } catch (e) {
-
-        //If the pipeTo error appears; clarify the problem by giving suggestions.
-        if (e == 'TypeError: Cannot read property "pipeTo" of undefined') {
-            e += '\n Use Google Chrome and enable-experimental-web-platform-features'
-        }
-        connectButton.innerText = 'Connect'
-        statusBar.innerText = e;
-    }
-}
-
-//Write to the Serial port
-async function writeToStream(line) {
-    console.log('send command', line);
-    const writer = outputStream.getWriter();
-    writer.write(line);
-    writer.write('\n');
-    writer.releaseLock();
-}
-
-//Disconnect from the Serial port
-async function disconnect() {
-
-    if (reader) {
-        await reader.cancel();
-        await inputDone.catch(() => { });
-        reader = null;
-        inputDone = null;
-    }
-    if (outputStream) {
-        await outputStream.getWriter().close();
-        await outputDone;
-        outputStream = null;
-        outputDone = null;
-    }
-    statusBar.innerText = `Disconnected`;
-    statusBar.className = 'badge bg-danger';
-    connectButton.innerText = 'Connect';
-    //Close the port.
-    await port.close();
-    port = null;
-}
-
-//Read the incoming data
-async function readLoop() {
-
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done === true) {
-            break;
-        }
-
-        if (m32Protocolhandler.handleInput(value)) {
-            continue;
-        }
-
-        // when recieved something add it to the textarea
-        if (mode == MODE_CW_GENERATOR) {
-            receiveText.value += value;
-            //Scroll to the bottom of the text field
-            receiveText.scrollTop = receiveText.scrollHeight;
-            compareTexts();
-            applyAutoHide();    
-        } else if (mode == MODE_ECHO_TRAINER) {
-            receiveTextEchoTrainer.value += value;
-            //Scroll to the bottom of the text field
-            receiveTextEchoTrainer.scrollTop = receiveTextEchoTrainer.scrollHeight;
-            detectAbbreviation();
-        } else if (mode == MODE_QSO_TRAINER) {
-            receiveTextQsoTrainer.value += value;
-            //Scroll to the bottom of the text field
-            receiveTextQsoTrainer.scrollTop = receiveTextQsoTrainer.scrollHeight;
-            detectQso();
-        }
-    }
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function initM32Protocol() {
-    //sendM32Command('PUT device/protocol/off', false); // force device info on next PUT
-    sendM32Command('PUT device/protocol/on');
-    sleep(1000);
-    //sendM32Command('GET device');
-    sendM32Command('GET control/speed');
-    //sendM32Command('GET control/volume');
-    sendM32Command('GET menu');
-}
-
-const timer = ms => new Promise(res => setTimeout(res, ms))
-
-async function sendM32Command(command, waitForResponse = true) {
-    console.log('sending command, wait', waitForResponse);
-    while(m32Protocolhandler.waitForResponse) {
-        console.log('waiting for response');
-        await timer(50);
-    };
-    writeToStream(command);
-    if (waitForResponse) {
-        m32Protocolhandler.commandSent();
-    }
-}
 
 // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk
 // and cw abbreviations CW-Schule graz

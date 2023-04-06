@@ -1,3 +1,5 @@
+'use strict';
+
 // class represents the state of the morserino
 class M32State {
     constructor() {
@@ -37,7 +39,7 @@ class M32CommandStateHandler {
                     //console.log('unhandled json key', key);
             }
         } else {
-            console.log('cannot handle json', json);
+            console.log('cannot handle json', jsonObject);
         }
     }
     
@@ -46,4 +48,6 @@ class M32CommandStateHandler {
         this.m32State.speedWpm = Number(speed);
     }
 }
+
+module.exports = { M32State, M32CommandStateHandler }
 
