@@ -18,7 +18,7 @@ const { QsoTrainerUI } = require('./m32-qso-trainer');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.5.0-beta5';
+let VERSION = '0.5.0-beta6';
 
 
 const MODE_CW_GENERATOR = 'cw-generator';
