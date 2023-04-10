@@ -14,6 +14,7 @@ const { M32Storage } = require('./m32-storage');
 const { EchoTrainerUI } = require('./m32-echo-trainer-ui');
 const { M32CommunicationService } = require('./m32-communication-service');
 const { QsoTrainerUI } = require('./m32-qso-trainer');
+const { ConfigurationUI } = require('./m32-configuration-ui');
 
 // let m32Protocolhandler;
 
@@ -48,6 +49,7 @@ class M32Main {
         this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService, m32Storage);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
+        this.configurationUI = new ConfigurationUI(m32CommunicationService, document.getElementById('m32-config'));
 
         m32Storage.loadSettings();
 
@@ -130,7 +132,7 @@ class M32Main {
             this.mode = MODE_QSO_TRAINER;
         } else if (event.target.id === 'm32-config-tab') {
             this.mode = MODE_M32_CONFIG;
-            //sendM32Command('GET configs');
+            this.configurationUI.readConfigs();
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }

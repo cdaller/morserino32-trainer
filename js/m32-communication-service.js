@@ -2,13 +2,14 @@
 
 let log = require("loglevel");
 
-var events = require('events');
+const events = require('events');
 
-var { M32ProtocolHandler } = require("./m32protocol");
-var { M32CommandConfigHandler } = require('./m32protocol-config-handler');
-var { M32CommandSpeechHandler } = require('./m32protocol-speech-handler');
-var { M32State, M32CommandStateHandler } = require('./m32protocol-state-handler')
-var { M32CommandUIHandler} = require('./m32protocol-ui-handler');
+const { M32ProtocolHandler } = require("./m32protocol");
+const { M32CommandSpeechHandler } = require('./m32protocol-speech-handler');
+const { M32State, M32CommandStateHandler } = require('./m32protocol-state-handler')
+const { M32CommandUIHandler} = require('./m32protocol-ui-handler');
+const { M32Translations } = require('./m32protocol-i18n');
+
 
 const EVENT_M32_CONNECTED = "m32-connected";
 const EVENT_M32_DISCONNECTED = "m32-disconnected";
@@ -33,16 +34,19 @@ class M32CommunicationService {
         this.eventEmitter = new events.EventEmitter();
 
         // speech & m3 protocol handler
-        var m32Language = 'en';
+        this.m32Language = 'en';
         this.m32State = new M32State();
-        this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
-        this.commandUIHandler = new M32CommandUIHandler(m32Language);
-        const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
+        this.m32translations = new M32Translations(this.m32Language);
+        this.speechSynthesisHandler = new M32CommandSpeechHandler(this.m32Language);
+        this.commandUIHandler = new M32CommandUIHandler(this.m32Language, this.m32translations);
         this.m32Protocolhandler = new M32ProtocolHandler([
             new M32CommandStateHandler(this.m32State), 
             this.commandUIHandler, 
-            this.speechSynthesisHandler,
-            configHandler]);
+            this.speechSynthesisHandler]);
+    }
+
+    addProtocolHandler(protcolHandler) {
+        this.m32Protocolhandler.addCallbackHandler(protcolHandler);
     }
 
     addEventListener(eventType, callback) {
@@ -60,6 +64,7 @@ class M32CommunicationService {
     }
 
     setLanguage(language) {
+        this.m32Language = language;
         this.speechSynthesisHandler.language = language;
         this.commandUIHandler.language = language;
     }

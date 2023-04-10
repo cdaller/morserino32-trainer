@@ -26,13 +26,14 @@ module.exports = { createSpanElement, createElement, createElementWithChildren}
 
 let log = require("loglevel");
 
-var events = require('events');
+const events = require('events');
 
-var { M32ProtocolHandler } = require("./m32protocol");
-var { M32CommandConfigHandler } = require('./m32protocol-config-handler');
-var { M32CommandSpeechHandler } = require('./m32protocol-speech-handler');
-var { M32State, M32CommandStateHandler } = require('./m32protocol-state-handler')
-var { M32CommandUIHandler} = require('./m32protocol-ui-handler');
+const { M32ProtocolHandler } = require("./m32protocol");
+const { M32CommandSpeechHandler } = require('./m32protocol-speech-handler');
+const { M32State, M32CommandStateHandler } = require('./m32protocol-state-handler')
+const { M32CommandUIHandler} = require('./m32protocol-ui-handler');
+const { M32Translations } = require('./m32protocol-i18n');
+
 
 const EVENT_M32_CONNECTED = "m32-connected";
 const EVENT_M32_DISCONNECTED = "m32-disconnected";
@@ -57,16 +58,19 @@ class M32CommunicationService {
         this.eventEmitter = new events.EventEmitter();
 
         // speech & m3 protocol handler
-        var m32Language = 'en';
+        this.m32Language = 'en';
         this.m32State = new M32State();
-        this.speechSynthesisHandler = new M32CommandSpeechHandler(m32Language);
-        this.commandUIHandler = new M32CommandUIHandler(m32Language);
-        const configHandler = new M32CommandConfigHandler(document.getElementById("m32-config"));
+        this.m32translations = new M32Translations(this.m32Language);
+        this.speechSynthesisHandler = new M32CommandSpeechHandler(this.m32Language);
+        this.commandUIHandler = new M32CommandUIHandler(this.m32Language, this.m32translations);
         this.m32Protocolhandler = new M32ProtocolHandler([
             new M32CommandStateHandler(this.m32State), 
             this.commandUIHandler, 
-            this.speechSynthesisHandler,
-            configHandler]);
+            this.speechSynthesisHandler]);
+    }
+
+    addProtocolHandler(protcolHandler) {
+        this.m32Protocolhandler.addCallbackHandler(protcolHandler);
     }
 
     addEventListener(eventType, callback) {
@@ -84,6 +88,7 @@ class M32CommunicationService {
     }
 
     setLanguage(language) {
+        this.m32Language = language;
         this.speechSynthesisHandler.language = language;
         this.commandUIHandler.language = language;
     }
@@ -263,7 +268,136 @@ class M32CommunicationService {
 module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, 
     EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED }
 
-},{"./m32protocol":14,"./m32protocol-config-handler":9,"./m32protocol-speech-handler":11,"./m32protocol-state-handler":12,"./m32protocol-ui-handler":13,"events":19,"loglevel":17}],3:[function(require,module,exports){
+},{"./m32protocol":14,"./m32protocol-i18n":10,"./m32protocol-speech-handler":11,"./m32protocol-state-handler":12,"./m32protocol-ui-handler":13,"events":19,"loglevel":17}],3:[function(require,module,exports){
+'use strict';
+
+const log  = require ('loglevel');
+const { createElement } = require('./dom-utils');
+
+class M32Config {
+    constructor(value) {
+        this.name = value['name'];
+        this.value = value['value'];
+        this.description = value['description'];
+        this.minimum = value['minimum'];
+        this.maximum = value['maximum'];
+        this.step = value['step'];
+        this.isMapped = value['isMapped'];
+        this.mappedValues = value['mapped values'];
+    }
+}
+
+class ConfigurationUI {
+    constructor(m32CommunicationService, configRootElement) {
+        this.m32CommunicationService = m32CommunicationService;
+        this.m32CommunicationService.addProtocolHandler(this);
+        this.configNames = [];
+        this.configMap = {};
+        this.configRootElement = configRootElement;
+        this.m32translations = m32CommunicationService.m32translations;
+    }
+
+    readConfigs() {
+        this.m32CommunicationService.sendM32Command('GET configs'); // triggers a handleM32Object callback
+    }
+
+    // callback method for a full json object received
+    handleM32Object(jsonObject) {
+        console.log('configHandler.handleM32Object', jsonObject);
+        const keys = Object.keys(jsonObject);
+        if (keys && keys.length > 0) {
+            const key = keys[0];
+            const value = jsonObject[key];
+            switch(key) {
+                case 'configs':
+                    if (this.configRootElement) {                            
+                        console.log(value);
+                        console.log(value.length);
+                        this.configNames = [];
+                        this.configMap = {};
+                        for (let index = 0; index < value.length; index++) {
+                            let name = value[index]['name'];
+                            this.configNames.push(name);
+                        }
+                        this.fetchFullConfiguration();
+                    }
+                    break;
+                case 'config':
+                    if (this.configRootElement) {                            
+                        console.log(value);
+                        let name = value['name'];
+                        this.configMap[name] = new M32Config(value);
+                        this.addConfigurationElements(this.configMap[name]);
+                    }
+                    break;
+                }
+        } else {
+            console.log('cannot handle json', jsonObject);
+        }
+    }
+
+    fetchFullConfiguration() {
+        log.debug('fetching configuration settings for', this.configNames);
+        for (let index = 0; index < this.configNames.length; index++) {
+            let configName = this.configNames[index];
+            if (configName !== 'CurtisB DahT%' 
+                && configName !== 'CurtisB DitT%'
+                && configName !== 'InterWord Spc'
+                && configName !== 'Interchar Spc'
+                && configName !== 'Echo Repeats'
+                && configName !== 'Max # of Words'
+                ) {
+            this.m32CommunicationService.sendM32Command('GET config/' + configName);
+                }
+        }
+    }
+    
+    addConfigurationElements(config) {
+        log.debug('add/replace dom element for config', config)
+        let i18nName = this.m32translations.translateConfig(config.name, this.m32CommunicationService.m32Language);
+        let elementId = this.getIdFromName(config.name);
+        let configElement = document.getElementById(elementId);
+        if (!configElement) {
+            configElement = createElement(null, 'div', 'row');
+            configElement.id = elementId;
+            this.configRootElement.appendChild(configElement);
+        }
+        let elements = [];
+        let titleColumn = createElement(null, 'div', 'col-md-6');
+        titleColumn.replaceChildren(...[createElement(i18nName, 'h3', null), createElement(config.description, 'p', null)]);
+        elements.push(titleColumn);
+        if (config.isMapped) {
+            let selectDivElement = createElement(null, 'div', 'col-md-4');
+            let selectElement = createElement(null, 'select', 'form-select');
+            selectElement.disabled = true; // FIXME: remove for edit!
+            let optionElements = [];
+            for (let index = config.minimum; index <= config.maximum; index++) {
+
+                let optionElement = createElement(config.mappedValues[index], 'option', null);
+                optionElement.value = index;
+                if (config.value == index) {
+                    optionElement.selected = true;
+                }
+                optionElements.push(optionElement);
+            }
+            selectElement.replaceChildren(...optionElements);
+            selectDivElement.replaceChildren(...[selectElement]);
+            elements.push(selectDivElement);
+        } else {
+            // fixme: create input field:
+            elements.push(createElement(config.value, 'span', null));
+        }
+        configElement.replaceChildren(...elements);
+    }
+
+    getIdFromName(configName) {
+        return configName.replace(/[] #,\/]/g, '_');
+    }
+}
+
+module.exports = { ConfigurationUI }
+
+},{"./dom-utils":1,"loglevel":17}],4:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -353,7 +487,7 @@ class M32ConnectUI {
 
 module.exports = { M32ConnectUI }
 
-},{"./m32-communication-service":2,"./m32-storage":7,"loglevel":17}],4:[function(require,module,exports){
+},{"./m32-communication-service":2,"./m32-storage":8,"loglevel":17}],5:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -771,7 +905,7 @@ class M32CwGeneratorUI {
 }
 
 module.exports = { M32CwGeneratorUI };
-},{"./dom-utils":1,"./m32-communication-service":2,"./m32protocol":14,"diff":16,"loglevel":17}],5:[function(require,module,exports){
+},{"./dom-utils":1,"./m32-communication-service":2,"./m32protocol":14,"diff":16,"loglevel":17}],6:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -1194,7 +1328,7 @@ class EchoTrainerUI {
 }
 
 module.exports = { EchoTrainerUI }
-},{"./dom-utils":1,"./m32-communication-service":2,"loglevel":17}],6:[function(require,module,exports){
+},{"./dom-utils":1,"./m32-communication-service":2,"loglevel":17}],7:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -1789,7 +1923,7 @@ class QsoTrainerUI {
 }
 
 module.exports = { QsoTrainerUI }
-},{"./dom-utils":1,"./m32-storage":7,"loglevel":17,"reregexp":18}],7:[function(require,module,exports){
+},{"./dom-utils":1,"./m32-storage":8,"loglevel":17,"reregexp":18}],8:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -1873,7 +2007,7 @@ class M32Storage {
 
 module.exports = { M32Settings, M32Storage, EVENT_SETTINGS_CHANGED }
 
-},{"events":19,"loglevel":17}],8:[function(require,module,exports){
+},{"events":19,"loglevel":17}],9:[function(require,module,exports){
 'use strict';
 
 
@@ -1890,6 +2024,7 @@ const { M32Storage } = require('./m32-storage');
 const { EchoTrainerUI } = require('./m32-echo-trainer-ui');
 const { M32CommunicationService } = require('./m32-communication-service');
 const { QsoTrainerUI } = require('./m32-qso-trainer');
+const { ConfigurationUI } = require('./m32-configuration-ui');
 
 // let m32Protocolhandler;
 
@@ -1924,6 +2059,7 @@ class M32Main {
         this.m32CwGeneratorUI = new M32CwGeneratorUI(m32CommunicationService, m32Storage);
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
+        this.configurationUI = new ConfigurationUI(m32CommunicationService, document.getElementById('m32-config'));
 
         m32Storage.loadSettings();
 
@@ -2006,7 +2142,7 @@ class M32Main {
             this.mode = MODE_QSO_TRAINER;
         } else if (event.target.id === 'm32-config-tab') {
             this.mode = MODE_M32_CONFIG;
-            //sendM32Command('GET configs');
+            this.configurationUI.readConfigs();
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }
@@ -2015,54 +2151,7 @@ class M32Main {
 module.exports = { MODE_CW_GENERATOR, MODE_ECHO_TRAINER, MODE_QSO_TRAINER, MODE_M32_CONFIG }
 
 
-},{"./m32-communication-service":2,"./m32-connect-ui":3,"./m32-cw-generator-ui":4,"./m32-echo-trainer-ui":5,"./m32-qso-trainer":6,"./m32-storage":7,"chart.js":15,"events":19,"loglevel":17}],9:[function(require,module,exports){
-'use strict';
-
-// class represents the state of the morserino
-class M32Config {
-    constructor() {
-        this.speedWpm = null;
-    }
-}
-
-// handling configuration of the morserino
-class M32CommandConfigHandler {
-
-    constructor(configElement) {
-        this.configElement = configElement;
-    }
-    
-    // callback method for a full json object received
-    handleM32Object(jsonObject) {
-        console.log('configHandler.handleM32Object', jsonObject);
-        const keys = Object.keys(jsonObject);
-        if (keys && keys.length > 0) {
-            const key = keys[0];
-            const value = jsonObject[key];
-            switch(key) {
-                case 'configs':
-                    if (this.configElement) {                            
-                        console.log(value);
-                        console.log(value.length);
-                        let elements = [];
-                        for (let index = 0; index < value.length; index++) {
-                            let element = createSpanElement(value[index]['name'], null);
-                            elements.push(element);
-                        }
-                        this.configElement.replaceChildren(...elements);
-                    }
-                    break;
-            }
-        } else {
-            console.log('cannot handle json', jsonObject);
-        }
-    }
-}
-
-module.exports = { M32CommandConfigHandler, M32Config }
-
-
-},{}],10:[function(require,module,exports){
+},{"./m32-communication-service":2,"./m32-configuration-ui":3,"./m32-connect-ui":4,"./m32-cw-generator-ui":5,"./m32-echo-trainer-ui":6,"./m32-qso-trainer":7,"./m32-storage":8,"chart.js":15,"events":19,"loglevel":17}],10:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -2338,15 +2427,13 @@ module.exports = { M32State, M32CommandStateHandler }
 
 let log = require("loglevel");
 
-const { M32Translations } = require('./m32protocol-i18n');
-
 
 class M32CommandUIHandler {
 
-    constructor(language = 'en') {
+    constructor(language = 'en', m32translations) {
         this.m32ProtocolEnabled = false;
         this.language = language;
-        this.m32translations = new M32Translations();
+        this.m32translations = m32translations;
     }
 
     // callback method for a full json object received
@@ -2410,7 +2497,7 @@ class M32CommandUIHandler {
 module.exports = { M32CommandUIHandler } 
 
 
-},{"./m32protocol-i18n":10,"loglevel":17}],14:[function(require,module,exports){
+},{"loglevel":17}],14:[function(require,module,exports){
 'use strict';
 
 const MORSERINO_START = 'vvv<ka> ';
@@ -2418,12 +2505,16 @@ const MORSERINO_END = ' +';
 
 
 class M32ProtocolHandler {
-    constructor(callbackFunctions) {
+    constructor(callbackHandlers) {
         this.json = '';
         this.inJson = false;
-        this.callbacks = callbackFunctions;
+        this.callbacks = callbackHandlers;
         this.m32ProtocolSupported = false;
         this.waitForResponse = false;
+    }
+
+    addCallbackHandler(callback) {
+        this.callbacks.push(callback);
     }
 
     commandSent() {
@@ -19872,4 +19963,4 @@ function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
   }
 }
 
-},{}]},{},[8]);
+},{}]},{},[9]);

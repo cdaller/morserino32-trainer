@@ -5,12 +5,16 @@ const MORSERINO_END = ' +';
 
 
 class M32ProtocolHandler {
-    constructor(callbackFunctions) {
+    constructor(callbackHandlers) {
         this.json = '';
         this.inJson = false;
-        this.callbacks = callbackFunctions;
+        this.callbacks = callbackHandlers;
         this.m32ProtocolSupported = false;
         this.waitForResponse = false;
+    }
+
+    addCallbackHandler(callback) {
+        this.callbacks.push(callback);
     }
 
     commandSent() {

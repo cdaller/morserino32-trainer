@@ -2,15 +2,13 @@
 
 let log = require("loglevel");
 
-const { M32Translations } = require('./m32protocol-i18n');
-
 
 class M32CommandUIHandler {
 
-    constructor(language = 'en') {
+    constructor(language = 'en', m32translations) {
         this.m32ProtocolEnabled = false;
         this.language = language;
-        this.m32translations = new M32Translations();
+        this.m32translations = m32translations;
     }
 
     // callback method for a full json object received
