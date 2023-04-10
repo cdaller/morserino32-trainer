@@ -83,6 +83,7 @@ class ConfigurationUI {
     
     addConfigurationElements(config) {
         log.debug('add/replace dom element for config', config)
+
         let i18nName = this.m32translations.translateConfig(config.name, this.m32CommunicationService.m32Language);
         let elementId = this.getIdFromName(config.name);
         let configElement = document.getElementById(elementId);
@@ -99,8 +100,11 @@ class ConfigurationUI {
             let selectDivElement = createElement(null, 'div', 'col-md-4');
             let selectElement = createElement(null, 'select', 'form-select');
             selectElement.disabled = true; // FIXME: remove for edit!
+            selectElement.setAttribute('data-m32-config-name', config.name);
+            selectElement.addEventListener('change', this.onChangeConfig.bind(this));
+
             let optionElements = [];
-            for (let index = config.minimum; index <= config.maximum; index++) {
+            for (let index = config.minimum; index <= config.maximum; index += config.step) {
 
                 let optionElement = createElement(config.mappedValues[index], 'option', null);
                 optionElement.value = index;
@@ -120,7 +124,13 @@ class ConfigurationUI {
     }
 
     getIdFromName(configName) {
-        return configName.replace(/[] #,\/]/g, '_');
+        return configName.replace(/[ #,/]/g, '_');
+    }
+
+    onChangeConfig(event) {
+        let configName = event.target.getAttribute('data-m32-config-name');
+        let value = event.target.value;
+        log.debug('changed:', configName, value);
     }
 }
 
