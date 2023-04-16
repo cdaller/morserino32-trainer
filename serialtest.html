@@ -261,16 +261,16 @@ GET device
                     <ul>
                         <li>read the current menu entry. Returns a json object "menu" containing the currently selected menu: 
                             <pre>GET menu↵</pre>
-                            Submenues are separated by a slash:
-                            <pre>{"menu":{"name":"Koch Trainer/CW Generator/Random"}}</pre>
+                            Submenues are separated by a slash, if it has submenus it cannot be executed:
+                            <pre>{"menu":{"content":"Echo Trainer/CW Abbrevs","menu number":11,"executable":true,"active":false}}</pre>
                         </li>
-                        <li>NOT YET IMPLEMENTED: read all possible menu entries. This will return an object "menus" holding an array of configurations (see below): 
+                        <li>read all possible menu entries. This will return an object "menus" holding an array of configurations (see below): 
                             <pre>GET menus↵</pre>
                         </li>
-                        <li>NOT YET IMPLEMENTED: navigate to a specific menu entry: <pre>PUT menu/path/to/menuentry↵</pre>Examples:
+                        <li>navigate to a menu entry with a given id: <pre>PUT menu/set/n↵</pre>Examples:
                             <ul>
-                                <li><pre>PUT menu/CW Decoder↵</pre></li>
-                                <li><pre>PUT menu/Koch Trainer/Learch New Chr↵</pre></li>
+                                <li><pre>PUT menu/set/n↵</pre></li>
+                                <li><pre>PUT menu/start/n↵</pre></li>
                             </ul>
                         </li>
                         <li>NOTE: we might need to define a key/id for the path and separate text for abbreviated paths (like "Adapt. Rand." or "Learch New Chr")</li>
@@ -282,16 +282,221 @@ GET device
 }</pre>
                     Examples:
                     <ul>
-                        <li><pre>{ "menu": {"name": "Koch Trainer/Echo Trainer/Adapt. Rand."} }</pre></li>
-                        <li><pre>{ "menu": {"name": "CW Encoder"} }</pre></li>
-                        <li>NOT YET IMPLEMENTED: All menus holding an array of menu entries: <pre>GET menus↵
-{ 
+                        <li>Top level menu: <pre>{"menu":{"content":"Echo Trainer/..","menu number":9,"executable":false,"active":false}}</pre></li>
+                        <li>Action menu: <pre>{"menu":{"content":"Echo Trainer/CW Abbrevs","menu number":11,"executable":true,"active":false}}</pre></li>
+                        <li>All menu items: <pre>GET menus↵
+{
     "menus": [
-        { "name": "Koch Trainer" },
-        { "name": "Koch Trainer/Learn New Chr." },
-        { "name": "Koch Trainer/CW Generator" },
-        { "name": "Koch Trainer/Echo Trainer" },
-        { "name": "CW Encoder" } 
+        {
+            "content": "CW Keyer",
+            "menu number": 1,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/..",
+            "menu number": 2,
+            "executable": false
+        },
+        {
+            "content": "CW Generator/Random",
+            "menu number": 3,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/CW Abbrevs",
+            "menu number": 4,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/English Words",
+            "menu number": 5,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/Call Signs",
+            "menu number": 6,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/Mixed",
+            "menu number": 7,
+            "executable": true
+        },
+        {
+            "content": "CW Generator/File Player",
+            "menu number": 8,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/..",
+            "menu number": 9,
+            "executable": false
+        },
+        {
+            "content": "Echo Trainer/Random",
+            "menu number": 10,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/CW Abbrevs",
+            "menu number": 11,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/English Words",
+            "menu number": 12,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/Call Signs",
+            "menu number": 13,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/Mixed",
+            "menu number": 14,
+            "executable": true
+        },
+        {
+            "content": "Echo Trainer/File Player",
+            "menu number": 15,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/..",
+            "menu number": 16,
+            "executable": false
+        },
+        {
+            "content": "Koch Trainer/Select Lesson",
+            "menu number": 17,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Learn New Chr",
+            "menu number": 18,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/CW Generator/..",
+            "menu number": 19,
+            "executable": false
+        },
+        {
+            "content": "Koch Trainer/CW Generator/Random",
+            "menu number": 20,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/CW Generator/CW Abbrevs",
+            "menu number": 21,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/CW Generator/English Words",
+            "menu number": 22,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/CW Generator/Mixed",
+            "menu number": 23,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/..",
+            "menu number": 24,
+            "executable": false
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/Random",
+            "menu number": 25,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/CW Abbrevs",
+            "menu number": 26,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/English Words",
+            "menu number": 27,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/Mixed",
+            "menu number": 28,
+            "executable": true
+        },
+        {
+            "content": "Koch Trainer/Echo Trainer/Adapt. Rand.",
+            "menu number": 29,
+            "executable": true
+        },
+        {
+            "content": "Transceiver/..",
+            "menu number": 30,
+            "executable": false
+        },
+        {
+            "content": "Transceiver/LoRa Trx",
+            "menu number": 31,
+            "executable": true
+        },
+        {
+            "content": "Transceiver/WiFi Trx",
+            "menu number": 32,
+            "executable": true
+        },
+        {
+            "content": "Transceiver/iCW/Ext Trx",
+            "menu number": 33,
+            "executable": true
+        },
+        {
+            "content": "CW Decoder",
+            "menu number": 34,
+            "executable": true
+        },
+        {
+            "content": "WiFi Functions/..",
+            "menu number": 35,
+            "executable": false
+        },
+        {
+            "content": "WiFi Functions/Disp MAC Addr",
+            "menu number": 36,
+            "executable": true
+        },
+        {
+            "content": "WiFi Functions/Config WiFi",
+            "menu number": 37,
+            "executable": false
+        },
+        {
+            "content": "WiFi Functions/Check WiFi",
+            "menu number": 38,
+            "executable": true
+        },
+        {
+            "content": "WiFi Functions/Upload File",
+            "menu number": 39,
+            "executable": false
+        },
+        {
+            "content": "WiFi Functions/Update Firmw",
+            "menu number": 40,
+            "executable": false
+        },
+        {
+            "content": "WiFi Functions/Wifi Select",
+            "menu number": 41,
+            "executable": false
+        },
+        {
+            "content": "Go To Sleep",
+            "menu number": 42,
+            "executable": true
+        }
     ]
 }
 </pre>
@@ -364,56 +569,86 @@ GET device
                     </ul>
                     <h4>Snapshots</h4>
                     <ul>
-                        <li><pre>GET snapshots</pre>
+                        <li><pre>GET snapshots↵</pre>
                             returns a list of all currently stored snapshots (n ==1..8)
                         </li>
-                        <li><pre>PUT snapshot/store/n</pre>
+                        <li><pre>PUT snapshot/store/n↵</pre>
                             store parameters in snapshot n (n ==1..8)
                         </li>
-                        <li><pre>PUT snapshot/recall/n</pre>
+                        <li><pre>PUT snapshot/recall/n↵</pre>
                             recall parameters from snapshot n
                         </li>
-                        <li><pre>PUT snapshot/clear/n</pre>
+                        <li><pre>PUT snapshot/clear/n↵</pre>
                             clear (delete) snapshot n
                         </li>
                     </ul>
+                    <!-- file upload -->
                     <h4>File Upload</h4>
                     A text file can be uploaded that can then be played in CW:
                     <ul>
-                        <li><pre>GET file/size</pre>
+                        <li><pre>GET file/size↵</pre>
                             usage of SPIFFS file system (used for player file) {"file":{"size":nnn, "free": nnn}} nnn in bytes
                         </li>
-                        <li><pre>GET file/text</pre>
+                        <li><pre>GET file/first line↵</pre>
+                            get the first line of the text file <pre>{"file":{"first line":{"first line of the text file"}}}</pre>
+                            See also below how to add a comment (to be used as title or description in first line).
+                        </li>
+                        <li><pre>GET file/text↵</pre>
                             get the contents of the text file <pre>{"file":{"text":{"contents of text file"}}}</pre>
                         </li>
-                        <li><pre>PUT file/new/line of text</pre>
+                        <li><pre>PUT file/new/line of text↵</pre>
                             replace existing file with new file, place a line of text into new file
                         </li>
-                        <li><pre>PUT file/append/line of text</pre>
+                        <li><pre>PUT file/append/line of text↵</pre>
                             append a line of text to the existing file
                         </li>
                     </ul>
+                    <h5>Comments</h5>
+                    <p>The text of a file can contain a comment that is not played: Starting with "\c" the rest of the line is treated as a comment. 
+                        If used as first line of a file it can be used as a title/description of the file content and can be retrieved with 
+                        <pre>GET file↵</pre> 
+                        or 
+                        <pre>GET file/first line↵</pre>
+                    </p>
+
+                    <!-- Configuration -->
                     <h4>Wifi Configuration</h4>
                     The wifi connections can be configured:
                     <ul>
-                        <li><pre>GET wifi</pre>
+                        <li><pre>GET wifi↵</pre>
                             get currently set wifi entries (SSID and trxpeer, NOT passwords!) - 
                             <pre>{"wifi":[{"ssid“:“MyFD48","trxpeer":"cq.morserino.info"},{"ssid“:“mywifi ","trxpeer":"cq.morserino.info"},{"ssid":"","trxpeer":""}]}</pre>
                         </li>
-                        <li><pre>PUT wifi/ssid/n/ssid</pre>
+                        <li><pre>PUT wifi/select/n↵</pre>
+                            selects the wifi number n
+                        </li>
+                        <li><pre>PUT wifi/ssid/n/ssid↵</pre>
                             set SSID for WiFi setting n (n == 1..3) e.g. 
                             <pre>PUT wifi/ssid/2/MyHomeRouter</pre>
                         </li>
-                        <li><pre>PUT wifi/password/n/password</pre>
+                        <li><pre>PUT wifi/password/n/password↵</pre>
                             set password for WiFi setting n e.g. 
                             <pre>PUT wifi/password/2/mySecret1234567</pre>
                         </li>
-                        <li><pre>PUT wifi/trxpeer/n/trxpeer</pre>
+                        <li><pre>PUT wifi/trxpeer/n/trxpeer↵</pre>
                             set TRX Peer for WiFi setting n e.g. 
                             <pre>PUT wifi/trxpeer/2/cq.morserino.info</pre>
                         </li>
                     </ul>                            
                 </div>
+                <!-- Koch Lesson -->
+                <h4>Koch Lesson</h4>
+                <ul>
+                    <li><pre>GET kochlesson↵</pre>
+                        Info about the koch lesson and the currently selected lesson is returned:
+                        <pre>{"kochlesson":{"value":40,"minimum":1,"maximum":51,"characters":["m","k","r","s","u","a","p","t","l","o","w","i",".","n","j","e","f","0","y","v",",","g","5","/","q","9","z","h","3","8","b","?","4","2","7","c","1","d","6","x","-","=","<sk>","+","<as>","<kn>","<ka>","<ve>","<bk>","@",":"]}}</pre>
+                    </li>
+                    <li><pre>PUT kochlesson/n↵</pre>
+                        selects the koch lesson with the given number
+                    </li>
+                </ul>                            
+            </div>
+                
             </div> <!-- serial communication test -->
 
         </div> <!-- end tab-content -->
