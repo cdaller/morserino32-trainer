@@ -65,6 +65,7 @@ class FileUploadUI {
     }
 
     receivedFileSize(size, free) {
+        log.debug("received file free/size", free, size);
         this.fileSizeStatus.innerHTML = size + "bytes used, " + free + "bytes free";
     }
 

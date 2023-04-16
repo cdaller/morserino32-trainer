@@ -142,6 +142,7 @@ class M32Main {
             this.configurationUI.readConfigs();
         } else if (event.target.id === 'm32-file-upload-tab') {
             this.mode = MODE_FILE_UPLOAD;
+            this.fileUploadUI.readFile();
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }

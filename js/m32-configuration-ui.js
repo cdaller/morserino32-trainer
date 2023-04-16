@@ -27,10 +27,16 @@ class ConfigurationUI {
         document.getElementById('m32-config-wifi1-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
+
+        document.getElementById('m32-config-snapshots-select').addEventListener('change', this.changedSnapshot.bind(this));
+
+        this.snapshotRecallButton = document.getElementById('m32-config-snapshot-button-recall');
+        this.snapshotRecallButton.addEventListener('click', this.recallSnapshotClicked.bind(this));
     }
 
     readConfigs() {
         this.m32CommunicationService.sendM32Command('GET wifi');
+        this.m32CommunicationService.sendM32Command('GET snapshots');
         this.m32CommunicationService.sendM32Command('GET configs'); // triggers a handleM32Object callback
     }
 
@@ -69,6 +75,13 @@ class ConfigurationUI {
                         this.receivedWifis(value);
                     }
                     break;
+                case 'snapshots':
+                    if (this.configRootElement) {                            
+                        console.log(value);
+                        this.receivedSnapshots(value);
+                    }
+                    break;
+    
                 }
         } else {
             console.log('cannot handle json', jsonObject);
@@ -96,32 +109,27 @@ class ConfigurationUI {
         }
         let elements = [];
         let titleColumn = createElement(null, 'div', 'col-md-6');
-        titleColumn.replaceChildren(...[createElement(i18nName, 'h3', null), createElement(config.description, 'p', null)]);
+        titleColumn.replaceChildren(...[createElement(i18nName, 'h4', null), createElement(config.description, 'p', null)]);
         elements.push(titleColumn);
-        if (config.isMapped) {
-            let selectDivElement = createElement(null, 'div', 'col-md-4');
-            let selectElement = createElement(null, 'select', 'form-select');
-            //selectElement.disabled = true; // FIXME: remove for edit!
-            selectElement.setAttribute('data-m32-config-name', config.name);
-            selectElement.addEventListener('change', this.onChangeConfig.bind(this));
+        let selectDivElement = createElement(null, 'div', 'col-md-4');
+        let selectElement = createElement(null, 'select', 'form-select');
+        //selectElement.disabled = true; // FIXME: remove for edit!
+        selectElement.setAttribute('data-m32-config-name', config.name);
+        selectElement.addEventListener('change', this.onChangeConfig.bind(this));
 
-            let optionElements = [];
-            for (let index = config.minimum; index <= config.maximum; index += config.step) {
-
-                let optionElement = createElement(config.mappedValues[index], 'option', null);
-                optionElement.value = index;
-                if (config.value == index) {
-                    optionElement.selected = true;
-                }
-                optionElements.push(optionElement);
+        let optionElements = [];
+        for (let index = config.minimum; index <= config.maximum; index += config.step) {
+            let displayValue = config.isMapped ? config.mappedValues[index] : index.toString();
+            let optionElement = createElement(displayValue, 'option', null);
+            optionElement.value = index;
+            if (config.value == index) {
+                optionElement.selected = true;
             }
-            selectElement.replaceChildren(...optionElements);
-            selectDivElement.replaceChildren(...[selectElement]);
-            elements.push(selectDivElement);
-        } else {
-            // fixme: create input field:
-            elements.push(createElement(config.value, 'span', null));
+            optionElements.push(optionElement);
         }
+        selectElement.replaceChildren(...optionElements);
+        selectDivElement.replaceChildren(...[selectElement]);
+        elements.push(selectDivElement);
         configElement.replaceChildren(...elements);
     }
 
@@ -134,7 +142,7 @@ class ConfigurationUI {
         let value = event.target.value;
         let command = "PUT config/" + configName + "/" + value;
         log.debug('changed:', configName, value);
-        this.m32CommunicationService.sendM32Command(command);
+        this.m32CommunicationService.sendM32Command(command, false);
     }
 
     receivedWifis(wifiConfig) {
@@ -159,6 +167,38 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command(`PUT wifi/ssid/${wifiNumber}/${ssid}`, false);
         this.m32CommunicationService.sendM32Command(`PUT wifi/password/${wifiNumber}/${password}`, false);
         this.m32CommunicationService.sendM32Command(`PUT wifi/trxpeer/${wifiNumber}/${trxPeer}`, false);
+    }
+
+    receivedSnapshots(snapshots) {
+        let selectElement = document.getElementById('m32-config-snapshots-select');
+        let existingSnapshots = snapshots['existing snapshots']
+        let optionElements = [];
+
+        for (let index = 0; index < existingSnapshots.length; index++) {
+            let snapshotId = existingSnapshots[index];
+            let optionElement = createElement(snapshotId.toString(), 'option', null);
+            optionElement.value = snapshotId;
+            optionElements.push(optionElement);
+        }
+        selectElement.replaceChildren(...optionElements);
+        selectElement.selectedIndex = -1; // no element selected by default
+    }
+
+    changedSnapshot(event) {
+        //let selectElement = event.target;
+        //let newSnapshotId = selectElement.options[selectElement.selectedIndex].value;
+        this.snapshotRecallButton.disabled = false;
+    }
+
+    recallSnapshotClicked() {
+        let selectedOption = document.getElementById('m32-config-snapshots-select');
+        let snapshotId = selectedOption.value;
+        if (snapshotId) {
+            log.debug("recall snapshot", snapshotId);
+            this.m32CommunicationService.sendM32Command("PUT snapshot/recall/" + snapshotId, false);
+            // read new configuration:
+            this.m32CommunicationService.sendM32Command("GET configs");
+        }
     }
 }
 

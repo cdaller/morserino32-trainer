@@ -348,13 +348,13 @@
                         type="button" role="tab" aria-controls="qso-trainer-tab-content" 
                         aria-selected="false">QSO Trainer (beta!)</button>
             </li>
-            <li class="nav-item m32-protocol-xxx" role="presentation">
+            <li class="nav-item m32-protocol" role="presentation">
                 <button class="nav-link" id="m32-config-tab" data-bs-toggle="tab" 
                         data-bs-target="#m32-config-tab-content" type="button" 
                         role="tab" aria-controls="m32-config-tab-content" 
                         aria-selected="false">M32 Config (alpha)</button>
             </li>
-            <li class="nav-item m32-protocol-xxx" role="presentation">
+            <li class="nav-item m32-protocol" role="presentation">
                 <button class="nav-link" id="m32-file-upload-tab" data-bs-toggle="tab" 
                         data-bs-target="#m32-file-upload-tab-content" type="button" 
                         role="tab" aria-controls="m32-file-upload-tab-content" 
@@ -582,25 +582,58 @@
             <!-- start m32 config -->
             <div class="tab-pane fade" id="m32-config-tab-content" role="tabpanel" aria-labelledby="m32-config-tab">
                 <h2>M32 Configuration (alpha)</h2>
-                <p>This section is work in progress and therefore read only for the moment!</p>
+                <p>Edit your Morserino configuration here:</p>
+
+                <hr/>
+
+                <div id="m32-config-snapshots">
+                    <h3>Snapshots</h3>
+                    <div id="m32-config-snapshots" class="row">
+                        <div class="col-md-3">
+                            <h4>Snapshot</h4>
+                            <p>Select snapshot to create, recall or clear a snapshot</p>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="m32-config-snapshots-select">
+                            </select>
+                        </div>    
+                        <div class="col-md-7">
+                            <div class="row">
+                                <button id="m32-config-snapshot-button-recall" class="col-md-2 btn btn-info" style="margin-top: 4px" type="button" disabled>
+                                    Recall
+                                </button>
+                                <!--
+                                <button id="m32-config-snapshot-button-store" class="col-md-2 btn btn-warn" style="margin-top: 4px" type="button">
+                                    Store
+                                </button>
+                                <button id="m32-config-snapshot-button-clear" class="col-md-2 btn btn-error" style="margin-top: 4px" type="button">
+                                    Clear
+                                </button>
+                                -->
+                            </div>
+                        </div>    
+                    </div>
+                </div>
 
                 <div id="m32-config"></div>
-                <!-- test config element:    
-                    <div id="test" class="row">
-                        <div class="col-md-6">
-                            <h3>TestConfig</h3>
-                            <p>Description of test config with very long description text and even longer and longer</p>
-                        </div>
-                        <div class="col-md-4">                        
-                            <select class="form-select">
-                                <option value="1">Eins</option>
-                                <option value="2" selected>Zwei</option>
-                            </select>
-                        </div>
+                <!-- test config element:
+                <div id="test-mapped" class="row">
+                    <div class="col-md-6">
+                        <h4>TestConfig Mapped</h4>
+                        <p>Description of test config with very long description text and even longer and longer</p>
                     </div>
+                    <div class="col-md-4">                        
+                        <select class="form-select">
+                            <option value="1">Eins</option>
+                            <option value="2" selected>Zwei</option>
+                        </select>
+                    </div>
+                </div>
                 -->
+                <hr/>
                 <div id="m32-config-wifi">
-                    <h5>Wifi 1</h5>
+                    <h3>Wifi Configuration</h3>
+                    <h4>Wifi 1</h4>
                     <div class="row">
                         <div class="col-md-2">
                             <label for="m32-config-wifi1-ssid" class="form-label">SSID</label>
@@ -632,7 +665,7 @@
                             <button id="m32-config-wifi1-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
                         </div>
                     </div>
-                    <h5>Wifi 2</h5>
+                    <h4>Wifi 2</h4>
                     <div class="row">
                         <div class="col-md-2">
                             <label for="m32-config-wifi2-ssid" class="form-label">SSID</label>
@@ -664,7 +697,7 @@
                             <button id="m32-config-wifi2-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
                         </div>
                     </div>
-                    <h5>Wifi 3</h5>
+                    <h4>Wifi 3</h4>
                     <div class="row">
                         <div class="col-md-2">
                             <label for="m32-config-wifi3-ssid" class="form-label">SSID</label>
@@ -704,9 +737,11 @@
             <div class="tab-pane fade" id="m32-file-upload-tab-content" role="tabpanel" aria-labelledby="m32-file-upload-tab">
                 <h2>M32 File Upload (alpha)</h2>
 
-                <div id="file-size-status"></div>
-                <div class="col-md-2">
-                    <button id="download-file-button" class="btn btn-info" style="margin-bottom: 8px" type="button">Download File</button>
+                <div class="row">
+                    <div class="col-md-2">
+                        <button id="download-file-button" class="btn btn-info" style="margin-bottom: 8px" type="button">Download File</button>
+                    </div>
+                    <div id="file-size-status" class="col-md-4"></div>
                 </div>
                 <textarea id="file-upload-content" name="file-upload-content" cols="80" rows="20">
 cq cq cq OE6YAW de OE6CHD pse k 
