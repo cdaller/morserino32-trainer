@@ -5,8 +5,7 @@ let jsdiff = require('diff');
 
 const { createElement, createSpanElement, createElementWithChildren } = require('./dom-utils')
 
-const { MORSERINO_START, MORSERINO_END } = require('./m32protocol')
-const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
+const { EVENT_M32_TEXT_RECEIVED, MORSERINO_START, MORSERINO_END } = require('./m32-communication-service');
 
 class M32CwGeneratorUI {
 

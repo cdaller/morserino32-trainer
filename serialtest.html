@@ -183,6 +183,18 @@
                 <div class="inputContainer">
         
                     <div class="form-group">
+                        Your Input:<br />
+                        <textarea rows="3" cols="80" id="inputText" spellcheck="false" placeholder="Send data to morserino">
+PUT device/protocol/on
+GET device
+                        </textarea>
+                    </div>                    
+        
+                    <div>
+                        <button id="sendTextButton" class="btn btn-outline-primary" title="Send Text" data-bs-toggle="tooltip">Send Text</button>
+                    </div>
+        
+                    <div class="form-group">
                         <div id="morserino_detail" class="collapse show">
                             Received from Morserino:
                             <textarea rows="3" cols="80" id="receiveText" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea> 
@@ -191,18 +203,15 @@
                             -->
                         </div>
                     </div>
+
+                    <div id="receiveError"></div>
                     
-                    <div class="form-group">
-                        Your Input:<br />
-                        <textarea rows="3" cols="80" id="inputText" spellcheck="false" placeholder="Send data to morserino">PUT device/protocol/on</textarea>
-                    </div>
-        
                     <div>
-                        <button id="sendTextButton" class="btn btn-outline-primary" title="Send Text" data-bs-toggle="tooltip">Send Text</button>
                         <button id="clearAllButton" class="btn btn-outline-secondary" title="Clear text received from Morserino and your input" data-bs-toggle="tooltip">Clear All</button>
                         <button id="clearReceivedButton" class="btn btn-outline-secondary" title="Clear only text received from Morserino" data-bs-toggle="tooltip">Clear Received Text</button>
                     </div>
-        
+
+
                 </div>
 
                 <div>
@@ -293,6 +302,8 @@
                     When the user triggers an action (like starting CW Decoder) the following message is sent by Morserino:
                     <pre>{"activate":{"state":"ON"}}</pre>
                     The following values are possible (not all are yet implemented): EXIT, ON, SET, CANCELLED, RECALLED, CLEARED
+                    Sometimes a message object is sent from the morserino that contains additional information:
+                    <pre>{"message":{"content":"Generator     Start / Stop  press Paddle  "}}</pre>
                     
                     <h4>Controls</h4>                
                     <ul>
@@ -351,6 +362,57 @@
 ]}</pre>
                         </li>
                     </ul>
+                    <h4>Snapshots</h4>
+                    <ul>
+                        <li><pre>GET snapshots</pre>
+                            returns a list of all currently stored snapshots (n ==1..8)
+                        </li>
+                        <li><pre>PUT snapshot/store/n</pre>
+                            store parameters in snapshot n (n ==1..8)
+                        </li>
+                        <li><pre>PUT snapshot/recall/n</pre>
+                            recall parameters from snapshot n
+                        </li>
+                        <li><pre>PUT snapshot/clear/n</pre>
+                            clear (delete) snapshot n
+                        </li>
+                    </ul>
+                    <h4>File Upload</h4>
+                    A text file can be uploaded that can then be played in CW:
+                    <ul>
+                        <li><pre>GET file/size</pre>
+                            usage of SPIFFS file system (used for player file) {"file":{"size":nnn, "free": nnn}} nnn in bytes
+                        </li>
+                        <li><pre>GET file/text</pre>
+                            get the contents of the text file <pre>{"file":{"text":{"contents of text file"}}}</pre>
+                        </li>
+                        <li><pre>PUT file/new/line of text</pre>
+                            replace existing file with new file, place a line of text into new file
+                        </li>
+                        <li><pre>PUT file/append/line of text</pre>
+                            append a line of text to the existing file
+                        </li>
+                    </ul>
+                    <h4>Wifi Configuration</h4>
+                    The wifi connections can be configured:
+                    <ul>
+                        <li><pre>GET wifi</pre>
+                            get currently set wifi entries (SSID and trxpeer, NOT passwords!) - 
+                            <pre>{"wifi":[{"ssid“:“MyFD48","trxpeer":"cq.morserino.info"},{"ssid“:“mywifi ","trxpeer":"cq.morserino.info"},{"ssid":"","trxpeer":""}]}</pre>
+                        </li>
+                        <li><pre>PUT wifi/ssid/n/ssid</pre>
+                            set SSID for WiFi setting n (n == 1..3) e.g. 
+                            <pre>PUT wifi/ssid/2/MyHomeRouter</pre>
+                        </li>
+                        <li><pre>PUT wifi/password/n/password</pre>
+                            set password for WiFi setting n e.g. 
+                            <pre>PUT wifi/password/2/mySecret1234567</pre>
+                        </li>
+                        <li><pre>PUT wifi/trxpeer/n/trxpeer</pre>
+                            set TRX Peer for WiFi setting n e.g. 
+                            <pre>PUT wifi/trxpeer/2/cq.morserino.info</pre>
+                        </li>
+                    </ul>                            
                 </div>
             </div> <!-- serial communication test -->
 

@@ -348,11 +348,17 @@
                         type="button" role="tab" aria-controls="qso-trainer-tab-content" 
                         aria-selected="false">QSO Trainer (beta!)</button>
             </li>
-            <li class="nav-item m32-protocol" role="presentation">
+            <li class="nav-item m32-protocol-xxx" role="presentation">
                 <button class="nav-link" id="m32-config-tab" data-bs-toggle="tab" 
                         data-bs-target="#m32-config-tab-content" type="button" 
                         role="tab" aria-controls="m32-config-tab-content" 
                         aria-selected="false">M32 Config (alpha)</button>
+            </li>
+            <li class="nav-item m32-protocol-xxx" role="presentation">
+                <button class="nav-link" id="m32-file-upload-tab" data-bs-toggle="tab" 
+                        data-bs-target="#m32-file-upload-tab-content" type="button" 
+                        role="tab" aria-controls="m32-file-upload-tab-content" 
+                        aria-selected="false">M32 File Upload (alpha)</button>
             </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
@@ -593,8 +599,128 @@
                         </div>
                     </div>
                 -->
+                <div id="m32-config-wifi">
+                    <h5>Wifi 1</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi1-ssid" class="form-label">SSID</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi1-ssid">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi1-password" class="form-label">Password</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" id="m32-config-wifi1-password">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi1-trxpeer" class="form-label">Trx Peer</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi1-trxpeer" value="cq.morserino.info">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="m32-config-wifi1-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                        </div>
+                    </div>
+                    <h5>Wifi 2</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi2-ssid" class="form-label">SSID</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi2-ssid">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi2-password" class="form-label">Password</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" id="m32-config-wifi2-password">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi2-trxpeer" class="form-label">Trx Peer</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi2-trxpeer" value="cq.morserino.info">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="m32-config-wifi2-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                        </div>
+                    </div>
+                    <h5>Wifi 3</h5>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi3-ssid" class="form-label">SSID</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi3-ssid">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi3-password" class="form-label">Password</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="password" id="m32-config-wifi3-password">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="m32-config-wifi3-trxpeer" class="form-label">Trx Peer</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input id="m32-config-wifi3-trxpeer" value="cq.morserino.info">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                        </div>
+                        <div class="col-md-2">
+                            <button id="m32-config-wifi3-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                        </div>
+                    </div>
+                </div>
 
             </div> <!-- end m32 config -->
+
+            <!-- start m32 file upload -->
+            <div class="tab-pane fade" id="m32-file-upload-tab-content" role="tabpanel" aria-labelledby="m32-file-upload-tab">
+                <h2>M32 File Upload (alpha)</h2>
+
+                <div id="file-size-status"></div>
+                <div class="col-md-2">
+                    <button id="download-file-button" class="btn btn-info" style="margin-bottom: 8px" type="button">Download File</button>
+                </div>
+                <textarea id="file-upload-content" name="file-upload-content" cols="80" rows="20">
+cq cq cq OE6YAW de OE6CHD pse k 
+my qth is graz graz =
+wx is sunny sunny =
+temp is 16C =
+OE6YAW de OE6CHD kn
+                </textarea>
+
+                <div class="col-md-2">
+                    <button id="upload-file-button" class="btn btn-info" style="margin-top: 4px" type="button">Upload File</button>
+                </div>
+
+            </div> <!-- end m32 file upload -->
             
         </div> <!-- end tab-content -->
     </div>

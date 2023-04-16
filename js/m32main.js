@@ -1,6 +1,7 @@
 'use strict';
 
 
+// eslint-disable-next-line no-unused-vars
 let Charts = require('chart.js');
 let log = require("loglevel");
 log.setDefaultLevel(log.levels.DEBUG);
@@ -15,6 +16,8 @@ const { EchoTrainerUI } = require('./m32-echo-trainer-ui');
 const { M32CommunicationService } = require('./m32-communication-service');
 const { QsoTrainerUI } = require('./m32-qso-trainer');
 const { ConfigurationUI } = require('./m32-configuration-ui');
+const { FileUploadUI } = require('./m32-file-upload-ui');
+
 
 // let m32Protocolhandler;
 
@@ -26,6 +29,7 @@ const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
 const MODE_QSO_TRAINER = 'qso-trainer';
 const MODE_M32_CONFIG = 'm32-config';
+const MODE_FILE_UPLOAD = 'file-upload';
 
 const EVENT_MODE_SELECTED = "mode-selected";
 
@@ -50,6 +54,7 @@ class M32Main {
         this.echoTrainerUI = new EchoTrainerUI(m32CommunicationService);
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
         this.configurationUI = new ConfigurationUI(m32CommunicationService, document.getElementById('m32-config'));
+        this.fileUploadUI = new FileUploadUI(m32CommunicationService);
 
         m32Storage.loadSettings();
 
@@ -117,6 +122,8 @@ class M32Main {
             document.getElementById('qso-trainer-tab').click();
         } else if (mode === MODE_M32_CONFIG) {
             document.getElementById('m32-config-tab').click();
+        } else if (mode === MODE_FILE_UPLOAD) {
+            document.getElementById('m32-file-upload-tab').click();
         } else {
             console.log('Unknown mode: ', mode);
         }
@@ -133,6 +140,8 @@ class M32Main {
         } else if (event.target.id === 'm32-config-tab') {
             this.mode = MODE_M32_CONFIG;
             this.configurationUI.readConfigs();
+        } else if (event.target.id === 'm32-file-upload-tab') {
+            this.mode = MODE_FILE_UPLOAD;
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }

@@ -24,9 +24,13 @@ class ConfigurationUI {
         this.configMap = {};
         this.configRootElement = configRootElement;
         this.m32translations = m32CommunicationService.m32translations;
+        document.getElementById('m32-config-wifi1-button').addEventListener('click', this.saveWifi.bind(this));
+        document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
+        document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
     }
 
     readConfigs() {
+        this.m32CommunicationService.sendM32Command('GET wifi');
         this.m32CommunicationService.sendM32Command('GET configs'); // triggers a handleM32Object callback
     }
 
@@ -59,6 +63,12 @@ class ConfigurationUI {
                         this.addConfigurationElements(this.configMap[name]);
                     }
                     break;
+                case 'wifi':
+                    if (this.configRootElement) {                            
+                        console.log(value);
+                        this.receivedWifis(value);
+                    }
+                    break;
                 }
         } else {
             console.log('cannot handle json', jsonObject);
@@ -69,15 +79,7 @@ class ConfigurationUI {
         log.debug('fetching configuration settings for', this.configNames);
         for (let index = 0; index < this.configNames.length; index++) {
             let configName = this.configNames[index];
-            if (configName !== 'CurtisB DahT%' 
-                && configName !== 'CurtisB DitT%'
-                && configName !== 'InterWord Spc'
-                && configName !== 'Interchar Spc'
-                && configName !== 'Echo Repeats'
-                && configName !== 'Max # of Words'
-                ) {
             this.m32CommunicationService.sendM32Command('GET config/' + configName);
-                }
         }
     }
     
@@ -99,7 +101,7 @@ class ConfigurationUI {
         if (config.isMapped) {
             let selectDivElement = createElement(null, 'div', 'col-md-4');
             let selectElement = createElement(null, 'select', 'form-select');
-            selectElement.disabled = true; // FIXME: remove for edit!
+            //selectElement.disabled = true; // FIXME: remove for edit!
             selectElement.setAttribute('data-m32-config-name', config.name);
             selectElement.addEventListener('change', this.onChangeConfig.bind(this));
 
@@ -130,7 +132,33 @@ class ConfigurationUI {
     onChangeConfig(event) {
         let configName = event.target.getAttribute('data-m32-config-name');
         let value = event.target.value;
+        let command = "PUT config/" + configName + "/" + value;
         log.debug('changed:', configName, value);
+        this.m32CommunicationService.sendM32Command(command);
+    }
+
+    receivedWifis(wifiConfig) {
+        let baseId = 'm32-config-wifi';
+        for (let index = 1; index < 4; index++) {
+            let ssidId = baseId + index + '-ssid';
+            let trxPeerId = baseId + index + '-trxpeer';
+            document.getElementById(ssidId).value = wifiConfig[index-1]['ssid'];
+            document.getElementById(trxPeerId).value = wifiConfig[index-1]['trxpeer'];
+        }
+    }
+
+    saveWifi(event) {
+        let baseId = event.target.id.substring(0, event.target.id.length - '-button'.length);
+        let ssidId = baseId + '-ssid';
+        let passwordId = baseId + '-password';
+        let trxPeerId = baseId + '-trxpeer';
+        let wifiNumber = baseId.substring(baseId.length - 1);
+        let ssid = document.getElementById(ssidId).value;
+        let password = document.getElementById(passwordId).value;
+        let trxPeer = document.getElementById(trxPeerId).value;
+        this.m32CommunicationService.sendM32Command(`PUT wifi/ssid/${wifiNumber}/${ssid}`, false);
+        this.m32CommunicationService.sendM32Command(`PUT wifi/password/${wifiNumber}/${password}`, false);
+        this.m32CommunicationService.sendM32Command(`PUT wifi/trxpeer/${wifiNumber}/${trxPeer}`, false);
     }
 }
 

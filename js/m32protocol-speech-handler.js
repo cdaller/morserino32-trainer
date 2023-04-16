@@ -85,12 +85,23 @@ class M32CommandSpeechHandler {
                 case 'message':
                     this.speak(value['content']);
                     break;
-                case 'config':
+                case 'config': {
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
-                    if (!value['isMapped']) {
-                        this.speak(this.m32Translations.translateConfig(value['name'], this.language) + ' is ' + this.m32Translations.translateConfig(value['displayed'], this.language));
+                    let configName = this.m32Translations.translateConfig(value['name'], this.language);
+                    let configValue = '';
+                    if (value['displayed']) {
+                        configValue = this.m32Translations.translateConfig(value['displayed'], this.language);
+                    } else {
+                        if (value['isMapped'] == false) {
+                            configValue = value['value'];
+                        } else {
+                            let mappingIndex = value['value'];
+                            configValue = value['mapped values'][mappingIndex];
+                        }
                     }
+                    this.speak(configName + ' is ' + configValue);
                     break;
+                }
                 case 'error':
                     this.speak(value['message']);
                     break;
