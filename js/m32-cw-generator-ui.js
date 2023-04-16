@@ -53,6 +53,7 @@ class M32CwGeneratorUI {
     }
 
     textReceived(value) {
+        log.debug("cw-generator received text", value);
         if (this.activeMode) {
             this.receiveText.value += value;
             //Scroll to the bottom of the text field

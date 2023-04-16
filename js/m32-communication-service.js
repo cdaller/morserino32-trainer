@@ -11,15 +11,15 @@ const { M32Translations } = require('./m32protocol-i18n');
 
 const MORSERINO_START = 'vvv<ka> ';
 const MORSERINO_END = ' +';
-const STATUS_JSON = 'json';
-const STATUS_TEXT = 'text';
+const STATUS_JSON = 'status-m32-json-received';
+const STATUS_TEXT = 'status-m32-text-received';
 
 
-const EVENT_M32_CONNECTED = "m32-connected";
-const EVENT_M32_DISCONNECTED = "m32-disconnected";
-const EVENT_M32_CONNECTION_ERROR = "m32-connection-error";
-const EVENT_M32_TEXT_RECEIVED = "m32-text-received";
-const EVENT_M32_JSON_ERROR_RECEIVED = "m32-json-error-received";
+const EVENT_M32_CONNECTED = "event-m32-connected";
+const EVENT_M32_DISCONNECTED = "event-m32-disconnected";
+const EVENT_M32_CONNECTION_ERROR = "event-m32-connection-error";
+const EVENT_M32_TEXT_RECEIVED = "event-m32-text-received";
+const EVENT_M32_JSON_ERROR_RECEIVED = "event-m32-json-error-received";
 
 class M32CommunicationService {
 
@@ -199,7 +199,7 @@ class M32CommunicationService {
     // is called from M32StreamParser
     m32Received(result) {
         log.debug('m32protocol received:', result);
-        if (result.status == STATUS_JSON) {
+        if (result.status === STATUS_JSON) {
             this.waitForReponseLock.locked = false;
             try {
                 let jsonObject = JSON.parse(result.content);
@@ -211,7 +211,7 @@ class M32CommunicationService {
                 this.eventEmitter.emit(EVENT_M32_JSON_ERROR_RECEIVED, result.error + ' when parsing "' + result.content + '"');
                 this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, result.content);
             }
-        } else if (result.tatus === STATUS_TEXT) {
+        } else if (result.status === STATUS_TEXT) {
             log.debug("text values received", result.content);
             this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, result.content);
         }
