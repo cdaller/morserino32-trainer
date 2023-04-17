@@ -634,19 +634,37 @@ GET device
                             set TRX Peer for WiFi setting n e.g. 
                             <pre>PUT wifi/trxpeer/2/cq.morserino.info</pre>
                         </li>
+                    </ul>
+
+                    <!-- Koch Lesson -->
+                    <h4>Koch Lesson</h4>
+                    <ul>
+                        <li><pre>GET kochlesson↵</pre>
+                            Info about the koch lesson and the currently selected lesson is returned:
+                            <pre>{"kochlesson":{"value":40,"minimum":1,"maximum":51,"characters":["m","k","r","s","u","a","p","t","l","o","w","i",".","n","j","e","f","0","y","v",",","g","5","/","q","9","z","h","3","8","b","?","4","2","7","c","1","d","6","x","-","=","<sk>","+","<as>","<kn>","<ka>","<ve>","<bk>","@",":"]}}</pre>
+                        </li>
+                        <li><pre>PUT kochlesson/n↵</pre>
+                            selects the koch lesson with the given number
+                        </li>
                     </ul>                            
+
+                    <h4>CW Player</h4>
+                    In CW Keyer mode or in Tranceiver mode CW output can be generate (like a memory keyer). Player is stopped by manual keying or the stop command.
+                    <ul>
+                        <li>
+                            <pre>PUT cw/play/cq cq cq de OE6CHD pse k↵</pre>
+                        </li>
+                        <li>
+                            Like play, but repeat until stopped.
+                            <pre>PUT cw/repeat/cq cq cq de OE6CHD pse k↵</pre>
+                        </li>
+                        <li>
+                            Stop cw playing
+                            <pre>PUT cw/stop↵</pre>
+                        </li>
+                    </ul>                            
+
                 </div>
-                <!-- Koch Lesson -->
-                <h4>Koch Lesson</h4>
-                <ul>
-                    <li><pre>GET kochlesson↵</pre>
-                        Info about the koch lesson and the currently selected lesson is returned:
-                        <pre>{"kochlesson":{"value":40,"minimum":1,"maximum":51,"characters":["m","k","r","s","u","a","p","t","l","o","w","i",".","n","j","e","f","0","y","v",",","g","5","/","q","9","z","h","3","8","b","?","4","2","7","c","1","d","6","x","-","=","<sk>","+","<as>","<kn>","<ka>","<ve>","<bk>","@",":"]}}</pre>
-                    </li>
-                    <li><pre>PUT kochlesson/n↵</pre>
-                        selects the koch lesson with the given number
-                    </li>
-                </ul>                            
             </div>
                 
             </div> <!-- serial communication test -->

@@ -71,7 +71,7 @@ class M32CommandSpeechHandler {
             switch(key) {
                 case 'menu':
                     var menues = value['content'].split('/');
-                    var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language)).join(' ');
+                    var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
                     this.speak(textToSpeak);
                     break;
                 case 'control':
@@ -87,10 +87,10 @@ class M32CommandSpeechHandler {
                     break;
                 case 'config': {
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
-                    let configName = this.m32Translations.translateConfig(value['name'], this.language);
+                    let configName = this.m32Translations.translateConfig(value['name'], this.language, 'speak');
                     let configValue = '';
                     if (value['displayed']) {
-                        configValue = this.m32Translations.translateConfig(value['displayed'], this.language);
+                        configValue = this.m32Translations.translateConfig(value['displayed'], this.language, 'speak');
                     } else {
                         if (value['isMapped'] == false) {
                             configValue = value['value'];
