@@ -13,7 +13,7 @@ class M32CommandSpeechHandler {
         this.language = language;
         this.voice = null;
         this.enabled = true;
-        this.m32Translations = new M32Translations();
+        this.m32Translations = new M32Translations(this.language);
     }
 
     speak(text) {

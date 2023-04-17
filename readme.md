@@ -83,3 +83,10 @@ watchify js/m32main.js   -o js/bundle.js
 * "I am lazy"
   * let bot start QSO
   * let bot continue QSO
+
+### Morserino Protocol
+
+* Create/save snapshots of CW school Graz
+* Select Wifi  (/)
+* CW Generator
+  * Voice output for results. How? e.g. Bravo missing, X-Ray wrong, ...

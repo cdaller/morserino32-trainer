@@ -20,7 +20,8 @@ class M32CwGeneratorUI {
         this.autoHideCheckbox = document.getElementById("autoHideCheckbox");
         this.clearAllButton = document.getElementById("clearAllButton");
         this.clearReceivedButton = document.getElementById("clearReceivedButton");
-        this.saveButton = document.getElementById("saveButton");
+        this.saveButton = document.getElementById("saveResultButton");
+        document.getElementById("speakResultButton").addEventListener("click", this.speakResult.bind(this));
 
         this.resultComparison = document.getElementById("resultComparison");
         this.inputComparator = document.getElementById("inputComparator");
@@ -136,6 +137,16 @@ class M32CwGeneratorUI {
         }
         return text;
     }
+
+    speakResult() {
+        let received = this.trimReceivedText(this.receiveText.value).toLowerCase();
+        let input = this.inputText.value.trim().toLowerCase();
+        let output = this.createVoiceTextForComparedText(received, input);
+
+        output = [`${this.lastPercentage}% correct: `, ...output];
+
+        this.m32CommunicationService.speechSynthesisHandler.speak(output.join('--'));
+    }
     
     // ------------------------------ compare text and create nice comparison html -------------------------------
     createHtmlForComparedText(received, input, ignoreWhitespace) {
@@ -179,6 +190,29 @@ class M32CwGeneratorUI {
             });
         }
     }
+
+    createVoiceTextForComparedText(received, input) {
+        let elements = [];
+
+        let diff = jsdiff.diffChars(received, input);
+        let that = this;
+        diff.forEach(function (part) {
+            // green for additions, red for deletions
+            // grey for common parts
+            if (part.added) {
+                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
+                elements.push(`wrong ${letters}`);
+            } else if (part.removed) {
+                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
+                elements.push(`missing ${letters}`);
+            } else {
+                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
+                elements.push(`correct ${letters}`);
+            }
+        });
+        return elements;
+    }
+
 
     // ------------------------------ handle save(d) result(s) -------------------------------
     saveResult() {

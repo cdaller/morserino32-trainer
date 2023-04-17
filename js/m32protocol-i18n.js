@@ -8,6 +8,11 @@ class M32Translations {
     this.m32ProtocolFallbackLanguage = 'en';
     this.menuTranslations = this.getMenuTranslations();
     this.configTranslations = this.getConfigTranslations();
+    this.characterTranslations = this.getAlphabetTranslations();
+  }
+
+  phonetisize(text) {
+    return [...text].map(char => this.translateCharacter(char)).join(' '); 
   }
 
   translateMenu(key, language, languageVariant = '') {
@@ -17,6 +22,11 @@ class M32Translations {
   translateConfig(key, language, languageVariant = '') {
     return this.translate(key, language, languageVariant, this.configTranslations);
   }
+
+  translateCharacter(key) {
+    return this.translate(key, this.m32ProtocolFallbackLanguage, '', this.characterTranslations);
+  }
+
 
   translate(key, language, languageVariant = '', i18nMap) {
     log.debug("Translate key", key, "to language", language);
@@ -150,6 +160,36 @@ class M32Translations {
       'custom chars': { en: 'Custom Characters' },
       'bc1: r e a': { en: 'BC1: r. e. a' },
     }
+  }
+
+  getAlphabetTranslations() {
+    return {
+      'a': {en: 'alpha'},
+      'b': {en: 'beta'},
+      'c': {en: 'charly'},
+      'd': {en: 'delta'},
+      'e': {en: 'echo'},
+      'f': {en: 'foxtrott'},
+      'g': {en: 'gamma'},
+      'h': {en: 'hotel'},
+      'i': {en: 'india'},
+      'j': {en: 'juliet'},
+      'k': {en: 'kilo'},
+      'l': {en: 'lima'},
+      'm': {en: 'mike'},
+      'n': {en: 'november'},
+      'o': {en: 'oscar'},
+      'p': {en: 'papa'},
+      'q': {en: 'quebec'},
+      'r': {en: 'romeo'},
+      's': {en: 'sierra'},
+      't': {en: 'tango'},
+      'u': {en: 'uniform'},
+      'v': {en: 'victor'},
+      'x': {en: 'x-ray'},
+      'y': {en: 'yankee'},
+      'z': {en: 'zulu}'}
+    } 
   }
 }
 
