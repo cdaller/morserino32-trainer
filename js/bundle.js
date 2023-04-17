@@ -437,6 +437,10 @@ class ConfigurationUI {
         document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
 
+        document.getElementById('m32-select-wifi1-button').addEventListener('click', this.selectWifi.bind(this));
+        document.getElementById('m32-select-wifi2-button').addEventListener('click', this.selectWifi.bind(this));
+        document.getElementById('m32-select-wifi3-button').addEventListener('click', this.selectWifi.bind(this));
+
         document.getElementById('m32-config-snapshots-select').addEventListener('change', this.changedSnapshot.bind(this));
 
         this.snapshotRecallButton = document.getElementById('m32-config-snapshot-button-recall');
@@ -576,6 +580,12 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command(`PUT wifi/ssid/${wifiNumber}/${ssid}`, false);
         this.m32CommunicationService.sendM32Command(`PUT wifi/password/${wifiNumber}/${password}`, false);
         this.m32CommunicationService.sendM32Command(`PUT wifi/trxpeer/${wifiNumber}/${trxPeer}`, false);
+    }
+
+    selectWifi(event) {
+        let baseId = event.target.id.substring(0, event.target.id.length - '-button'.length);
+        let wifiNumber = baseId.substring(baseId.length - 1);
+        this.m32CommunicationService.sendM32Command(`PUT wifi/select/${wifiNumber}`, false);
     }
 
     receivedSnapshots(snapshots) {

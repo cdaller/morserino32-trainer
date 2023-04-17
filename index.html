@@ -599,7 +599,7 @@
                         </div>    
                         <div class="col-md-7">
                             <div class="row">
-                                <button id="m32-config-snapshot-button-recall" class="col-md-2 btn btn-info" style="margin-top: 4px" type="button" disabled>
+                                <button id="m32-config-snapshot-button-recall" class="col-md-2 btn btn-outline-primary" style="margin-top: 4px" type="button" disabled>
                                     Recall
                                 </button>
                                 <!--
@@ -614,22 +614,6 @@
                         </div>    
                     </div>
                 </div>
-
-                <div id="m32-config"></div>
-                <!-- test config element:
-                <div id="test-mapped" class="row">
-                    <div class="col-md-6">
-                        <h4>TestConfig Mapped</h4>
-                        <p>Description of test config with very long description text and even longer and longer</p>
-                    </div>
-                    <div class="col-md-4">                        
-                        <select class="form-select">
-                            <option value="1">Eins</option>
-                            <option value="2" selected>Zwei</option>
-                        </select>
-                    </div>
-                </div>
-                -->
                 <hr/>
                 <div id="m32-config-wifi">
                     <h3>Wifi Configuration</h3>
@@ -661,8 +645,11 @@
                     <div class="row">
                         <div class="col-md-2">
                         </div>
+                        <div class="col-md-1">
+                            <button id="m32-config-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                        </div>
                         <div class="col-md-2">
-                            <button id="m32-config-wifi1-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                            <button id="m32-select-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
                         </div>
                     </div>
                     <h4>Wifi 2</h4>
@@ -693,8 +680,11 @@
                     <div class="row">
                         <div class="col-md-2">
                         </div>
+                        <div class="col-md-1">
+                            <button id="m32-config-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                        </div>
                         <div class="col-md-2">
-                            <button id="m32-config-wifi2-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                            <button id="m32-select-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
                         </div>
                     </div>
                     <h4>Wifi 3</h4>
@@ -725,11 +715,35 @@
                     <div class="row">
                         <div class="col-md-2">
                         </div>
+                        <div class="col-md-1">
+                            <button id="m32-config-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                        </div>
                         <div class="col-md-2">
-                            <button id="m32-config-wifi3-button" class="btn btn-info" style="margin-top: 4px" type="button">Save</button>
+                            <button id="m32-select-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
                         </div>
                     </div>
                 </div>
+                <hr/>
+
+                <div>
+                    <h3>Configuration</h3>
+                    <div id="m32-config"></div>
+                </div>
+
+                <!-- test config element:
+                <div id="test-mapped" class="row">
+                    <div class="col-md-6">
+                        <h4>TestConfig Mapped</h4>
+                        <p>Description of test config with very long description text and even longer and longer</p>
+                    </div>
+                    <div class="col-md-4">                        
+                        <select class="form-select">
+                            <option value="1">Eins</option>
+                            <option value="2" selected>Zwei</option>
+                        </select>
+                    </div>
+                </div>
+                -->
 
             </div> <!-- end m32 config -->
 
