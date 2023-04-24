@@ -203,6 +203,8 @@ class M32CommunicationService {
         if (result.status === STATUS_JSON) {
             this.waitForReponseLock.locked = false;
             try {
+                // fix wrong encoding of new lines in json from morserino:
+                result.content = result.content.replaceAll(/\n/g,"\\n").replaceAll(/\r/g, "").replaceAll("\\c","\\\\c");
                 let jsonObject = JSON.parse(result.content);
                 this.protocolHandlers.forEach(handler => {
                     handler.handleM32Object(jsonObject);

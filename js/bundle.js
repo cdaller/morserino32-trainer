@@ -226,6 +226,8 @@ class M32CommunicationService {
         if (result.status === STATUS_JSON) {
             this.waitForReponseLock.locked = false;
             try {
+                // fix wrong encoding of new lines in json from morserino:
+                result.content = result.content.replaceAll(/\n/g,"\\n").replaceAll(/\r/g, "").replaceAll("\\c","\\\\c");
                 let jsonObject = JSON.parse(result.content);
                 this.protocolHandlers.forEach(handler => {
                     handler.handleM32Object(jsonObject);
@@ -1606,11 +1608,15 @@ class FileUploadUI {
 
         this.downloadFileButton.addEventListener('click', this.downloadFileButtonClick.bind(this), false);
         this.uploadFileButton.addEventListener('click', this.uploadFileButtonClick.bind(this), false);
+
+        document.getElementById("m32-file-upload-german-proverbs").addEventListener('click', this.loadText.bind(this));
+
+        this.textsMap = this.getTextsMap();
     }
 
     readFile() {
         this.m32CommunicationService.sendM32Command('GET file/size');
-        //this.m32CommunicationService.sendM32Command('GET file/text');
+        this.m32CommunicationService.sendM32Command('GET file/text');
     }
 
     // callback method for a full json object received
@@ -1649,10 +1655,11 @@ class FileUploadUI {
         for (let lineNum = 0; lineNum < lines.length; lineNum++) {
             let line = lines[lineNum].trim();
             if (line) {
-                this.m32CommunicationService.sendM32Command('PUT file/' + command + '/' + lines[lineNum]);
+                this.m32CommunicationService.sendM32Command('PUT file/' + command + '/' + lines[lineNum], false);
                 command = 'append';
             }
         }
+        this.m32CommunicationService.sendM32Command('GET file/size');
     }
 
     receivedFileSize(size, free) {
@@ -1662,6 +1669,63 @@ class FileUploadUI {
 
     receivedFileText(text) {
         this.fileTextArea.value = text;
+    }
+
+    loadText(event) {
+        let text = this.textsMap[event.target.id];
+        if (text) {
+            this.fileTextArea.value = text;
+        }
+    }
+
+    getTextsMap() {
+        return {
+            'm32-file-upload-german-proverbs': 
+`\\c Deutsche Sprichworte
+Jeder sollte vor seiner eigenen Tuer kehren. = 
+Wer rastet, der rostet. = 
+Wenn zwei sich streiten, freut sich der Dritte. = 
+Wer ernten will, muss saeen. = 
+Jeder Topf findet seinen Deckel. = 
+Liebe geht durch den Magen. = 
+Wo Rauch ist, da ist auch Feuer. = 
+Puenktlichkeit ist die Hoeflichkeit der Koenige. = 
+Das Auge isst mit. = 
+Die Welt ist ein Dorf. = 
+Das letzte Hemd hat keine Taschen. = 
+Dummheit und Stolz wachsen auf einem Holz. = 
+Wer schoen sein will, muss leiden. = 
+Der Ton macht die Musik. = 
+Die Ratten verlassen das sinkende Schiff. = 
+Was Haenschen nicht lernt, lernt Hans nimmermehr. = 
+Ist die Katze aus dem Haus tanzen die Maeuse auf dem Tisch. = 
+Der Fisch stinkt vom Kopf her. = 
+Man saegt nicht den Ast ab auf dem man sitzt. = 
+Kleinvieh macht auch Mist. = 
+Reden ist silber, schweigen ist gold. = 
+Mit Speck faengt man Maeuse. = 
+Eine Hand waescht die andere. = 
+Lieber den Spatz in der Hand als die Taube auf dem Dach. = 
+Unkraut vergeht nicht. = 
+Wer den Pfennig nicht ehrt ist des Talers nicht wert. = 
+In der Not frisst der Teufel Fliegen. = 
+Pech im Spiel Glueck in der Liebe. = 
+Ein gutes Gewissen ist ein sanftes Ruhekissen. = 
+Wer im Glashaus sitzt, soll nicht mit Steinen werfen. = 
+Viele Koeche verderben den Brei. = 
+Kleider machen Leute. = 
+Scherben bringen Glueck. = 
+Einem geschenkten Gaul schaut man nicht ins Maul. = 
+Luegen haben kurze Beine. = 
+Auch ein blindes Huhn findet mal ein Korn. = 
+Jeder ist seines Glueckes Schmied. = 
+Aller guten Dinge sind drei. = 
+Gelegenheit macht Diebe. = 
+Der Apfel faellt nicht weit vom Stamm. = 
+Wie man in den Wald hineinruft, so schallt es heraus. = 
+Morgenstund hat Gold im Mund. = 
+`, 
+        };
     }
 
 }
