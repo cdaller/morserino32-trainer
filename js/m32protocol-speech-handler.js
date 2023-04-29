@@ -14,24 +14,40 @@ class M32CommandSpeechHandler {
         this.voice = null;
         this.enabled = true;
         this.m32Translations = new M32Translations(this.language);
+        this.speakQueue = [];
     }
 
-    speak(text) {
+    speak(text, type = 'none', addToQueue = true) {
         if (!this.enabled) {
             return;
         }
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
-            log.debug("cancel previous speech synthesis");
-            this.speechSynth.cancel();
+            if (addToQueue && (type === 'message' || type == 'error')) {
+                log.debug('push to speak queue', text, type);
+                this.speakQueue.push({text, type});
+                return;
+            } else {
+                log.debug("cancel previous speech synthesis");
+                this.speechSynth.cancel();
+            }
         }
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1;
         utterance.rate = 1;
         utterance.voice = this.getVoice(this.language);
+        utterance.addEventListener('end', this.speakEndEvent.bind(this));
         this.speechSynth.speak(utterance);
+    }
+
+    speakEndEvent() {
+        if (this.speakQueue.length > 0) {
+            let toSpeakObj = this.speakQueue.shift();
+            log.debug('shifted from speak queue', this.speakQueue);
+            this.speak(toSpeakObj.text, toSpeakObj.type, false);
+        }
     }
 
     getVoice(language) {
@@ -72,10 +88,10 @@ class M32CommandSpeechHandler {
                 case 'menu':
                     var menues = value['content'].split('/');
                     var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
-                    this.speak(textToSpeak);
+                    this.speak(textToSpeak, 'menu');
                     break;
                 case 'control':
-                    this.speak(value['name'] + ' ' + value['value']);
+                    this.speak(value['name'] + ' ' + value['value'], 'control');
                     break;
                 /*    
                 case 'activate':
@@ -83,7 +99,7 @@ class M32CommandSpeechHandler {
                     break;
                 */
                 case 'message':
-                    this.speak(value['content']);
+                    this.speak(value['content'], 'message');
                     break;
                 case 'config': {
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
@@ -99,11 +115,11 @@ class M32CommandSpeechHandler {
                             configValue = value['mapped values'][mappingIndex];
                         }
                     }
-                    this.speak(configName + ' is ' + configValue);
+                    this.speak(configName + ' is ' + configValue, 'config');
                     break;
                 }
                 case 'error':
-                    this.speak(value['message']);
+                    this.speak(value['message'], 'error');
                     break;
                 default:
                     console.log('unhandled json key', key);

@@ -1,5 +1,8 @@
 'use strict';
 
+const { M32_MENU_CW_GENERATOR_FILE_PLAYER_ID } = require('./m32-communication-service');
+
+
 const log  = require ('loglevel');
 
 class FileUploadUI {
@@ -8,15 +11,16 @@ class FileUploadUI {
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addProtocolHandler(this);
 
-        this.downloadFileButton = document.getElementById("download-file-button");
-        this.uploadFileButton = document.getElementById("upload-file-button");
-        this.fileSizeStatus = document.getElementById("file-size-status");
+        this.downloadFileButton = document.getElementById("m32-file-upload-download-file-button");
+        this.uploadFileButton = document.getElementById("m32-file-upload-upload-file-button");
+        this.fileSizeStatus = document.getElementById("m32-file-upload-file-size-status");
         this.fileTextArea = document.getElementById('file-upload-content');
 
         this.downloadFileButton.addEventListener('click', this.downloadFileButtonClick.bind(this), false);
         this.uploadFileButton.addEventListener('click', this.uploadFileButtonClick.bind(this), false);
 
         document.getElementById("m32-file-upload-german-proverbs").addEventListener('click', this.loadText.bind(this));
+        document.getElementById("m32-file-upload-menu-play-file-button").addEventListener('click', this.m32CwGeneratorFilePlayerStart.bind(this));
 
         this.textsMap = this.getTextsMap();
     }
@@ -41,8 +45,7 @@ class FileUploadUI {
                     if (value['text']) {
                         this.receivedFileText(value['text']);
                     }
-                    console.log(value);
-                    console.log(value.length);
+                    console.log('file-upload-handleM32Object', value);
                     break;
                 }
         } else {
@@ -83,6 +86,11 @@ class FileUploadUI {
         if (text) {
             this.fileTextArea.value = text;
         }
+    }
+
+    m32CwGeneratorFilePlayerStart() {
+        this.m32CommunicationService.sendM32Command('PUT menu/start/' + M32_MENU_CW_GENERATOR_FILE_PLAYER_ID);
+
     }
 
     getTextsMap() {

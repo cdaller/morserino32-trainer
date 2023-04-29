@@ -139,7 +139,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     
     <div class="shadow-sm p-3 mb-2 bg-light">
-        <h1>Morserino32 CW Training</h1>
+        <h1>Morserino-32 CW Training</h1>
             <div class="row">
                 <div class="col-12 col-md-11">
                     <ul>
@@ -268,6 +268,7 @@
                 </div>
             </div>
             <ul>
+                <li>2023-04-30: Add Morserino file upload/download, handle multiple messages in a better way for voice output</li>
                 <li>2023-04-10: Add configuration of Morserino</li>
                 <li>2023-04-05: Modularization of source code</li>
                 <li>2023-03-05: Voice output of Morserino actions (change of menu, etc.)</li>
@@ -585,7 +586,16 @@
             <!-- start m32 config -->
             <div class="tab-pane fade" id="m32-config-tab-content" role="tabpanel" aria-labelledby="m32-config-tab">
                 <h2>M32 Configuration (alpha)</h2>
-                <p>Edit your Morserino configuration here:</p>
+                <div class="row">
+                    <div class="col-md-7">
+                        <p>Edit your Morserino configuration here</p>
+                    </div>
+                    <div class="col-md-3">
+                        <button id="m32-config-reload-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        (Re)Load Config
+                        </button>
+                    </div>
+                </div>
 
                 <hr/>
 
@@ -756,13 +766,16 @@
 
                 <div class="row">
                     <div class="col-md-2">
-                        <button id="download-file-button" class="btn btn-info" style="margin-bottom: 8px" type="button">Download File from M32</button>
+                        <button id="m32-file-upload-download-file-button" class="btn btn-info" style="margin-bottom: 8px" type="button">Download File from M32</button>
                     </div>
-                    <div id="file-size-status" class="col-md-4"></div>
+                    <div id="m32-file-upload-file-size-status" class="col-md-4"></div>
+                    <div class="col-md-2">
+                        <button id="m32-file-upload-menu-play-file-button" class="btn btn-outline-info" style="margin-bottom: 8px" type="button">Start CW Generator/File Player</button>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-md-8">
-                        <textarea id="file-upload-content" name="file-upload-content" cols="80" rows="20">
+                        <textarea id="file-upload-content" name="file-upload-content" cols="80" rows="10">
                             cq cq cq OE6YAW de OE6CHD pse k 
                             my qth is graz graz =
                             wx is sunny sunny =
@@ -778,7 +791,7 @@
                         
                     </div>                    
                 <div class="col-md-2">
-                    <button id="upload-file-button" class="btn btn-info" style="margin-top: 4px" type="button">Upload File to M32</button>
+                    <button id="m32-file-upload-upload-file-button" class="btn btn-info" style="margin-top: 4px" type="button">Upload File to M32</button>
                 </div>
 
             </div> <!-- end m32 file upload -->

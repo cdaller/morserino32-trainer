@@ -45,6 +45,8 @@ const EVENT_M32_CONNECTION_ERROR = "event-m32-connection-error";
 const EVENT_M32_TEXT_RECEIVED = "event-m32-text-received";
 const EVENT_M32_JSON_ERROR_RECEIVED = "event-m32-json-error-received";
 
+const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
+
 class M32CommunicationService {
 
     constructor(autoInitM32Protocol = true) {
@@ -406,7 +408,8 @@ class Lock {
 }
 
 module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, 
-    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, MORSERINO_START, MORSERINO_END }
+    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, MORSERINO_START, MORSERINO_END,
+    M32_MENU_CW_GENERATOR_FILE_PLAYER_ID }
 
 },{"./m32protocol-i18n":11,"./m32protocol-speech-handler":12,"./m32protocol-state-handler":13,"./m32protocol-ui-handler":14,"events":19,"loglevel":17}],3:[function(require,module,exports){
 'use strict';
@@ -435,6 +438,9 @@ class ConfigurationUI {
         this.configMap = {};
         this.configRootElement = configRootElement;
         this.m32translations = m32CommunicationService.m32translations;
+
+        document.getElementById('m32-config-reload-button').addEventListener('click', this.readConfigs.bind(this));
+
         document.getElementById('m32-config-wifi1-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
@@ -504,6 +510,7 @@ class ConfigurationUI {
     }
 
     fetchFullConfiguration() {
+        // FIXME: order is sometimes confused!
         log.debug('fetching configuration settings for', this.configNames);
         for (let index = 0; index < this.configNames.length; index++) {
             let configName = this.configNames[index];
@@ -1593,6 +1600,9 @@ module.exports = { EchoTrainerUI }
 },{"./dom-utils":1,"./m32-communication-service":2,"loglevel":17}],7:[function(require,module,exports){
 'use strict';
 
+const { M32_MENU_CW_GENERATOR_FILE_PLAYER_ID } = require('./m32-communication-service');
+
+
 const log  = require ('loglevel');
 
 class FileUploadUI {
@@ -1601,15 +1611,16 @@ class FileUploadUI {
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addProtocolHandler(this);
 
-        this.downloadFileButton = document.getElementById("download-file-button");
-        this.uploadFileButton = document.getElementById("upload-file-button");
-        this.fileSizeStatus = document.getElementById("file-size-status");
+        this.downloadFileButton = document.getElementById("m32-file-upload-download-file-button");
+        this.uploadFileButton = document.getElementById("m32-file-upload-upload-file-button");
+        this.fileSizeStatus = document.getElementById("m32-file-upload-file-size-status");
         this.fileTextArea = document.getElementById('file-upload-content');
 
         this.downloadFileButton.addEventListener('click', this.downloadFileButtonClick.bind(this), false);
         this.uploadFileButton.addEventListener('click', this.uploadFileButtonClick.bind(this), false);
 
         document.getElementById("m32-file-upload-german-proverbs").addEventListener('click', this.loadText.bind(this));
+        document.getElementById("m32-file-upload-menu-play-file-button").addEventListener('click', this.m32CwGeneratorFilePlayerStart.bind(this));
 
         this.textsMap = this.getTextsMap();
     }
@@ -1634,8 +1645,7 @@ class FileUploadUI {
                     if (value['text']) {
                         this.receivedFileText(value['text']);
                     }
-                    console.log(value);
-                    console.log(value.length);
+                    console.log('file-upload-handleM32Object', value);
                     break;
                 }
         } else {
@@ -1676,6 +1686,11 @@ class FileUploadUI {
         if (text) {
             this.fileTextArea.value = text;
         }
+    }
+
+    m32CwGeneratorFilePlayerStart() {
+        this.m32CommunicationService.sendM32Command('PUT menu/start/' + M32_MENU_CW_GENERATOR_FILE_PLAYER_ID);
+
     }
 
     getTextsMap() {
@@ -1731,7 +1746,7 @@ Morgenstund hat Gold im Mund. =
 }
 module.exports = { FileUploadUI }
 
-},{"loglevel":17}],8:[function(require,module,exports){
+},{"./m32-communication-service":2,"loglevel":17}],8:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -2779,24 +2794,40 @@ class M32CommandSpeechHandler {
         this.voice = null;
         this.enabled = true;
         this.m32Translations = new M32Translations(this.language);
+        this.speakQueue = [];
     }
 
-    speak(text) {
+    speak(text, type = 'none', addToQueue = true) {
         if (!this.enabled) {
             return;
         }
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
-            log.debug("cancel previous speech synthesis");
-            this.speechSynth.cancel();
+            if (addToQueue && (type === 'message' || type == 'error')) {
+                log.debug('push to speak queue', text, type);
+                this.speakQueue.push({text, type});
+                return;
+            } else {
+                log.debug("cancel previous speech synthesis");
+                this.speechSynth.cancel();
+            }
         }
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1;
         utterance.rate = 1;
         utterance.voice = this.getVoice(this.language);
+        utterance.addEventListener('end', this.speakEndEvent.bind(this));
         this.speechSynth.speak(utterance);
+    }
+
+    speakEndEvent() {
+        if (this.speakQueue.length > 0) {
+            let toSpeakObj = this.speakQueue.shift();
+            log.debug('shifted from speak queue', this.speakQueue);
+            this.speak(toSpeakObj.text, toSpeakObj.type, false);
+        }
     }
 
     getVoice(language) {
@@ -2837,10 +2868,10 @@ class M32CommandSpeechHandler {
                 case 'menu':
                     var menues = value['content'].split('/');
                     var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
-                    this.speak(textToSpeak);
+                    this.speak(textToSpeak, 'menu');
                     break;
                 case 'control':
-                    this.speak(value['name'] + ' ' + value['value']);
+                    this.speak(value['name'] + ' ' + value['value'], 'control');
                     break;
                 /*    
                 case 'activate':
@@ -2848,7 +2879,7 @@ class M32CommandSpeechHandler {
                     break;
                 */
                 case 'message':
-                    this.speak(value['content']);
+                    this.speak(value['content'], 'message');
                     break;
                 case 'config': {
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
@@ -2864,11 +2895,11 @@ class M32CommandSpeechHandler {
                             configValue = value['mapped values'][mappingIndex];
                         }
                     }
-                    this.speak(configName + ' is ' + configValue);
+                    this.speak(configName + ' is ' + configValue, 'config');
                     break;
                 }
                 case 'error':
-                    this.speak(value['message']);
+                    this.speak(value['message'], 'error');
                     break;
                 default:
                     console.log('unhandled json key', key);

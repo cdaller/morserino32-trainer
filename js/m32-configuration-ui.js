@@ -24,6 +24,9 @@ class ConfigurationUI {
         this.configMap = {};
         this.configRootElement = configRootElement;
         this.m32translations = m32CommunicationService.m32translations;
+
+        document.getElementById('m32-config-reload-button').addEventListener('click', this.readConfigs.bind(this));
+
         document.getElementById('m32-config-wifi1-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
@@ -93,6 +96,7 @@ class ConfigurationUI {
     }
 
     fetchFullConfiguration() {
+        // FIXME: order is sometimes confused!
         log.debug('fetching configuration settings for', this.configNames);
         for (let index = 0; index < this.configNames.length; index++) {
             let configName = this.configNames[index];

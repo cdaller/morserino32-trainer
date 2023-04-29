@@ -22,6 +22,8 @@ const EVENT_M32_CONNECTION_ERROR = "event-m32-connection-error";
 const EVENT_M32_TEXT_RECEIVED = "event-m32-text-received";
 const EVENT_M32_JSON_ERROR_RECEIVED = "event-m32-json-error-received";
 
+const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
+
 class M32CommunicationService {
 
     constructor(autoInitM32Protocol = true) {
@@ -383,7 +385,8 @@ class Lock {
 }
 
 module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, 
-    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, MORSERINO_START, MORSERINO_END }
+    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, MORSERINO_START, MORSERINO_END,
+    M32_MENU_CW_GENERATOR_FILE_PLAYER_ID }
 
 },{"./m32protocol-i18n":4,"./m32protocol-speech-handler":5,"./m32protocol-state-handler":6,"./m32protocol-ui-handler":7,"events":10,"loglevel":9}],2:[function(require,module,exports){
 'use strict';
@@ -774,24 +777,40 @@ class M32CommandSpeechHandler {
         this.voice = null;
         this.enabled = true;
         this.m32Translations = new M32Translations(this.language);
+        this.speakQueue = [];
     }
 
-    speak(text) {
+    speak(text, type = 'none', addToQueue = true) {
         if (!this.enabled) {
             return;
         }
         console.log('speak', text);
 
         if (this.speechSynth.speaking) {
-            log.debug("cancel previous speech synthesis");
-            this.speechSynth.cancel();
+            if (addToQueue && (type === 'message' || type == 'error')) {
+                log.debug('push to speak queue', text, type);
+                this.speakQueue.push({text, type});
+                return;
+            } else {
+                log.debug("cancel previous speech synthesis");
+                this.speechSynth.cancel();
+            }
         }
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.pitch = 1;
         utterance.rate = 1;
         utterance.voice = this.getVoice(this.language);
+        utterance.addEventListener('end', this.speakEndEvent.bind(this));
         this.speechSynth.speak(utterance);
+    }
+
+    speakEndEvent() {
+        if (this.speakQueue.length > 0) {
+            let toSpeakObj = this.speakQueue.shift();
+            log.debug('shifted from speak queue', this.speakQueue);
+            this.speak(toSpeakObj.text, toSpeakObj.type, false);
+        }
     }
 
     getVoice(language) {
@@ -832,10 +851,10 @@ class M32CommandSpeechHandler {
                 case 'menu':
                     var menues = value['content'].split('/');
                     var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
-                    this.speak(textToSpeak);
+                    this.speak(textToSpeak, 'menu');
                     break;
                 case 'control':
-                    this.speak(value['name'] + ' ' + value['value']);
+                    this.speak(value['name'] + ' ' + value['value'], 'control');
                     break;
                 /*    
                 case 'activate':
@@ -843,7 +862,7 @@ class M32CommandSpeechHandler {
                     break;
                 */
                 case 'message':
-                    this.speak(value['content']);
+                    this.speak(value['content'], 'message');
                     break;
                 case 'config': {
                     // distinguish between navigation in configuration and manual request of config (returning mapped values):
@@ -859,11 +878,11 @@ class M32CommandSpeechHandler {
                             configValue = value['mapped values'][mappingIndex];
                         }
                     }
-                    this.speak(configName + ' is ' + configValue);
+                    this.speak(configName + ' is ' + configValue, 'config');
                     break;
                 }
                 case 'error':
-                    this.speak(value['message']);
+                    this.speak(value['message'], 'error');
                     break;
                 default:
                     console.log('unhandled json key', key);
