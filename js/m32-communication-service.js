@@ -55,7 +55,7 @@ class M32CommunicationService {
 
         this.m32StreamParser = new M32StreamParser(this.m32Received.bind(this));
 
-        M32StreamParser.test();
+        //M32StreamParser.test();
     }
 
     addProtocolHandler(protcolHandler) {
@@ -74,6 +74,10 @@ class M32CommunicationService {
     enableVoiceOutput(enabled) {
         log.debug("speech synthesis, enable voice output", enabled);
         this.speechSynthesisHandler.enabled = enabled;
+    }
+
+    disableVoiceOuputTemporarily(type) {
+        this.speechSynthesisHandler.disableVoiceOuputTemporarily(type);
     }
 
     setLanguage(language) {

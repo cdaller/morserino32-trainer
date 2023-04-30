@@ -15,10 +15,15 @@ class M32CommandSpeechHandler {
         this.enabled = true;
         this.m32Translations = new M32Translations(this.language);
         this.speakQueue = [];
+        this.disabledTypeMap = new Map();
     }
 
     speak(text, type = 'none', addToQueue = true) {
         if (!this.enabled) {
+            return;
+        }
+        if (this.disabledTypeMap.has(type)) {
+            this.disableVoiceOuputTemporarily(type); // refresh disable state
             return;
         }
         console.log('speak', text);
@@ -75,6 +80,21 @@ class M32CommandSpeechHandler {
 
     setLanguage(language) {
         this.language = language;
+    }
+
+    disableVoiceOuputTemporarily(type) {
+        let timeoutId = this.disabledTypeMap.get(type);
+        if (timeoutId) {
+            // cancel old timeout for type
+            //log.debug('Cancel timeout for type ', type, timeoutId);
+            clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+            //log.debug('Delete timeout for type ', type);
+            this.disabledTypeMap.delete(type);
+        }, 1000);
+        //log.debug('Add timeout for type ', type);
+        this.disabledTypeMap.set(type, timeoutId);
     }
 
     // callback method for a full json object received

@@ -13,6 +13,12 @@ class M32Config {
         this.step = value['step'];
         this.isMapped = value['isMapped'];
         this.mappedValues = value['mapped values'];
+        this.displayed = value['displayed'];
+    }
+
+    merge(value) {
+        this.value = value['value'];
+        this.displayed = value['displayed'];
     }
 }
 
@@ -72,7 +78,12 @@ class ConfigurationUI {
                     if (this.configRootElement) {                            
                         console.log(value);
                         let name = value['name'];
-                        this.configMap[name] = new M32Config(value);
+                        let m32Config = this.configMap[name];
+                        if (m32Config) {
+                            m32Config.merge(value);
+                        } else {
+                            this.configMap[name] = new M32Config(value);
+                        }
                         this.addConfigurationElements(this.configMap[name]);
                     }
                     break;
@@ -96,8 +107,9 @@ class ConfigurationUI {
     }
 
     fetchFullConfiguration() {
-        // FIXME: order is sometimes confused!
+        // FIXME: order is sometimes mixed up!
         log.debug('fetching configuration settings for', this.configNames);
+        this.m32CommunicationService.disableVoiceOuputTemporarily('config');
         for (let index = 0; index < this.configNames.length; index++) {
             let configName = this.configNames[index];
             this.m32CommunicationService.sendM32Command('GET config/' + configName);
@@ -114,31 +126,48 @@ class ConfigurationUI {
             configElement = createElement(null, 'div', 'row');
             configElement.id = elementId;
             this.configRootElement.appendChild(configElement);
-        }
-        let elements = [];
-        let titleColumn = createElement(null, 'div', 'col-md-6');
-        titleColumn.replaceChildren(...[createElement(i18nName, 'h4', null), createElement(config.description, 'p', null)]);
-        elements.push(titleColumn);
-        let selectDivElement = createElement(null, 'div', 'col-md-4');
-        let selectElement = createElement(null, 'select', 'form-select');
-        //selectElement.disabled = true; // FIXME: remove for edit!
-        selectElement.setAttribute('data-m32-config-name', config.name);
-        selectElement.addEventListener('change', this.onChangeConfig.bind(this));
 
-        let optionElements = [];
-        for (let index = config.minimum; index <= config.maximum; index += config.step) {
-            let displayValue = config.isMapped ? config.mappedValues[index] : index.toString();
-            let optionElement = createElement(displayValue, 'option', null);
-            optionElement.value = index;
-            if (config.value == index) {
-                optionElement.selected = true;
+            let elements = [];
+            let titleColumn = createElement(null, 'div', 'col-md-6');
+            titleColumn.replaceChildren(...[createElement(i18nName, 'h4', null), createElement(config.description, 'p', null)]);
+            elements.push(titleColumn);
+            let selectDivElement = createElement(null, 'div', 'col-md-4');
+            let selectElement = createElement(null, 'select', 'form-select');
+            //selectElement.disabled = true; // FIXME: remove for edit!
+            selectElement.setAttribute('data-m32-config-name', config.name);
+            selectElement.addEventListener('change', this.onChangeConfig.bind(this));
+            
+            let optionElements = [];
+            for (let index = config.minimum; index <= config.maximum; index += config.step) {
+                let displayValue = config.isMapped ? config.mappedValues[index] : index.toString();
+                let optionElement = createElement(displayValue, 'option', null);
+                optionElement.value = index;
+                if (config.value == index) {
+                    optionElement.selected = true;
+                }
+                optionElements.push(optionElement);
             }
-            optionElements.push(optionElement);
+            selectElement.replaceChildren(...optionElements);
+            selectDivElement.replaceChildren(...[selectElement]);
+            elements.push(selectDivElement);
+            configElement.replaceChildren(...elements);
         }
-        selectElement.replaceChildren(...optionElements);
-        selectDivElement.replaceChildren(...[selectElement]);
-        elements.push(selectDivElement);
-        configElement.replaceChildren(...elements);
+        // if a config element is received on manual user interaction on morserino, a different config
+        // element is sent: no mapping, only 'displayed' and 'value' 
+        // update the selection
+        if (config.displayed) {
+            // not a full config json was received, but only a value and displayed
+            let selectorElement = document.querySelector('[data-m32-config-name="' + config.name + '"]');
+            let configValue = config.value.toString();
+            for (let index = 0; index < selectorElement.length; index += 1) {
+                let optionElement = selectorElement[index];
+                if (optionElement.value === configValue) {
+                    optionElement.selected = true;
+                } else {
+                    optionElement.selected = false;
+                }
+            }
+        }
     }
 
     getIdFromName(configName) {
