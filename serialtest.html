@@ -561,18 +561,207 @@ GET device
                             only name and value and if the value is mapped to a string, it is also returned): 
                             <pre>GET configs↵
 { "configs": [
-  {"name": "key1", "value": value1, "displayed": "Config Title"},
-  {"name": "key2", "value": value2, "displayed": "Config Title2"}
+    {"name": "key1", "value": value1, "displayed": "Config Title"},
+    {"name": "key2", "value": value2, "displayed": "Config Title2"}
 ]}</pre>
+
+Here is a full result of the command:
+
+<pre>
+{
+    "configs": [
+        {
+            "name": "Encoder Click",
+            "value": 1,
+            "displayed": "On"
+        },
+        {
+            "name": "Tone Pitch",
+            "value": 10,
+            "displayed": "622 Hz e2"
+        },
+        {
+            "name": "External Pol.",
+            "value": 0,
+            "displayed": "Normal"
+        },
+        {
+            "name": "Paddle Polar.",
+            "value": 1,
+            "displayed": "-. dah dit"
+        },
+        {
+            "name": "Keyer Mode",
+            "value": 2,
+            "displayed": "Iambic B"
+        },
+        {
+            "name": "CurtisB DahT%",
+            "value": 45,
+            "displayed": "45"
+        },
+        {
+            "name": "CurtisB DitT%",
+            "value": 75,
+            "displayed": "75"
+        },
+        {
+            "name": "AutoChar Spc",
+            "value": 0,
+            "displayed": "Off"
+        },
+        {
+            "name": "Tone Shift",
+            "value": 1,
+            "displayed": "Up 1 Half"
+        },
+        {
+            "name": "InterWord Spc",
+            "value": 7,
+            "displayed": "7"
+        },
+        {
+            "name": "Interchar Spc",
+            "value": 3,
+            "displayed": "3"
+        },
+        {
+            "name": "Random Groups",
+            "value": 0,
+            "displayed": "All Chars"
+        },
+        {
+            "name": "Length Rnd Gr",
+            "value": 1,
+            "displayed": "1"
+        },
+        {
+            "name": "Length Calls",
+            "value": 0,
+            "displayed": "Unlimited"
+        },
+        {
+            "name": "Length Abbrev",
+            "value": 3,
+            "displayed": "4"
+        },
+        {
+            "name": "Length Words",
+            "value": 0,
+            "displayed": "Unlimited"
+        },
+        {
+            "name": "CW Gen Displ",
+            "value": 1,
+            "displayed": "Char by char"
+        },
+        {
+            "name": "Each Word 2x",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Echo Prompt",
+            "value": 1,
+            "displayed": "Sound only"
+        },
+        {
+            "name": "Echo Repeats",
+            "value": 3,
+            "displayed": "3"
+        },
+        {
+            "name": "Confrm. Tone",
+            "value": 1,
+            "displayed": "ON"
+        },
+        {
+            "name": "Key ext TX",
+            "value": 1,
+            "displayed": "CW Keyer only"
+        },
+        {
+            "name": "Generator Tx",
+            "value": 0,
+            "displayed": "Tx OFF"
+        },
+        {
+            "name": "Bandwidth",
+            "value": 0,
+            "displayed": "Wide"
+        },
+        {
+            "name": "Adaptv. Speed",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Koch Sequence",
+            "value": 0,
+            "displayed": "M32"
+        },
+        {
+            "name": "LICW Carousel",
+            "value": 0,
+            "displayed": "BC1: r e a"
+        },
+        {
+            "name": "Latency",
+            "value": 7,
+            "displayed": "87.5%"
+        },
+        {
+            "name": "Randomize File",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Decoded on IO",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Time-out",
+            "value": 1,
+            "displayed": "5 min"
+        },
+        {
+            "name": "Quick Start",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Stop<Next>Rep",
+            "value": 0,
+            "displayed": "OFF"
+        },
+        {
+            "name": "Max # of Words",
+            "value": 15,
+            "displayed": "15"
+        },
+        {
+            "name": "LoRa Channel",
+            "value": 0,
+            "displayed": "Standard"
+        },
+        {
+            "name": "Serial Output",
+            "value": 5,
+            "displayed": "All"
+        }
+    ]
+}    
+</pre>
                         </li>
                     </ul>
                     <h4>Snapshots</h4>
                     <ul>
                         <li><pre>GET snapshots↵</pre>
-                            returns a list of all currently stored snapshots (n ==1..8)
+                            returns a list of all currently stored snapshots (n = 1..8)
                         </li>
                         <li><pre>PUT snapshot/store/n↵</pre>
-                            store parameters in snapshot n (n ==1..8)
+                            store parameters in snapshot n (n = 1..8)
                         </li>
                         <li><pre>PUT snapshot/recall/n↵</pre>
                             recall parameters from snapshot n

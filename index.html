@@ -268,6 +268,7 @@
                 </div>
             </div>
             <ul>
+                <li>2023-05-14: Improve configuration: snapshots (recall, clear, store, setup snapshots for CW School Graz)</li>
                 <li>2023-04-30: Add Morserino file upload/download, handle multiple messages in a better way for voice output</li>
                 <li>2023-04-10: Add configuration of Morserino</li>
                 <li>2023-04-05: Modularization of source code</li>
@@ -359,7 +360,7 @@
                 <button class="nav-link" id="m32-file-upload-tab" data-bs-toggle="tab" 
                         data-bs-target="#m32-file-upload-tab-content" type="button" 
                         role="tab" aria-controls="m32-file-upload-tab-content" 
-                        aria-selected="false">M32 File Upload (alpha)</button>
+                        aria-selected="false">M32 File Upload</button>
             </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
@@ -596,35 +597,57 @@
                         </button>
                     </div>
                 </div>
+                <div>
+                    <ul>
+                        <li><a href="#m32-config-snapshots">Snapshots</a></li>
+                        <li><a href="#m32-config-wifi">Wifi Configuration</a></li>
+                        <li><a href="#m32-config-settings">Configuration</a></li>
+                        <li><a href="#m32-config-cw-school-graz">CW School Graz Configuration</a></li>
+                    </ul>
+                </div>
 
                 <hr/>
 
                 <div id="m32-config-snapshots">
                     <h3>Snapshots</h3>
                     <div id="m32-config-snapshots" class="row">
-                        <div class="col-md-3">
-                            <h4>Snapshot</h4>
-                            <p>Select snapshot to create, recall or clear a snapshot</p>
+                        <div class="col-md-5">
+                            <p>Select snapshot to recall or clear a snapshot</p>
                         </div>
                         <div class="col-md-2">
                             <select class="form-select" id="m32-config-snapshots-select">
                             </select>
                         </div>    
-                        <div class="col-md-7">
-                            <div class="row">
-                                <button id="m32-config-snapshot-button-recall" class="col-md-2 btn btn-outline-primary" style="margin-top: 4px" type="button" disabled>
-                                    Recall
-                                </button>
-                                <!--
-                                <button id="m32-config-snapshot-button-store" class="col-md-2 btn btn-warn" style="margin-top: 4px" type="button">
-                                    Store
-                                </button>
-                                <button id="m32-config-snapshot-button-clear" class="col-md-2 btn btn-error" style="margin-top: 4px" type="button">
-                                    Clear
-                                </button>
-                                -->
-                            </div>
+                        <div class="col-md-5">
+                            <button id="m32-config-snapshot-button-recall" class="btn btn-outline-primary" style="margin-top: 4px" type="button" disabled>
+                                Recall
+                            </button>
+                            <button id="m32-config-snapshot-button-clear" class="btn btn-outline-danger" style="margin-top: 4px" type="button" disabled>
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div id="m32-config-snapshots-store" class="row">
+                        <div class="col-md-5">
+                            <p>Select id to store/overwrite configuration as snapshot.</p>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="m32-config-snapshots-store-select">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
                         </div>    
+                        <div class="col-md-5">
+                            <button id="m32-config-snapshot-button-store" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                                Store
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <hr/>
@@ -738,7 +761,7 @@
                 </div>
                 <hr/>
 
-                <div>
+                <div id="m32-config-settings">
                     <h3>Configuration</h3>
                     <div id="m32-config"></div>
                 </div>
@@ -758,11 +781,41 @@
                 </div>
                 -->
 
+                <hr/>
+
+                <div id="m32-config-cw-school-graz">
+                    <h3>CW School Graz</h3>
+                    <p>
+                        <a href="https://oe6.oevsv.at/referate/cwschule">CW School Graz</a> uses <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Exercise-Plan-Matthew-Pullan.pdf">6 snapshots</a> (or <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Uebungsplan.pdf">here</a> in german) for different lectures. 
+                        Here you can program these snapshots with one push of a button!
+                    </p>
+                    <p>
+                        Plase note that this will overwrite the Snapshots 1 to 6 in your Morserino!
+                    </p>
+                    <button id="m32-config-cw-school-setup-snaphot1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot1
+                    </button>
+                    <button id="m32-config-cw-school-setup-snaphot2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot2
+                    </button>
+                    <button id="m32-config-cw-school-setup-snaphot3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot3
+                    </button>
+                    <button id="m32-config-cw-school-setup-snaphot4-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot4
+                    </button>
+                    <button id="m32-config-cw-school-setup-snaphot5-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot5
+                    </button>
+                    <button id="m32-config-cw-school-setup-snaphot6-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
+                        Setup Snapshot6
+                    </button>
+                </div>
             </div> <!-- end m32 config -->
 
             <!-- start m32 file upload -->
             <div class="tab-pane fade" id="m32-file-upload-tab-content" role="tabpanel" aria-labelledby="m32-file-upload-tab">
-                <h2>M32 File Upload (alpha)</h2>
+                <h2>M32 File Upload</h2>
 
                 <div class="row">
                     <div class="col-md-2">

@@ -43,8 +43,20 @@ class ConfigurationUI {
 
         document.getElementById('m32-config-snapshots-select').addEventListener('change', this.changedSnapshot.bind(this));
 
+        document.getElementById('m32-config-snapshot-button-store').addEventListener('click', this.storeSnapshot.bind(this));
+        
+        document.getElementById('m32-config-cw-school-setup-snaphot1-button').addEventListener('click', this.setupCwSchoolSnapshot1.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot2-button').addEventListener('click', this.setupCwSchoolSnapshot2.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot3-button').addEventListener('click', this.setupCwSchoolSnapshot3.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot4-button').addEventListener('click', this.setupCwSchoolSnapshot4.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
+        
+
         this.snapshotRecallButton = document.getElementById('m32-config-snapshot-button-recall');
         this.snapshotRecallButton.addEventListener('click', this.recallSnapshotClicked.bind(this));
+        this.snapshotClearButton = document.getElementById('m32-config-snapshot-button-clear');
+        this.snapshotClearButton.addEventListener('click', this.clearSnapshotClicked.bind(this));
     }
 
     readConfigs() {
@@ -155,7 +167,7 @@ class ConfigurationUI {
         // if a config element is received on manual user interaction on morserino, a different config
         // element is sent: no mapping, only 'displayed' and 'value' 
         // update the selection
-        if (config.displayed) {
+        //if (config.displayed) {
             // not a full config json was received, but only a value and displayed
             let selectorElement = document.querySelector('[data-m32-config-name="' + config.name + '"]');
             let configValue = config.value.toString();
@@ -167,7 +179,7 @@ class ConfigurationUI {
                     optionElement.selected = false;
                 }
             }
-        }
+        //}
     }
 
     getIdFromName(configName) {
@@ -231,6 +243,7 @@ class ConfigurationUI {
         //let selectElement = event.target;
         //let newSnapshotId = selectElement.options[selectElement.selectedIndex].value;
         this.snapshotRecallButton.disabled = false;
+        this.snapshotClearButton.disabled = false;
     }
 
     recallSnapshotClicked() {
@@ -242,6 +255,109 @@ class ConfigurationUI {
             // read new configuration:
             this.m32CommunicationService.sendM32Command("GET configs");
         }
+    }
+
+    clearSnapshotClicked() {
+        let selectedOption = document.getElementById('m32-config-snapshots-select');
+        let snapshotId = selectedOption.value;
+        if (snapshotId) {
+            log.debug("clear snapshot", snapshotId);
+            this.m32CommunicationService.sendM32Command("PUT snapshot/clear/" + snapshotId, false);
+            // read new configuration:
+            this.m32CommunicationService.sendM32Command("GET snapshots");
+        }
+    }
+
+    storeSnapshot() {
+        let selectedOption = document.getElementById('m32-config-snapshots-store-select');
+        let snapshotId = selectedOption.value;
+        if (snapshotId) {
+            log.debug("store snapshot", snapshotId);
+            this.m32CommunicationService.sendM32Command("PUT snapshot/store/" + snapshotId, false);
+            // read new configuration:
+            this.m32CommunicationService.sendM32Command("GET snapshots");
+        }
+    }
+
+
+    setupCwSchoolSnapshot1() {
+        // snapshot 1
+        log.debug('configure snapshots 1');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/3"); // CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/30", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/1", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    setupCwSchoolSnapshot2() {
+        log.debug('configure snapshots for CW Schule Graz');
+        // snapshot 2
+        log.debug('configure snapshots 2');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/17"); // Koch Trainer/Select Lesson
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Time-out/0", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/2", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    setupCwSchoolSnapshot3() {
+        // snapshot 3
+        log.debug('configure snapshots 3');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/25"); // Koch Trainer/Echo Trainer/Random
+        //this.m32CommunicationService.sendM32Command("PUT menu/set/29"); // Koch Trainer/Echo Trainer/Adapt. Rand.
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/9", false); // 2-5
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/3", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    setupCwSchoolSnapshot4() {
+        // snapshot 4
+        log.debug('configure snapshots 4');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/3"); // CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/15", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/4", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    setupCwSchoolSnapshot5() {
+        // snapshot 5
+        log.debug('configure snapshots 5');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/1"); // CW Keyer
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/5", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+    
+    setupCwSchoolSnapshot6() {
+        // snapshot 6
+        log.debug('configure snapshots 6');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/21"); // Koch Trainer/CW Generator/CW Abbrevs
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Abbrev/2", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
     }
 }
 
