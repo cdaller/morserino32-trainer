@@ -354,7 +354,7 @@
                 <button class="nav-link" id="m32-config-tab" data-bs-toggle="tab" 
                         data-bs-target="#m32-config-tab-content" type="button" 
                         role="tab" aria-controls="m32-config-tab-content" 
-                        aria-selected="false">M32 Config (alpha)</button>
+                        aria-selected="false">M32 Config</button>
             </li>
             <li class="nav-item m32-protocol" role="presentation">
                 <button class="nav-link" id="m32-file-upload-tab" data-bs-toggle="tab" 
@@ -586,9 +586,9 @@
 
             <!-- start m32 config -->
             <div class="tab-pane fade" id="m32-config-tab-content" role="tabpanel" aria-labelledby="m32-config-tab">
-                <h2>M32 Configuration (alpha)</h2>
+                <h2>M32 Configuration</h2>
                 <div class="row">
-                    <div class="col-md-7">
+                    <div class="col-md-5">
                         <p>Edit your Morserino configuration here</p>
                     </div>
                     <div class="col-md-3">
@@ -599,11 +599,19 @@
                 </div>
                 <div>
                     <ul>
+                        <li><a href="#m32-config-device">Device Info</a></li>
                         <li><a href="#m32-config-snapshots">Snapshots</a></li>
                         <li><a href="#m32-config-wifi">Wifi Configuration</a></li>
                         <li><a href="#m32-config-settings">Configuration</a></li>
                         <li><a href="#m32-config-cw-school-graz">CW School Graz Configuration</a></li>
                     </ul>
+                </div>
+
+                <hr/>
+
+                <div id="m32-config-device">
+                    <div id="m32-config-device-info"></div>
+                    <button id="m32-device-info-button" class="btn btn-outline-primary">Load Device Info</button>
                 </div>
 
                 <hr/>

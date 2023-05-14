@@ -141,6 +141,9 @@ class M32CommandSpeechHandler {
                 case 'error':
                     this.speak(value['message'], 'error');
                     break;
+                case 'device':
+                    this.speak('firmware' + value['firmware'], 'device');
+                    break;
                 default:
                     console.log('unhandled json key', key);
             }

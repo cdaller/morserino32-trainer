@@ -470,6 +470,7 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
         
+        document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
         this.snapshotRecallButton = document.getElementById('m32-config-snapshot-button-recall');
         this.snapshotRecallButton.addEventListener('click', this.recallSnapshotClicked.bind(this));
@@ -529,7 +530,13 @@ class ConfigurationUI {
                         this.receivedSnapshots(value);
                     }
                     break;
-    
+                case 'device':
+                    if (this.configRootElement) {                            
+                        console.log(value);
+                        this.receivedDevice(value);
+                    }
+                    break;
+        
                 }
         } else {
             console.log('cannot handle json', jsonObject);
@@ -776,6 +783,15 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    requestDeviceInfo() {
+        this.m32CommunicationService.sendM32Command("GET device");
+    }
+
+    receivedDevice(value) {
+        let message = 'Hardware: ' + value['hardware'] + ', Firmware: ' + value['firmware'];
+        document.getElementById('m32-config-device-info').innerHTML = message;
     }
 }
 
@@ -3069,6 +3085,9 @@ class M32CommandSpeechHandler {
                 }
                 case 'error':
                     this.speak(value['message'], 'error');
+                    break;
+                case 'device':
+                    this.speak('firmware' + value['firmware'], 'device');
                     break;
                 default:
                     console.log('unhandled json key', key);
