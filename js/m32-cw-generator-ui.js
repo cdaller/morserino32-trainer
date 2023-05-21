@@ -41,6 +41,9 @@ class M32CwGeneratorUI {
 
         this.inputText.oninput = this.compareTexts.bind(this);
 
+        //document.getElementById("cw-generator-start-snapshot4-button").addEventListener('click', this.startSnapshot4.bind(this));
+        document.getElementById("cw-generator-start-button").addEventListener('click', this.startCwGenerator.bind(this));
+
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
         this.m32State = this.m32CommunicationService.m32State; // FIXME: use event to publish change in m32State
@@ -445,6 +448,16 @@ class M32CwGeneratorUI {
             });
 
 
+    }
+    
+    startSnapshot4() {
+        log.debug("starting snapshot 4");
+        this.m32CommunicationService.sendM32Command('PUT snapshot/recall/4', false);
+        this.m32CommunicationService.sendM32Command('PUT menu/start', false);
+    }
+
+    startCwGenerator() {
+        this.m32CommunicationService.sendM32Command('PUT menu/start/20', false);
     }
 }
 

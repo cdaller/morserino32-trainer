@@ -99,7 +99,7 @@ class M32Translations {
         '39 char 6': {en: '39 6', en_speak: '39--6'},
         '40 char x': {en: '40 x', en_speak: '40--x-ray'},
         '41 char -': {en: '41 -', en_speak: '41--minus'},
-        '42 char =': {en: '41 =', en_speak: '41--='},
+        '42 char =': {en: '42 =', en_speak: '42--='},
         '43 char <sk>': {en: '43 <sk>', en_speak: '43--silent key'},
         '44 char +': {en: '44 +', en_speak: '44--+'},
         '45 char <as>': {en: '45 <as>', en_speak: '45--alpha sierra'},

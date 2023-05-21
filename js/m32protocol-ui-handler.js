@@ -17,6 +17,7 @@ class M32CommandUIHandler {
         if (!this.m32ProtocolEnabled) {
             this.m32ProtocolEnabled = true;
             this.enableAllM32ProtocolElements();
+            document.dispatchEvent(new Event("m32Connected"));
         }
         const keys = Object.keys(jsonObject);
         if (keys && keys.length > 0) {
@@ -32,7 +33,11 @@ class M32CommandUIHandler {
                     if (controlKey === 'speed') {
                         this.receivedM32Speed(controlValue);
                     }
-                    break;            }
+                    break;            
+                case 'kochlesson':
+                    this.receivedM32KochLesson(value);
+                    break;                        
+                }
         } else {
             console.debug('cannot handle json', jsonObject);
         }
@@ -61,10 +66,31 @@ class M32CommandUIHandler {
         if (menuElement) {
             menuElement.textContent = textToDisplay;
         }
+
+        if (menu.startsWith('Koch Trainer/Select Lesson')) {
+            var lesson = menues[2].split(' ');
+            var kochLessonElement = document.getElementById("m32KochLesson");
+            if (kochLessonElement) {
+                var value = lesson[0];
+                var currentCharacter = lesson[2];
+                kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
+            }
+        }
+
         // FIXME: does not work - use event to publish this?
         // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
         //     openTabForMode(MODE_ECHO_TRAINER);
         // }
+    }
+
+    receivedM32KochLesson(kochlesson) {
+        var value = kochlesson['value'];
+        var characters = kochlesson['characters'];
+        var currentCharacter  = characters[value - 1];
+        var kochLessonElement = document.getElementById("m32KochLesson");
+        if (kochLessonElement) {
+            kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
+        }
     }
 
 }

@@ -22,7 +22,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.5.0-beta6';
+let VERSION = '0.6.0';
 
 
 const MODE_CW_GENERATOR = 'cw-generator';
@@ -108,7 +108,6 @@ class M32Main {
             console.log('setting m32language to ', paramM32Language);
             m32CommunicationService.setLanguage(paramM32Language);
         }
-        
     }
 
     // ------------------------ tab handling ------------------------

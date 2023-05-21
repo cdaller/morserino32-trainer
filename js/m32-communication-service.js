@@ -252,6 +252,7 @@ class M32CommunicationService {
         this.sendM32Command('PUT config/Serial Output/5', false);
         //sendM32Command('GET device');
         this.sendM32Command('GET control/speed');
+        this.sendM32Command('GET kochlesson');
         //sendM32Command('GET control/volume');
         this.sendM32Command('GET menu');
     }

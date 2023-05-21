@@ -17,6 +17,7 @@ class M32Settings {
         this.cwPlayerEls = 2;
         this.qsoRptWords = false;
         this.voiceOutputEnabled = true;
+        this.showCwSchoolGraz = true;
     }
 
     loadFromStoredSettings(storedSettings) {
@@ -37,6 +38,10 @@ class M32Settings {
             if ('voiceOutputEnabled' in storedSettings) {
                 this.voiceOutputEnabled = storedSettings.voiceOutputEnabled;
             }
+            if ('showCwSchoolGraz' in storedSettings) {
+                this.showCwSchoolGraz = storedSettings.showCwSchoolGraz;
+            }
+
         }
     }
 }

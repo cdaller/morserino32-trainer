@@ -28,6 +28,15 @@ class M32ConnectUI {
         if (!serialCommunicationavailable) {
             this.disableSerialCommunication();
         }  
+
+        this.cwSchoolGrazEnabled = false;
+        this.cwSchoolGrazCheckbox = document.getElementById("cwSchoolGrazCheckbox");
+        this.cwSchoolGrazCheckbox.addEventListener('change', this.clickCwSchoolReceived.bind(this));   
+
+        document.addEventListener("m32Connected", (e) => {
+            this.changeAllCwSchoolGrazElements();
+        }, false);
+
     }
 
     //When the connectButton is pressed
@@ -82,7 +91,31 @@ class M32ConnectUI {
         this.voiceOutputEnabled = settings.voiceOutputEnabled;
         this.voiceOutputCheckbox.checked = this.voiceOutputEnabled;
         this.m32CommunicationService.enableVoiceOutput(this.voiceOutputEnabled);
+
+        this.cwSchoolGrazEnabled = settings.showCwSchoolGraz;
+        this.cwSchoolGrazCheckbox.checked = this.cwSchoolGrazEnabled;
+        this.changeAllCwSchoolGrazElements();
+
     }
+
+    clickCwSchoolReceived() {
+        log.debug('CW School Graz changed');
+        this.cwSchoolGrazEnabled = this.cwSchoolGrazCheckbox.checked;
+        this.m32Storage.settings.showCwSchoolGraz = this.cwSchoolGrazEnabled;
+        this.changeAllCwSchoolGrazElements(this.cwSchoolGrazEnabled);
+        this.m32Storage.saveSettings();
+    }
+
+    changeAllCwSchoolGrazElements() {
+        log.debug('enable all cw-school-graz elements');
+        if (this.cwSchoolGrazEnabled && this.m32CommunicationService.commandUIHandler.m32ProtocolEnabled) {
+            document.querySelectorAll('.cw-school-graz').forEach(element => element.classList.add('cw-school-graz-enabled'));
+        } else {
+            document.querySelectorAll('.cw-school-graz').forEach(element => element.classList.remove('cw-school-graz-enabled'));
+        }
+    }
+
+
 }
 
 module.exports = { M32ConnectUI }

@@ -128,6 +128,12 @@
         .m32-protocol-enabled {
             visibility: visible;
         }
+        .cw-school-graz {
+            visibility: hidden;
+        }
+        .cw-school-graz-enabled {
+            visibility: visible;
+        }
     </style>
 </head>
 
@@ -295,17 +301,33 @@
     </div>
 
 
+
+
     <div class="contentContainer">
         <div class="row">
-            <div class="col-6">
+            <div class="col-5">
                 Morserino Status:&#160;<span id="statusBar" class="badge bg-danger">Disconnected</span>
                 <button id="connectButton" class="btn btn-primary" style="margin-top: 4px" title="Connect to Morserino via USB cable" data-bs-toggle="tooltip">Connect</button>
             </div>
-            <div class="col-2 form-check form-switch m32-protocol">
-                <input class="form-check-input" type="checkbox" checked id="voiceOutputCheckbox">
-                <label class="form-check-label" for="showReceivedCheckbox">Voice Output</label>
+            <div class="col-3">
+                <div class="row" >
+                    <div class="col">
+                        <div class="form-check form-switch m32-protocol">
+                            <input class="form-check-input" type="checkbox" checked id="voiceOutputCheckbox">
+                            <label class="form-check-label" for="showReceivedCheckbox">Voice Output</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check form-switch m32-protocol">
+                            <input class="form-check-input" type="checkbox" checked id="cwSchoolGrazCheckbox">
+                            <label class="form-check-label" for="cwSchoolGrazCheckbox">🎵 CW School Graz</label>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+                
             <div class="col-4 m32-protocol container" id="m32state">
                 <div class="row" >
                     <div class="col text-end">
@@ -315,6 +337,7 @@
                 <div class="row">
                     <div class="col text-end">
                         <span id="m32Speed" class="badge bg-dark">17 wpm</span>
+                        <span id="m32KochLesson" class="badge bg-dark">Koch: a (1)</span>
                     </div>
                 </div>
             </div>
@@ -366,7 +389,23 @@
         <div class="tab-content" id="mainTabContent">
             <!-- start cw generator -->
             <div class="tab-pane fade show active" id="cw-generator-tab-content" role="tabpanel" aria-labelledby="cw-generator-tab">
-                <h2>CW Generator / CW Keyer</h2>
+                <div class="row">
+                    <div class="col-6">
+                        <h2>CW Generator / CW Keyer</h2>
+                    </div>
+
+                    <div class="col-6 text-end">
+                        <button id="cw-generator-start-button" class="btn btn-outline-info btn-sm m32-protocol" type="button">
+                            Start CW Generator
+                        </button>
+                        <!--
+
+                            <button id="cw-generator-start-snapshot4-button" class="btn btn-outline-info btn-sm cw-school-graz" type="button">
+                                🎵 Start Snapshot 4
+                            </button>
+                        -->
+                    </div>
+                </div>
                 <div class="inputContainer">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" checked id="showReceivedCheckbox">
@@ -603,13 +642,14 @@
                         <li><a href="#m32-config-snapshots">Snapshots</a></li>
                         <li><a href="#m32-config-wifi">Wifi Configuration</a></li>
                         <li><a href="#m32-config-settings">Configuration</a></li>
-                        <li><a href="#m32-config-cw-school-graz">CW School Graz Configuration</a></li>
+                        <li class="cw-school-graz"><a href="#m32-config-cw-school-graz">🎵 CW School Graz Configuration</a></li>
                     </ul>
                 </div>
 
                 <hr/>
 
                 <div id="m32-config-device">
+                    <h3>Device Info</h3>
                     <div id="m32-config-device-info"></div>
                     <button id="m32-device-info-button" class="btn btn-outline-primary">Load Device Info</button>
                 </div>
@@ -791,10 +831,10 @@
 
                 <hr/>
 
-                <div id="m32-config-cw-school-graz">
-                    <h3>CW School Graz</h3>
+                <div id="m32-config-cw-school-graz" class="cw-school-graz">
+                    <h3>🎵 CW School Graz</h3>
                     <p>
-                        <a href="https://oe6.oevsv.at/referate/cwschule">CW School Graz</a> uses <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Exercise-Plan-Matthew-Pullan.pdf">6 snapshots</a> (or <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Uebungsplan.pdf">here</a> in german) for different lectures. 
+                        <a href="https://oe6.oevsv.at/referate/cwschule">🎵 CW School Graz</a> uses <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Exercise-Plan-Matthew-Pullan.pdf">6 snapshots</a> (or <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Uebungsplan.pdf">here</a> in german) for different lectures. 
                         Here you can program these snapshots with one push of a button!
                     </p>
                     <p>
