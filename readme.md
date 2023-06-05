@@ -61,6 +61,23 @@ watchify js/m32main.js   -o js/bundle.js
   * User needs to type word correctly or repeat
   * just play
 
+### Feedback from blind user Marcus
+
+* menu "info
+  * nice: get device - voice ouput firmware and battery
+* important:
+  * configuration
+  * if "quick start" on -> to remember current state after switch on
+    * forget to speak
+* adaptive random speed
+  * concurrent voice output and the morse character
+* if morserino is in scroll mode, it should also speak the characters (m32 feature)
+* create snapshots for cw school - DONE
+* random texts
+  * "(z)" - random words of text
+  * speak one sentence after the other
+
+* voice output for "upload done" - does not work because upload is async
 
 ### QSO Bot
 
