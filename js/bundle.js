@@ -3276,7 +3276,7 @@ class M32CommandUIHandler {
             menuElement.textContent = textToDisplay;
         }
 
-        if (menu.startsWith('Koch Trainer/Select Lesson')) {
+        if (menu.startsWith('Koch Trainer/Select Lesson') && menues.length > 2) {
             var lesson = menues[2].split(' ');
             var kochLessonElement = document.getElementById("m32KochLesson");
             if (kochLessonElement) {
