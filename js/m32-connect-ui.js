@@ -31,7 +31,9 @@ class M32ConnectUI {
 
         this.cwSchoolGrazEnabled = false;
         this.cwSchoolGrazCheckbox = document.getElementById("cwSchoolGrazCheckbox");
-        this.cwSchoolGrazCheckbox.addEventListener('change', this.clickCwSchoolReceived.bind(this));   
+        if (this.cwSchoolGrazCheckbox) {
+          this.cwSchoolGrazCheckbox.addEventListener('change', this.clickCwSchoolReceived.bind(this));   
+        }
 
         document.addEventListener("m32Connected", (e) => {
             this.changeAllCwSchoolGrazElements();

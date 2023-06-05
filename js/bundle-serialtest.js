@@ -253,6 +253,7 @@ class M32CommunicationService {
         this.sendM32Command('PUT config/Serial Output/5', false);
         //sendM32Command('GET device');
         this.sendM32Command('GET control/speed');
+        this.sendM32Command('GET kochlesson');
         //sendM32Command('GET control/volume');
         this.sendM32Command('GET menu');
     }
@@ -423,6 +424,17 @@ class M32ConnectUI {
         if (!serialCommunicationavailable) {
             this.disableSerialCommunication();
         }  
+
+        this.cwSchoolGrazEnabled = false;
+        this.cwSchoolGrazCheckbox = document.getElementById("cwSchoolGrazCheckbox");
+        if (this.cwSchoolGrazCheckbox) {
+          this.cwSchoolGrazCheckbox.addEventListener('change', this.clickCwSchoolReceived.bind(this));   
+        }
+
+        document.addEventListener("m32Connected", (e) => {
+            this.changeAllCwSchoolGrazElements();
+        }, false);
+
     }
 
     //When the connectButton is pressed
@@ -477,7 +489,31 @@ class M32ConnectUI {
         this.voiceOutputEnabled = settings.voiceOutputEnabled;
         this.voiceOutputCheckbox.checked = this.voiceOutputEnabled;
         this.m32CommunicationService.enableVoiceOutput(this.voiceOutputEnabled);
+
+        this.cwSchoolGrazEnabled = settings.showCwSchoolGraz;
+        this.cwSchoolGrazCheckbox.checked = this.cwSchoolGrazEnabled;
+        this.changeAllCwSchoolGrazElements();
+
     }
+
+    clickCwSchoolReceived() {
+        log.debug('CW School Graz changed');
+        this.cwSchoolGrazEnabled = this.cwSchoolGrazCheckbox.checked;
+        this.m32Storage.settings.showCwSchoolGraz = this.cwSchoolGrazEnabled;
+        this.changeAllCwSchoolGrazElements(this.cwSchoolGrazEnabled);
+        this.m32Storage.saveSettings();
+    }
+
+    changeAllCwSchoolGrazElements() {
+        log.debug('enable all cw-school-graz elements');
+        if (this.cwSchoolGrazEnabled && this.m32CommunicationService.commandUIHandler.m32ProtocolEnabled) {
+            document.querySelectorAll('.cw-school-graz').forEach(element => element.classList.add('cw-school-graz-enabled'));
+        } else {
+            document.querySelectorAll('.cw-school-graz').forEach(element => element.classList.remove('cw-school-graz-enabled'));
+        }
+    }
+
+
 }
 
 module.exports = { M32ConnectUI }
@@ -502,6 +538,7 @@ class M32Settings {
         this.cwPlayerEls = 2;
         this.qsoRptWords = false;
         this.voiceOutputEnabled = true;
+        this.showCwSchoolGraz = true;
     }
 
     loadFromStoredSettings(storedSettings) {
@@ -522,6 +559,10 @@ class M32Settings {
             if ('voiceOutputEnabled' in storedSettings) {
                 this.voiceOutputEnabled = storedSettings.voiceOutputEnabled;
             }
+            if ('showCwSchoolGraz' in storedSettings) {
+                this.showCwSchoolGraz = storedSettings.showCwSchoolGraz;
+            }
+
         }
     }
 }
@@ -668,7 +709,7 @@ class M32Translations {
         '39 char 6': {en: '39 6', en_speak: '39--6'},
         '40 char x': {en: '40 x', en_speak: '40--x-ray'},
         '41 char -': {en: '41 -', en_speak: '41--minus'},
-        '42 char =': {en: '41 =', en_speak: '41--='},
+        '42 char =': {en: '42 =', en_speak: '42--='},
         '43 char <sk>': {en: '43 <sk>', en_speak: '43--silent key'},
         '44 char +': {en: '44 +', en_speak: '44--+'},
         '45 char <as>': {en: '45 <as>', en_speak: '45--alpha sierra'},
@@ -908,6 +949,9 @@ class M32CommandSpeechHandler {
                 case 'error':
                     this.speak(value['message'], 'error');
                     break;
+                case 'device':
+                    this.speak('firmware' + value['firmware'], 'device');
+                    break;
                 default:
                     console.log('unhandled json key', key);
             }
@@ -994,6 +1038,7 @@ class M32CommandUIHandler {
         if (!this.m32ProtocolEnabled) {
             this.m32ProtocolEnabled = true;
             this.enableAllM32ProtocolElements();
+            document.dispatchEvent(new Event("m32Connected"));
         }
         const keys = Object.keys(jsonObject);
         if (keys && keys.length > 0) {
@@ -1009,7 +1054,11 @@ class M32CommandUIHandler {
                     if (controlKey === 'speed') {
                         this.receivedM32Speed(controlValue);
                     }
-                    break;            }
+                    break;            
+                case 'kochlesson':
+                    this.receivedM32KochLesson(value);
+                    break;                        
+                }
         } else {
             console.debug('cannot handle json', jsonObject);
         }
@@ -1038,10 +1087,31 @@ class M32CommandUIHandler {
         if (menuElement) {
             menuElement.textContent = textToDisplay;
         }
+
+        if (menu.startsWith('Koch Trainer/Select Lesson') && menues.length > 2) {
+            var lesson = menues[2].split(' ');
+            var kochLessonElement = document.getElementById("m32KochLesson");
+            if (kochLessonElement) {
+                var value = lesson[0];
+                var currentCharacter = lesson[2];
+                kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
+            }
+        }
+
         // FIXME: does not work - use event to publish this?
         // if (menues.length > 1 && menues[1] === 'Echo Trainer') {
         //     openTabForMode(MODE_ECHO_TRAINER);
         // }
+    }
+
+    receivedM32KochLesson(kochlesson) {
+        var value = kochlesson['value'];
+        var characters = kochlesson['characters'];
+        var currentCharacter  = characters[value - 1];
+        var kochLessonElement = document.getElementById("m32KochLesson");
+        if (kochLessonElement) {
+            kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
+        }
     }
 
 }
