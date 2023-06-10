@@ -780,7 +780,7 @@ class ConfigurationUI {
     setupCwSchoolSnapshot6() {
         // snapshot 6
         log.debug('configure snapshots 6');
-        this.m32CommunicationService.sendM32Command("PUT menu/set/21"); // Koch Trainer/CW Generator/CW Abbrevs
+        this.m32CommunicationService.sendM32Command("PUT menu/set/11"); // Echo Trainer/CW Generator/CW Abbrevs
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
@@ -972,8 +972,8 @@ class M32CwGeneratorUI {
 
         this.inputText.oninput = this.compareTexts.bind(this);
 
-        //document.getElementById("cw-generator-start-snapshot4-button").addEventListener('click', this.startSnapshot4.bind(this));
-        document.getElementById("cw-generator-start-button").addEventListener('click', this.startCwGenerator.bind(this));
+        document.getElementById("cw-generator-start-snapshot4-button").addEventListener('click', this.startSnapshot4.bind(this));
+        document.getElementById("cw-generator-start-button").addEventListener('click', this.startCwGenerator.bind(this));        
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
@@ -1418,6 +1418,9 @@ class EchoTrainerUI {
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
 
+        document.getElementById("echo-trainer-start-snapshot5-button").addEventListener('click', this.startSnapshot6.bind(this));
+        document.getElementById("echo-trainer-start-button").addEventListener('click', this.startEchoTrainerAbbreviations.bind(this));
+
         this.activeMode = false;
     }
 
@@ -1494,6 +1497,16 @@ class EchoTrainerUI {
         for (let count = 1; count < rowCount; count++) {
             table.deleteRow(-1);
         }
+    }
+
+    startSnapshot6() {
+        log.debug("starting snapshot 5");
+        this.m32CommunicationService.sendM32Command('PUT snapshot/recall/6', false);
+        this.m32CommunicationService.sendM32Command('PUT menu/start', false);
+    }
+
+    startEchoTrainerAbbreviations() {
+        this.m32CommunicationService.sendM32Command('PUT menu/start/11', false);
     }
     
     // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk

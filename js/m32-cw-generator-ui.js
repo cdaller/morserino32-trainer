@@ -41,8 +41,8 @@ class M32CwGeneratorUI {
 
         this.inputText.oninput = this.compareTexts.bind(this);
 
-        //document.getElementById("cw-generator-start-snapshot4-button").addEventListener('click', this.startSnapshot4.bind(this));
-        document.getElementById("cw-generator-start-button").addEventListener('click', this.startCwGenerator.bind(this));
+        document.getElementById("cw-generator-start-snapshot4-button").addEventListener('click', this.startSnapshot4.bind(this));
+        document.getElementById("cw-generator-start-button").addEventListener('click', this.startCwGenerator.bind(this));        
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));

@@ -22,6 +22,9 @@ class EchoTrainerUI {
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
 
+        document.getElementById("echo-trainer-start-snapshot5-button").addEventListener('click', this.startSnapshot6.bind(this));
+        document.getElementById("echo-trainer-start-button").addEventListener('click', this.startEchoTrainerAbbreviations.bind(this));
+
         this.activeMode = false;
     }
 
@@ -98,6 +101,16 @@ class EchoTrainerUI {
         for (let count = 1; count < rowCount; count++) {
             table.deleteRow(-1);
         }
+    }
+
+    startSnapshot6() {
+        log.debug("starting snapshot 5");
+        this.m32CommunicationService.sendM32Command('PUT snapshot/recall/6', false);
+        this.m32CommunicationService.sendM32Command('PUT menu/start', false);
+    }
+
+    startEchoTrainerAbbreviations() {
+        this.m32CommunicationService.sendM32Command('PUT menu/start/11', false);
     }
     
     // source: https://de.wikipedia.org/wiki/Liste_von_Abk%C3%BCrzungen_im_Amateurfunk

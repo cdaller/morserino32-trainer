@@ -323,7 +323,7 @@
                     <div class="col">
                         <div class="form-check form-switch m32-protocol">
                             <input class="form-check-input" type="checkbox" checked id="cwSchoolGrazCheckbox">
-                            <label class="form-check-label" for="cwSchoolGrazCheckbox">🎵 CW School Graz</label>
+                            <label class="form-check-label" for="cwSchoolGrazCheckbox"><i class="bi bi-music-note-beamed"></i> CW School Graz</label>
                         </div>
                     </div>
                 </div>
@@ -396,15 +396,12 @@
                     </div>
 
                     <div class="col-6 text-end">
-                        <button id="cw-generator-start-button" class="btn btn-outline-info btn-sm m32-protocol" type="button">
-                            Start CW Generator
+                        <button id="cw-generator-start-snapshot4-button" class="btn btn-outline-info btn-sm cw-school-graz" type="button">
+                            <i class="bi bi-music-note-beamed"></i> Start Snapshot 4
                         </button>
-                        <!--
-
-                            <button id="cw-generator-start-snapshot4-button" class="btn btn-outline-info btn-sm cw-school-graz" type="button">
-                                🎵 Start Snapshot 4
-                            </button>
-                        -->
+                        <button id="cw-generator-start-button" class="btn btn-outline-info btn-sm m32-protocol" type="button">
+                            <i class="bi bi-play-btn"></i> Start CW Generator
+                        </button>
                     </div>
                 </div>
                 <div class="inputContainer">
@@ -475,7 +472,20 @@
 
             <!-- start echo trainer -->
             <div class="tab-pane fade" id="echo-trainer-tab-content" role="tabpanel" aria-labelledby="echo-trainer-tab">
-                <h2>Echo Trainer</h2>
+                <div class="row">
+                    <div class="col-6">
+                        <h2>Echo Trainer</h2>
+                    </div>
+
+                    <div class="col-6 text-end">
+                        <button id="echo-trainer-start-snapshot5-button" class="btn btn-outline-info btn-sm cw-school-graz" type="button">
+                            <i class="bi bi-music-note-beamed"></i> Start Snapshot 6
+                        </button>
+                        <button id="echo-trainer-start-button" class="btn btn-outline-info btn-sm m32-protocol" type="button">
+                            <i class="bi bi-play-btn"></i> Start Echo Trainer/CW Abbreviations
+                        </button>
+                    </div>
+                </div>
                 <div class="form-group">
                     Received from Morserino:
                     <textarea readonly onfocus="this.blur()" rows="6" cols="80" id="receiveTextEchoTrainer" spellcheck="false" placeholder="Here the characters received from Morserino are shown."></textarea>
@@ -643,7 +653,7 @@
                         <li><a href="#m32-config-snapshots">Snapshots</a></li>
                         <li><a href="#m32-config-wifi">Wifi Configuration</a></li>
                         <li><a href="#m32-config-settings">Configuration</a></li>
-                        <li class="cw-school-graz"><a href="#m32-config-cw-school-graz">🎵 CW School Graz Configuration</a></li>
+                        <li class="cw-school-graz"><a href="#m32-config-cw-school-graz"><i class="bi bi-music-note-beamed"></i> CW School Graz Configuration</a></li>
                     </ul>
                 </div>
 
@@ -833,9 +843,9 @@
                 <hr/>
 
                 <div id="m32-config-cw-school-graz" class="cw-school-graz">
-                    <h3>🎵 CW School Graz</h3>
+                    <h3><i class="bi bi-music-note-beamed"></i> CW School Graz</h3>
                     <p>
-                        <a href="https://oe6.oevsv.at/referate/cwschule">🎵 CW School Graz</a> uses <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Exercise-Plan-Matthew-Pullan.pdf">6 snapshots</a> (or <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Uebungsplan.pdf">here</a> in german) for different lectures. 
+                        <a href="https://oe6.oevsv.at/referate/cwschule"><i class="bi bi-music-note-beamed"></i> CW School Graz</a> uses <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Exercise-Plan-Matthew-Pullan.pdf">6 snapshots</a> (or <a href="https://oe6.oevsv.at/export/sites/oe6/referate/cwschule/unterlagen/Morserino-32-Uebungsplan.pdf">here</a> in german) for different lectures. 
                         Here you can program these snapshots with one push of a button!
                     </p>
                     <p>
