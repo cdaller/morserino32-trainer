@@ -3,6 +3,7 @@
 
 // eslint-disable-next-line no-unused-vars
 let Charts = require('chart.js');
+
 let log = require("loglevel");
 log.setDefaultLevel(log.levels.DEBUG);
 log.debug("m32main start");
@@ -23,7 +24,6 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 
 // some constants
 let VERSION = '0.6.0';
-
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
