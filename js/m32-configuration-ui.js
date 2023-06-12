@@ -336,7 +336,7 @@ class ConfigurationUI {
     setupCwSchoolSnapshot4() {
         // snapshot 4
         log.debug('configure snapshots 4');
-        this.m32CommunicationService.sendM32Command("PUT menu/set/3"); // CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT menu/set/20"); // Koch Trainer/CW Generator/Random
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
