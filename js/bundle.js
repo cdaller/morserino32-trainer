@@ -709,7 +709,7 @@ class ConfigurationUI {
     setupCwSchoolSnapshot1() {
         // snapshot 1
         log.debug('configure snapshots 1');
-        this.m32CommunicationService.sendM32Command("PUT menu/set/3"); // CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT menu/set/20"); // Koch Trainer / CW Generator/Random
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/30", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
@@ -739,8 +739,8 @@ class ConfigurationUI {
     setupCwSchoolSnapshot3() {
         // snapshot 3
         log.debug('configure snapshots 3');
-        this.m32CommunicationService.sendM32Command("PUT menu/set/25"); // Koch Trainer/Echo Trainer/Random
-        //this.m32CommunicationService.sendM32Command("PUT menu/set/29"); // Koch Trainer/Echo Trainer/Adapt. Rand.
+        //this.m32CommunicationService.sendM32Command("PUT menu/set/25"); // Koch Trainer/Echo Trainer/Random
+        this.m32CommunicationService.sendM32Command("PUT menu/set/29"); // Koch Trainer/Echo Trainer/Adapt. Rand.
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
