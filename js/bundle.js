@@ -2962,7 +2962,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.3';
+let VERSION = '0.6.4';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
