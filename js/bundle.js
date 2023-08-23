@@ -2867,7 +2867,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.2';
+let VERSION = '0.6.3';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -3054,6 +3054,7 @@ class M32Translations {
   getMenuTranslations() {
       return {
         'koch trainer': {de: 'Koch Trainer'},
+          'adapt. random': {en: 'Adaptive Random', de: 'Adaptiver Zufall'},
         // koch lessons
         '1 char m':  {en: '1 m', en_speak: '1--mike'},
         '2 char k':  {en: '2 k', en_speak: '2--kilo'},
