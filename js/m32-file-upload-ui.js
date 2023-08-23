@@ -317,6 +317,101 @@ VVV <KA> wy0zq de wv3xzs/1 <BT> thanks for coming back claire. <BT> rig is kenwo
 VVV <KA> wy7yv de wq3wxy/0 <BT> good to talk to you again matthew. i live in charleston, south carolina where your rst is 478. weather is sunny and cold and my name is william. <BT> my age is 32 and i am a engineer. <BT> rig is kenwood zv739 and runs 375 watts to a colinear antenna up 51 feet. how copy? <BT> wy7yv de wq3wxy/0<AR>
 VVV <KA> wz4pvz de w3qzu/7 <BT> good copy bill. <BT> rig is yaesu px492 and runs 900 watts to a monobander antenna up 41 feet. <BT> weather is overcast and warm and my name is julie. <BT> i live in winnemucca, nevada where your rst is 558. <BT> my age is 39 and i am a sales manager. <BT> how copy? <BT> wz4pvz de w3qzu/7<AR>
 VVV <KA> wz9uzj de wg9zp/3 <BT> solid copy becky. i live in nashua, new hampshire where your rst is 558. weather is sunny and cold and my name is beth. <BT> my age is 68 and i am a architect. <BT> rig is kenwood xv242 and runs 160 watts to a inverted v antenna up 49 feet. how copy? <BT> wz9uzj de wg9zp/3`
+},
+{
+    title: 'Bremer Stadtmusikanten',
+    content: 
+`\\cDie Bremer Stadtmusikanten
+Bremer Stadtmusikanten
+Autor: Gebrüder Grimm
+Es war einmal ein Mann, der hatte einen Esel. Dieser hatte schon lange Jahre unverdrossen die Säcke in die Mühle getragen. Nun aber verließen den Esel die Kräfte, so dass er nicht mehr zur Arbeit taugte. Da dachte sein Herr daran, ihn wegzugehen. Aber der Esel merkte, dass sein Herr nichts Gutes im Sinn hatte und lief fort. Er machte sich auf den Weg nach Bremen, denn dort, so dachte er, könnte er ja ein Bremer Stadtmusikant werden.
+
+Auf nach Bremen!
+Als er schon eine Weile gegangen war, sah er einen Jagdhund am Wegesrand liegen, der jämmerlich jammerte.
+
+"Warum jammerst du denn so, Packan?"
+fragte der Esel.
+
+"Ach",
+sagte der Hund,
+
+"ich bin alt und werde jeden Tag schwächer. Ich kann auch nicht mehr auf die Jagd und mein Herr will mich daher totschießen. Da bin ich davongelaufen. Aber womit soll ich nun mein Brot verdienen?"
+"Weißt du, was",
+sprach der Esel,
+
+"ich gehe nach Bremen und werde dort ein Stadtmusikant. Komm mit mir und musiziere mit mir. Ich spiele die Laute, und du schlägst die Pauke."
+Der Hund war einverstanden, und sie gingen zusammen weiter.
+
+Es dauerte nicht lange, da sahen sie eine Katze am Wege sitzen, die machte ein Gesicht wie sieben Tage Regenwetter.
+
+"Was ist denn dir in die Quere gekommen, alter Bartputzer?"
+fragte der Esel.
+
+"Wer kann da lustig sein, wenn es einem an den Kragen geht",
+antwortete die Katze.
+
+"Ich bin nun alt und weil meine Zähne stumpf werden und ich lieber hinter dem Ofen sitze und spinne, als nach Mäusen zu jagen, hat mich meine Frau ertränken wollen. Ich konnte mich zwar noch davonschleichen, aber nun ist guter Rat teuer. Was soll ich nun tun?"
+"Geh mit uns nach Bremen! Du verstehst dich doch auf die Nachtmusik. Wir wollen zusammen Bremer Stadtmusikanten werden."
+Die Katze hielt das für gut und ging mit ihnen fort.
+
+Als die drei so miteinander gingen, kamen sie an einem Hof vorbei. Dotr saß der Haushahn auf dem Tor und krähte aus Leibeskräften.
+
+"Dein Schreien geht einem ja durch Mark und Bein",
+sprach der Esel,
+
+"was ist mir dir?"
+"Die Hausfrau hat der Köchin befohlen, mir heute abend den Kopf abzusschlagen. Morgen, am Sonntag, haben sie Gäste und da wollen sie mich in der Suppe essen. Nun schrei ich aus vollem Hals, solang ich noch kann."
+"Ei was",
+sagte der Esel,
+
+"zieh lieber mit uns fort! Wir gehen nach Bremen, etwas Besseres als den Tod findest du dort in jedem Fall. Du hast eine gute Stimme, und wenn wir zusammen musizieren, wird es sicherlich herrlich klingen."
+Dem Hahn gefiel der Vorschlag, und sie gingen alle vier mitsammen fort.
+
+Die Bremer Stadtmusikanten
+Aber die Stadt Bremen war weit und so kamen sie abends in einen Wald, wo sie übernachten wollten. Der Esel und der Hund legten sich unter einen großen Baum, die Katze kletterte auf einen Ast, und der Hahn flog bis in den Wipfel, wo es am sichersten für ihn war.
+
+Bevor er einschlief, sah er sich noch einmal in alle Himmelsrichtungen um. Da bemerkte er einen Lichtschein in der Ferne. Er sagte seinen Gefährten, dass da wohl ein Haus sei, denn er sehe ein Licht. Der Esel antwortete:
+
+"Dann wollen wir uns aufmachen und dort hingehen, denn hier ist die Herberge schlecht."
+Und auch der Hund meinte, ein paar Knochen und mit etwas Fleisch täten ihm auch gut.
+
+Das Räuberhaus
+Also machten sie sich auf den Weg zu dem Flecken, wo das Licht war. Bald sahen sie es heller schimmern, und es wurde immer größer, bis sie vor ein hellerleuchtetes Räuberhaus kamen. Der Esel, als der größte, ging ans Fenster und schaute hinein.
+
+"Was siehst du, Grauschimmel?"
+fragte der Hahn.
+
+"Was ich sehe?"
+antwortete der Esel.
+
+"Einen gedeckten Tisch mit schönem Essen und Trinken. Räuber sitzen rundherum und lassen sich es gutgehen!"
+"Das wäre etwas für uns",
+sprach der Hahn.
+
+Da überlegten die Tiere, wie sie es anfangen könnten, die Räuber hinauszujagen. Endlich fanden sie einen Weg. Der Esel stellte sich mit den Vorderfüßen auf das Fenster, der Hund sprang auf seinen Rücken, die Katze kletterte auf den Hund, und zuletzt flog der Hahn hinauf und setzte sich auf den Kopf der. Als das geschehen war, fingen sie auf ein Zeichen an, ihre Musik zu machen: der Esel schrie, der Hund bellte, die Katze miaute und der Hahn krähte. Darauf stürzten sie durch das Fenster in die Stube hinein, dass die Scheiben klirrten.
+
+Die Räuber fuhren bei dem entsetzlichen Lärm in die Höhe. Sie meinten, ein Gespenst käme herein und flohen voller Furcht in den Wald hinaus.
+
+Nun setzten sich die vier Gesellen an den Tisch, und jeder aß nach Herzenslust.
+
+Als sie fertig waren, löschten sie das Licht aus, und jeder suchte sich einen Schlafplatz nach seinem Geschmack. Der Esel legte sich auf den Mist, der Hund hinter die Tür, die Katze auf den Herd bei der warmen Asche, und der Hahn flog auf das Dach hinauf. Und weil sie müde waren von ihrem langen Weg, schliefen sie bald ein.
+
+In der Nacht
+Als Mitternacht vorbei war und die Räuber von weitem sahen, dass kein Licht mehr im Haus brannte und alles ruhig schien, sprach der Hauptmann:
+
+"Wir hätten uns doch nicht ins Bockshorn jagen lassen sollen!"
+und schickte einen Räuber zurück, um zu sehen, ob noch jemand im Hause wäre.
+
+Der Räuber fand alles still. Er ging in die Küche und wollte ein Licht anzünden. Da sah er die feurigen Augen der Katze und meinte, es wären glühende Kohlen. Er hielt ein Streichholz dran, um sie zu entzünden.
+
+Aber die Katze verstand keinen Spaß, sprang ihm ins Gesicht und kratzte ihn aus Leibeskräften. Da erschrak er gewaltig und wollte zur Hintertür hinauslaufen, doch der Hund, der da lag, sprang auf und biß ihn ins Bein. Als der Räuber über den Hof am Misthaufen vorbeirannte, gab ihm der Esel noch einen tüchtigen Tritt mit den Hufen. Der Hahn aber, der von dem Lärm aus dem Schlaf geweckt worden war, rief vom Dache herunter:
+
+"Kikeriki!"
+Da lief der Räuber, so schnell er konnte, zu seinem Hauptmann zurück und sprach:
+
+"In dem Haus sitzt eine greuliche Hexe, die hat mich angehaucht und mir mit ihren langen Fingern das Gesicht zerkratzt. An der Tür steht ein Mann mit einem Messer, der hat mich ins Bein gestochen. Auf dem Hof aber liegt ein schwarzes Ungetüm, das hat mit einem Holzprügel auf mich eingeschlagen und oben auf dem Dache, da sitzt der Richter und rief: -Bringt mir den Schelm her!- Da machte ich, dass ich fortkam."
+Von nun an getrauten sich die Räuber nicht mehr in das Haus. Den vier Bremer Stadtmusikanten aber gefiels darin so gut, dass sie nicht wieder hinaus wollten.
+`
 }
 
 ] 
