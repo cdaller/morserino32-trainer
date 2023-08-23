@@ -3054,7 +3054,7 @@ class M32Translations {
   getMenuTranslations() {
       return {
         'koch trainer': {de: 'Koch Trainer'},
-          'adapt. random': {en: 'Adaptive Random', de: 'Adaptiver Zufall'},
+          'adapt. rand.': {en: 'Adaptive Random', de: 'Adaptiver Zufall'},
         // koch lessons
         '1 char m':  {en: '1 m', en_speak: '1--mike'},
         '2 char k':  {en: '2 k', en_speak: '2--kilo'},
