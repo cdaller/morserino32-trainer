@@ -794,12 +794,13 @@ class ConfigurationUI {
 
     setupCwSchoolSnapshot7() {
         // snapshot 7
-        log.debug('configure snapshots 6');
+        log.debug('configure snapshots 7');
         this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
-
+        
         this.m32CommunicationService.sendM32Command("GET snapshots");
     }
 
