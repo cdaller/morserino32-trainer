@@ -1897,7 +1897,7 @@ class FileUploadUI {
         this.fileUploadList = document.getElementById('upload-text-list');
         this.fillUploadFileList();
 
-        //document.getElementById("m32-file-upload-german-proverbs").addEventListener('click', this.loadText.bind(this));
+        document.getElementById("m32-file-upload-start-snapshot7-button").addEventListener('click', this.startSnapshot7.bind(this));
         document.getElementById("m32-file-upload-menu-play-file-button").addEventListener('click', this.m32CwGeneratorFilePlayerStart.bind(this));
 
         //this.textsMap = this.getTextsMap();
@@ -1976,8 +1976,14 @@ class FileUploadUI {
 
     m32CwGeneratorFilePlayerStart() {
         this.m32CommunicationService.sendM32Command('PUT menu/start/' + M32_MENU_CW_GENERATOR_FILE_PLAYER_ID);
-
     }
+
+    startSnapshot7() {
+        log.debug("starting snapshot 7");
+        this.m32CommunicationService.sendM32Command('PUT snapshot/recall/7', false);
+        this.m32CommunicationService.sendM32Command('PUT menu/start', false);
+    }
+
 
     fillUploadFileList() {
         let elements = [];
