@@ -470,6 +470,7 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snaphot4-button').addEventListener('click', this.setupCwSchoolSnapshot4.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
@@ -787,6 +788,17 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT config/Length Abbrev/2", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    setupCwSchoolSnapshot7() {
+        // snapshot 7
+        log.debug('configure snapshots 6');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
     }
@@ -2962,7 +2974,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.4';
+let VERSION = '0.6.5';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
