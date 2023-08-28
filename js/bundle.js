@@ -818,7 +818,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/25", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
-        this.m32CommunicationService.sendM32Command("PUT config/Length Calls/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/8", false);
         
         this.m32CommunicationService.sendM32Command("GET snapshots");
