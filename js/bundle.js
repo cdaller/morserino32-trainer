@@ -471,6 +471,7 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot8-button').addEventListener('click', this.setupCwSchoolSnapshot8.bind(this));
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
@@ -720,6 +721,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/1", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     setupCwSchoolSnapshot2() {
@@ -735,6 +737,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/2", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     setupCwSchoolSnapshot3() {
@@ -751,6 +754,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/3", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     setupCwSchoolSnapshot4() {
@@ -766,6 +770,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/4", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     setupCwSchoolSnapshot5() {
@@ -776,6 +781,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/5", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
     
     setupCwSchoolSnapshot6() {
@@ -790,6 +796,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
 
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     setupCwSchoolSnapshot7() {
@@ -802,6 +809,20 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
         
         this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
+    setupCwSchoolSnapshot8() {
+        // snapshot 7
+        log.debug('configure snapshots 8');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/25", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Length Calls/3", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/8", false);
+        
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
     requestDeviceInfo() {
