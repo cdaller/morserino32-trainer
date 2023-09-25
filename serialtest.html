@@ -783,11 +783,11 @@ Here is a full result of the command:
                             usage of SPIFFS file system (used for player file) {"file":{"size":nnn, "free": nnn}} nnn in bytes
                         </li>
                         <li><pre>GET file/first line↵</pre>
-                            get the first line of the text file <pre>{"file":{"first line":{"first line of the text file"}}}</pre>
+                            get the first line of the text file <pre>{"file":{"first line":"contents of text file"}}</pre>
                             See also below how to add a comment (to be used as title or description in first line).
                         </li>
                         <li><pre>GET file/text↵</pre>
-                            get the contents of the text file <pre>{"file":{"text":{"contents of text file"}}}</pre>
+                            get the contents of the text file <pre>{"file":{"text":"contents of text file"}}</pre>
                         </li>
                         <li><pre>PUT file/new/line of text↵</pre>
                             replace existing file with new file, place a line of text into new file
