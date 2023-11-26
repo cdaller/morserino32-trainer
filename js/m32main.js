@@ -23,7 +23,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.8';
+let VERSION = '0.6.9';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -133,7 +133,7 @@ class M32Main {
     }
 
     tabEventListener(event) {
-        //console.log('tab event', event);	
+        console.log('tab event', event);	
         if (event.target.id === 'cw-generator-tab') {
             this.mode = MODE_CW_GENERATOR;
         } else if (event.target.id === 'echo-trainer-tab') {
@@ -149,6 +149,8 @@ class M32Main {
         } else if (event.target.id === 'm32-cw-memory-tab') {
             this.mode = MODE_CW_MEMORY;
             this.cwMemoryUI.readCwMemories();
+        } else {
+            console.log("ERROR: unknown mode!", event)
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }

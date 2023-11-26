@@ -1030,8 +1030,8 @@ class M32CwGeneratorUI {
     }
 
     textReceived(value) {
-        log.debug("cw-generator received text", value);
         if (this.activeMode) {
+            log.debug("cw-generator received text", value);
             this.receiveText.value += value;
             //Scroll to the bottom of the text field
             this.receiveText.scrollTop = this.receiveText.scrollHeight;
@@ -2757,13 +2757,17 @@ const log  = require ('loglevel');
 const { createElement } = require('./dom-utils');
 const ReRegExp = require('reregexp').default;
 const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
+const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
 
 const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
 
 class QsoTrainerUI {
 
     constructor(m32CommunicationService, m32Storage) {
+
         this.m32CommunicationService = m32CommunicationService;
+        this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
+
         this.m32Storage = m32Storage;
         this.m32Storage.addEventListener(EVENT_SETTINGS_CHANGED, this.settingsChanged.bind(this));
 
@@ -2857,20 +2861,23 @@ class QsoTrainerUI {
 
     textReceived(value) {
         if (this.activeMode) {
+            log.debug("qso trainer received text", value);
             this.receiveTextQsoTrainer.value += value;
+            this.receiveTextQsoTrainer.scrollTop = this.receiveTextQsoTrainer.scrollHeight;
+            this.detectQso();    
         }
     }
 
     modeSelected(mode) {
-        this.activeMode = mode === 'qso-trainer';
+        this.activeMode = mode === "qso-trainer";
         log.debug("qso trainer active", this.activeMode, mode);
     }
 
 
     detectQso() {
         this.endOfMessageDetected = false;
-        //console.log('detecteQso', endOfMessageDetected)
         let text = this.receiveTextQsoTrainer.value;
+        log.debug('detecteQso', "'" + text + "'");
         if (text.endsWith(' kn ') || text.endsWith(' <kn> ') 
             || text.endsWith('e e ')
             || text.endsWith(' bk ') || text.endsWith(' <bk> ') 
@@ -3344,7 +3351,7 @@ class QsoTrainerUI {
 }
 
 module.exports = { QsoTrainerUI }
-},{"./dom-utils":1,"./m32-storage":10,"loglevel":18,"reregexp":19}],10:[function(require,module,exports){
+},{"./dom-utils":1,"./m32-communication-service":2,"./m32-storage":10,"loglevel":18,"reregexp":19}],10:[function(require,module,exports){
 'use strict';
 
 const log  = require ('loglevel');
@@ -3459,7 +3466,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.8';
+let VERSION = '0.6.9';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -3569,7 +3576,7 @@ class M32Main {
     }
 
     tabEventListener(event) {
-        //console.log('tab event', event);	
+        console.log('tab event', event);	
         if (event.target.id === 'cw-generator-tab') {
             this.mode = MODE_CW_GENERATOR;
         } else if (event.target.id === 'echo-trainer-tab') {
@@ -3585,6 +3592,8 @@ class M32Main {
         } else if (event.target.id === 'm32-cw-memory-tab') {
             this.mode = MODE_CW_MEMORY;
             this.cwMemoryUI.readCwMemories();
+        } else {
+            console.log("ERROR: unknown mode!", event)
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }

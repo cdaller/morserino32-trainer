@@ -5,13 +5,17 @@ const log  = require ('loglevel');
 const { createElement } = require('./dom-utils');
 const ReRegExp = require('reregexp').default;
 const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
+const { EVENT_M32_TEXT_RECEIVED } = require('./m32-communication-service');
 
 const QSO_WAIT_TIME_MS = 2000; // wait ms after receiving 'kn' to answer
 
 class QsoTrainerUI {
 
     constructor(m32CommunicationService, m32Storage) {
+
         this.m32CommunicationService = m32CommunicationService;
+        this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
+
         this.m32Storage = m32Storage;
         this.m32Storage.addEventListener(EVENT_SETTINGS_CHANGED, this.settingsChanged.bind(this));
 
@@ -105,20 +109,23 @@ class QsoTrainerUI {
 
     textReceived(value) {
         if (this.activeMode) {
+            log.debug("qso trainer received text", value);
             this.receiveTextQsoTrainer.value += value;
+            this.receiveTextQsoTrainer.scrollTop = this.receiveTextQsoTrainer.scrollHeight;
+            this.detectQso();    
         }
     }
 
     modeSelected(mode) {
-        this.activeMode = mode === 'qso-trainer';
+        this.activeMode = mode === "qso-trainer";
         log.debug("qso trainer active", this.activeMode, mode);
     }
 
 
     detectQso() {
         this.endOfMessageDetected = false;
-        //console.log('detecteQso', endOfMessageDetected)
         let text = this.receiveTextQsoTrainer.value;
+        log.debug('detecteQso', "'" + text + "'");
         if (text.endsWith(' kn ') || text.endsWith(' <kn> ') 
             || text.endsWith('e e ')
             || text.endsWith(' bk ') || text.endsWith(' <bk> ') 
