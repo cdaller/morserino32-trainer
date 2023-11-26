@@ -843,7 +843,7 @@ Here is a full result of the command:
 
                     <h4>CW Player</h4>
                     In CW Keyer mode or in Tranceiver mode CW output can be generate (like a memory keyer). Player is stopped by manual keying or the stop command.
-                    <code>/p</code> or <code>&lt;p&gt;</code> add short pauses.
+                    <code>/p</code>,  <code>[p]</code>, or <code>&lt;p&gt;</code> add short pauses.
                     <ul>
                         <li>
                             <pre>PUT cw/play/cq cq cq de OE6CHD pse k↵</pre>
@@ -857,6 +857,27 @@ Here is a full result of the command:
                             <pre>PUT cw/stop↵</pre>
                         </li>
                     </ul>                            
+                    <h4>CW Memory</h4>
+                    <p>There are 8 memories to store text that can be played. Memory 1 and 2 are played in loops until the paddle is touched.
+                        Use <code>/p</code>,  <code>[p]</code>, or <code>&lt;p&gt;</code> for a pause (e.g. to listen to an answer).
+                    </p>
+                    <ul>
+                        <li><pre>GET cw/memories↵</pre>
+                            returns a list of all currently stored memmories:
+                            <pre>{"CW Memories":{"cw memories in use":[1,2]}}</pre>
+                        </li>
+                        <li><pre>PUT cw/store/n/text↵</pre>
+                            store text in cw memory n (n = 1..8)
+                            <pre>PUT cw/store/1/cq cq cq de OE6CHD pse k↵</pre>
+                        </li>
+                        <li><pre>GET cw/memory/n↵</pre>
+                            returns the text for memory n (n = 1..8):
+                            <pre>{"CW Memory":{"number":1,"content":"cq cq cq de OE6CHD pse k"}}</pre>
+                        </li>
+                        <li><pre>PUT cw/recall/n↵</pre>
+                            generate morse code from the content in memory number n; if <code>&lt;n&gt;</code> is 1 or 2, do this until stopped by touching a paddle, or by the <code>PUT cw/stop</code> command
+                        </li>
+                    </ul>
 
                 </div>
             </div>

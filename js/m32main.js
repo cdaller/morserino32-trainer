@@ -17,19 +17,20 @@ const { EchoTrainerUI } = require('./m32-echo-trainer-ui');
 const { M32CommunicationService } = require('./m32-communication-service');
 const { QsoTrainerUI } = require('./m32-qso-trainer');
 const { ConfigurationUI } = require('./m32-configuration-ui');
+const { CWMemoryUI } = require('./m32-cw-memory-ui');
 const { FileUploadUI } = require('./m32-file-upload-ui');
-
 
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.6.7';
+let VERSION = '0.6.8';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
 const MODE_QSO_TRAINER = 'qso-trainer';
 const MODE_M32_CONFIG = 'm32-config';
 const MODE_FILE_UPLOAD = 'file-upload';
+const MODE_CW_MEMORY = 'cw-memory';
 
 const EVENT_MODE_SELECTED = "mode-selected";
 
@@ -55,6 +56,7 @@ class M32Main {
         this.qsoTrainerUI = new QsoTrainerUI(m32CommunicationService, m32Storage);
         this.configurationUI = new ConfigurationUI(m32CommunicationService, document.getElementById('m32-config'));
         this.fileUploadUI = new FileUploadUI(m32CommunicationService);
+        this.cwMemoryUI = new CWMemoryUI(m32CommunicationService);
 
         m32Storage.loadSettings();
 
@@ -123,6 +125,8 @@ class M32Main {
             document.getElementById('m32-config-tab').click();
         } else if (mode === MODE_FILE_UPLOAD) {
             document.getElementById('m32-file-upload-tab').click();
+        } else if (mode === MODE_CW_MEMORY) {
+            document.getElementById('m32-cw-memory-tab').click();
         } else {
             console.log('Unknown mode: ', mode);
         }
@@ -142,10 +146,13 @@ class M32Main {
         } else if (event.target.id === 'm32-file-upload-tab') {
             this.mode = MODE_FILE_UPLOAD;
             this.fileUploadUI.readFile();
+        } else if (event.target.id === 'm32-cw-memory-tab') {
+            this.mode = MODE_CW_MEMORY;
+            this.cwMemoryUI.readCwMemories();
         }
         this.eventEmitter.emit(EVENT_MODE_SELECTED, this.mode);
     }
 }
 
-module.exports = { MODE_CW_GENERATOR, MODE_ECHO_TRAINER, MODE_QSO_TRAINER, MODE_M32_CONFIG }
+module.exports = { MODE_CW_GENERATOR, MODE_ECHO_TRAINER, MODE_QSO_TRAINER, MODE_M32_CONFIG, MODE_CW_MEMORY }
 
