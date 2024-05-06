@@ -2132,7 +2132,7 @@ class FileUploadUI {
 
     getFileUploadTexts() {
         return [ {
-            title: 'German Sayings (DE)', 
+            title: 'Deutsche Sprichwörter (DE)', 
             content:  
 `\\c Deutsche Sprichworte
 Jeder sollte vor seiner eigenen Tuer kehren. = 
