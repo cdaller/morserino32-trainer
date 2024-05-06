@@ -452,11 +452,13 @@ class M32CwGeneratorUI {
     
     startSnapshot4() {
         log.debug("starting snapshot 4");
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT snapshot/recall/4', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start', false);
     }
 
     startCwGenerator() {
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start/20', false);
     }
 }

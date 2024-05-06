@@ -102,11 +102,13 @@ class FileUploadUI {
     }
 
     m32CwGeneratorFilePlayerStart() {
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start/' + M32_MENU_CW_GENERATOR_FILE_PLAYER_ID);
     }
 
     startSnapshot7() {
         log.debug("starting snapshot 7");
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT snapshot/recall/7', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start', false);
     }

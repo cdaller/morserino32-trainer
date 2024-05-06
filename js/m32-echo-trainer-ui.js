@@ -106,17 +106,20 @@ class EchoTrainerUI {
 
     startSnapshot6() {
         log.debug("starting snapshot 6");
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT snapshot/recall/6', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start', false);
     }
 
     startSnapshot8() {
         log.debug("starting snapshot 8");
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT snapshot/recall/8', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start', false);
     }
 
     startEchoTrainerAbbreviations() {
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
         this.m32CommunicationService.sendM32Command('PUT menu/start/11', false);
     }
     

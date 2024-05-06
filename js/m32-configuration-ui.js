@@ -260,6 +260,7 @@ class ConfigurationUI {
         let snapshotId = selectedOption.value;
         if (snapshotId) {
             log.debug("recall snapshot", snapshotId);
+            this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
             this.m32CommunicationService.sendM32Command("PUT snapshot/recall/" + snapshotId, false);
             // read new configuration:
             this.m32CommunicationService.sendM32Command("GET configs");

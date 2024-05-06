@@ -137,6 +137,9 @@
         .cw-school-graz-enabled {
             visibility: visible;
         }
+        .changed {
+            border: 1px solid red;
+        }
     </style>
 </head>
 
@@ -285,6 +288,7 @@
                 </div>
             </div>
             <ul>
+                <li>2024-05-07: Add CW Memories</li>
                 <li>2024-05-06: Fix Snapshot 6 of CW Schule Graz, Add link to browser FW Flasher</li>
                 <li>2023-11-26: fixed broken QSO Training Mode</li>
                 <li>2023-05-14: Improve configuration: snapshots (recall, clear, store, setup snapshots for CW School Graz)</li>
@@ -398,15 +402,12 @@
                         role="tab" aria-controls="m32-file-upload-tab-content" 
                         aria-selected="false">M32 File Upload</button>
             </li>
-            <!--
-
-                <li class="nav-item m32-protocol-enabled" role="presentation">
+                <li class="nav-item m32-protocol" role="presentation">
                     <button class="nav-link" id="m32-cw-memory-tab" data-bs-toggle="tab" 
                     data-bs-target="#m32-cw-memory-tab-content" type="button" 
                     role="tab" aria-controls="m32-cw-memory-tab-content" 
                     aria-selected="false">M32 CW Memory</button>
                 </li>
-            -->
         </ul>
         <div class="tab-content" id="mainTabContent">
             <!-- start cw generator -->
@@ -970,62 +971,77 @@ OE6YAW de OE6CHD kn
 
             <!-- start m32 cw memory -->
             <div class="tab-pane fade" id="m32-cw-memory-tab-content" role="tabpanel" aria-labelledby="m32-cw-memory-tab">
-                <h2>M32 CW Memory</h2>
+                <div class="row">
+                    <div class="col-6">
+                        <h2>M32 CW Memory</h2>
+                    </div>
+
+                    <div class="col-6 text-end">
+                        <button id="cw-memory-start-snapshot5-button" class="btn btn-outline-info btn-sm cw-school-graz" type="button">
+                            <i class="bi bi-music-note-beamed"></i> Start Snapshot 5
+                        </button>
+                        <button id="cw-memory-start-button" class="btn btn-outline-info btn-sm m32-protocol" type="button">
+                            <i class="bi bi-play-btn"></i> Start CW Keyer
+                        </button>
+                    </div>
+                </div>
+
+                <p>Use Morserino as programmable CW Keyer. To recall memories, you must enable CW Keyer mode!</p>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-1">CW Memory 1 (loop)</span>
                     <input id="m32-cw-memory-1-input" type="text" class="form-control" placeholder="cq cq cq de oe6chd pse k" aria-label="CW Memory 1" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-1-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-1-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-1-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-1">CW Memory 2 (loop)</span>
                     <input id="m32-cw-memory-2-input" type="text" class="form-control" placeholder="" aria-label="CW Memory 2" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-2-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-2-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-2-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-1">CW Memory 3</span>
                     <input id="m32-cw-memory-3-input" type="text" class="form-control" placeholder="my name is chris =" aria-label="CW Memory 3" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-3-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-3-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-3-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-4">CW Memory 4</span>
                     <input id="m32-cw-memory-4-input" type="text" class="form-control" placeholder="my qth is graz =" aria-label="CW Memory 4" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-4-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-4-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-4-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-5">CW Memory 5</span>
                     <input id="m32-cw-memory-5-input" type="text" class="form-control" placeholder="" aria-label="CW Memory 5" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-5-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-5-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-5-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-6">CW Memory 6</span>
                     <input id="m32-cw-memory-6-input" type="text" class="form-control" placeholder="" aria-label="CW Memory 6" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-6-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-6-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-6-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-7">CW Memory 7</span>
                     <input id="m32-cw-memory-7-input" type="text" class="form-control" placeholder="" aria-label="CW Memory 7" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-7-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-7-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-7-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
 
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="label-cw-memory-8">CW Memory 8</span>
                     <input id="m32-cw-memory-8-input" type="text" class="form-control" placeholder="" aria-label="CW Memory 8" aria-describedby="label-cw-memory-1">
                     <button class="btn btn-info" type="button" id="m32-cw-memory-8-save-button"><i class="bi bi-box-arrow-up"></i> Save to M32</button>
-                    <button class="btn btn-primary" type="button" id="m32-cw-memory-8-play-button"><i class="bi bi-play-btn"></i> Play</button>
+                    <button class="btn btn-primary" type="button" id="m32-cw-memory-8-recall-button"><i class="bi bi-play-btn"></i> Play</button>
                 </div>
             </div> <!-- end m32 cw memory -->
             
