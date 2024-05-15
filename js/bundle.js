@@ -792,7 +792,7 @@ class ConfigurationUI {
     setupCwSchoolSnapshot6() {
         // snapshot 6
         log.debug('configure snapshots 6');
-        this.m32CommunicationService.sendM32Command("PUT menu/set/11"); // Echo Trainer/CW Abbrevs
+        this.m32CommunicationService.sendM32Command("PUT menu/set/21"); // Koch Trainer/CW Generator/CW Abbrevs
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/7", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
@@ -3520,7 +3520,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.0';
+let VERSION = '0.7.1';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
