@@ -302,7 +302,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
         this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/1", false);
-        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/0", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
         this.m32CommunicationService.sleep(1000);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/1", false);
@@ -320,7 +320,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
         this.m32CommunicationService.sendM32Command("PUT config/Time-out/0", false);
-        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/0", false);
         this.m32CommunicationService.sleep(1000);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/2", false);
 
@@ -337,7 +337,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
         this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/1", false); // 2-5
-        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/0", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
         this.m32CommunicationService.sleep(1000);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/3", false);
@@ -354,7 +354,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
         this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
         this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/9", false);
-        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/0", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/15", false);
         this.m32CommunicationService.sleep(1000);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/4", false);
