@@ -468,10 +468,14 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snaphot2-button').addEventListener('click', this.setupCwSchoolSnapshot2.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot3-button').addEventListener('click', this.setupCwSchoolSnapshot3.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot4-button').addEventListener('click', this.setupCwSchoolSnapshot4.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot4-koch-button').addEventListener('click', this.setupCwSchoolSnapshot4Koch.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
-        document.getElementById('m32-config-cw-school-setup-snaphot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
-        document.getElementById('m32-config-cw-school-setup-snaphot8-button').addEventListener('click', this.setupCwSchoolSnapshot8.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot6-koch-button').addEventListener('click', this.setupCwSchoolSnapshot6Koch.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot7-koch-button').addEventListener('click', this.setupCwSchoolSnapshot7Koch.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot8-button').addEventListener('click', this.setupCwSchoolSnapshot8.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot8-koch-button').addEventListener('click', this.setupCwSchoolSnapshot8Koch.bind(this));
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
@@ -778,6 +782,23 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot4Koch() {
+        // snapshot 4
+        log.debug('configure snapshots 4');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/20"); // Koch Trainer/CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/9", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/15", false);
+        this.m32CommunicationService.sleep(1000);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/4", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot5() {
         // snapshot 5
         log.debug('configure snapshots 5');
@@ -805,6 +826,22 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot6Koch() {
+        // snapshot 6
+        log.debug('configure snapshots 6');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/26"); // Koch Trainer/Echo Trainer/CW Abbrevs
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Abbrev/2", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot7() {
         // snapshot 7
         log.debug('configure snapshots 7');
@@ -819,12 +856,41 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot7Koch() {
+        // snapshot 7
+        log.debug('configure snapshots 7');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
+        
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot8() {
         // snapshot 8
         log.debug('configure snapshots 8');
         this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/25", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/8", false);
+        
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
+    setupCwSchoolSnapshot8Koch() {
+        // snapshot 8
+        log.debug('configure snapshots 8');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
         this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
@@ -2558,9 +2624,9 @@ Wie gern denk' ich daran zurück, nicht um mich in meiner Heldentat zu sonnen, s
 `
 },
 {
-    title: 'Nouvelle von Goethe (DE)',
+    title: 'Novelle von Goethe (DE)',
     content: 
-`\\cNouvelle
+`\\cNovelle
 Johann Wolfgang von Goethe
 
 Novelle
@@ -2788,6 +2854,21 @@ Blankes Schwert erstarrt im Hiebe, Glaub und Hoffnung sind erfüllt, wundertäti
 Ist es möglich zu denken, daß man in den Zügen eines so grimmigen Geschöpfes, des Tyrannen der Wälder, des Despoten des Tierreiches, einen Ausdruck von Freundlichkeit, von dankbarer Zufriedenheit habe spüren können, so geschah es hier, und wirklich sah das Kind in seiner Verklärung aus wie ein mächtiger, siegreicher Überwinder, jener zwar nicht wie der Überwundene, denn seine Kraft blieb in ihm verborgen, aber doch wie der Gezähmte, wie der dem eigenen friedlichen Willen Anheimgegebene.
 Das Kind flötete und sang so weiter, nach seiner Art die Zeilen verschränkend und neue hinzufügend: und so geht mit guten Kindern selger Engel gern zu Rat, böses Wollen zu verhindern, zu befördern schöne Tat.
 So beschwören, fest zu bannen liebem Sohn ans zarte Knie ihn, des Waldes Hochtyrannen, frommer Sinn und Melodie.
+`
+},
+{
+    title: 'Wortliste Top 500 (DE)',
+    content: 
+`\\cWortliste
+allgemein Frage bleiben gehen Kunst ziehen selber gewiss Ding Hand fühlen gehören anbieten Boden Teil recht zu stehen wollen schauen allerdings Herr deren dass drei Regel öffentlich Mal denn Recht eher Möglichkeit scheinen Gruppe nächste Moment dazu dich Angst dann wie fahren da um schreiben schließen bestimmt Arbeit anderer alleine verlieren studieren klar planen Tisch geschehen also Werk an kein nach handeln Tür kennen wissen richtig obwohl kurz fünf Sohn bekannt führen während darin mehr Gesellschaft Zahl wachsen genug Platz solche was alt erklären die anfangen denken gewinnen Spiel Minute Anfang ähnlich Beziehung sagen Stück in leicht Zukunft Meter halten wir mehrere Paar verschieden gleich ansehen Kopf stark etwas beide Person Information gut Aufgabe Haus beginnen verlassen brauchen wohl dort Monat davon arbeiten glauben offen einzeln wenn mit spät schnell bekommen Geld lang der weitere folgen Frau fragen ja Musik schwarz Sache schwierig gegenüber uns bedeuten Krieg legen nun liegen sitzen Entwicklung sehen gerne du dessen am seit sollen Programm bestehen oben genau Raum darauf Abbildung mich jemand gemeinsam fallen Schule aber wer Punkt sich meist als wo es Nacht Tag sprechen doch wirklich Staat Eltern all etwa spielen wichtig eigentlich mal erwarten erkennen Funktion ändern acht Beispiel einsetzen bisher Bedeutung Zeit annehmen einige Begriff praktisch zwei steigen schaffen unterschiedlich Folge Rahmen möglich Erfahrung Leute Familie zeigen sicher Geschichte Wohnung irgendwie einmal Vater dafür fehlen System Beruf müssen ihnen ihm vier rüber zwar ein nämlich manch Sinn je Mann klein reden stellen interessieren finden Ergebnis Jahrhundert Gott natürlich erstes ab kaum nahe warten Thema bereits Gespräch bis sein wohnen beschreiben erzählen kommen Problem nehmen danach Unternehmen sogar gering Art Freund gegen werden entwickeln Buch deshalb Gesicht Euro von erreichen gerade Absatz wesentlich laufen schön Million verstehen durch Woche vor Situation dein oft gar Rolle jetzt Uni lange Interesse überhaupt eigen Form Bild völlig lassen nein Preis Mensch groß Stadt selbst aussehen fast sofort Auge rot ganz Bereich der, Abend Grund letzt Prozent wahrscheinlich dabei Land erscheinen verbinden er dadurch bisschen, Ort rund Deutsch erster Stelle ausgehen Text jung ob deutsch einfach Fall plötzlich wieder vergehen dagegen Auto zunächst das Lehrer Blick frei dürfen hoch zwischen endlich Mutter daran Kind Stimme welche Milliarde weil und schon Seite häufig kriegen Wert Richtung Ihr naja Weise anderes man sie tun ihn inzwischen leben haben immer erhalten schwer über hinter ziemlich für früh nutzen damit Ende na Morgen international neu so beziehungsweise Regierung politisch erst suchen früher viel Straße nennen lernen dir Weg einzig manchmal weiter ach hier bei vielleicht außerdem Ziel vergleichen sondern auf zehn andere heute tragen sozial unter Stunde im vorstellen auch Wasser schließlich damals sehr erinnern deutlich ergeben halb ich Schüler setzen noch Politik mir gelten mein direkt bringen wegen dies anders versuchen nie mögen sechs Uhr machen denen best- darstellen halt neben her nichts Wort Welt besonder- aus bissel Universität können Mark Jahr treffen besonders heißen bilden wenig ohne jedoch helfen nicht niemand nur meinen ebenso persönlich entstehen oder eben Schritt Leben voll lesen europäisch bieten besser warum Name sowie daher weit erste entsprechen Sprache bald sonst betreffen schlecht 
+`
+},
+
+{
+    title: 'Wordlist Top 500 (EN)',
+    content: 
+`\\cWordlist
+step even class hour nothing left eye should every foot between on after head often science took since notice is hundred what bed base few south play thing I but tell first against drive picture some bird street behind travel why let hot hot warm clear rain horse fast unit big game piece take come does language possible common word top answer add less red force will rock from look through feet heat full dark try book problem same reach very record use we house sea care where green than three how build several field toward second next with boat decide fill dry year boy air six my pose serve fish know which friend old order stood press plane watch no am group down him sound our happen sun perhaps color has read for find go wood east check last ran country wheel bring great vowel whole better quick measure final up say ever them out beauty was draw his morning list animal did course help of stand it correct contain note cause side among her form small home simple surface father might fact such north day cold two work yes they main while name mother feel question would well put get when gave in their oh strong high example do face star by if power music numeral above end any table size life new plant about saw wonder said give ago king fine night blue line money brought too TRUE fly ask think test move lot got pound act center able carry done fall told cry pass light had half again right change wind man body good room area four large pattern family tail story city place week be back still teach see produce paper machine grow during hear slow west must could found make only once lead water ship noun miss shape set learn door dog start write point free one ground appear self ready special round went wait plan mountain box began show sing cross fire farm before there live black war your listen world town can sure men car need have at figure stop talk usual snow love young hand map until ten together mind sentence rule mark you direct weight follow real lay all low gold the cut way knew certain interest early those number may little page most yet though begin then eat soon never me enough port govern kind five made came product more white tree idea late river close school own earth walk mean island complete best sleep she run turn ease front people mile this remember who far and near thought cover land road inch deep differ he a minute voice call as part rest leave that heard both keep are short an develop busy spell laugh like study over person thousand time sit children were girl long been stay each much song moon always hard under hold many or us seem so object other pull letter these state want age also now to plain don't open off just here food 
 `
 },
 // {
@@ -3520,7 +3601,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.2';
+let VERSION = '0.7.3';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -3804,8 +3885,8 @@ class M32Translations {
       'curtisb daht%': { en: 'Curtis B Mode dah Timing Percentage' },
       'curtisb ditt%': { en: 'Curtis B Mode dit Timing Percentage' },
       'autochar spc': { en: 'Auto Character Space' },
-      'interword spc': { en: 'Inter word Space' },
-      'interchar spc': { en: 'Inter character Space' },
+      'interword spc': { en: 'Inter Word Space' },
+      'interchar spc': { en: 'Inter Character Space' },
       'length rnd gr': { en: 'Length Random Groups' },
       'length abbrev': { en: 'Length Abbreviations' },
       'max # of words': { en: 'Maximum Number of Words' },

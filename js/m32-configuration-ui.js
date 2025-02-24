@@ -49,10 +49,14 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snaphot2-button').addEventListener('click', this.setupCwSchoolSnapshot2.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot3-button').addEventListener('click', this.setupCwSchoolSnapshot3.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot4-button').addEventListener('click', this.setupCwSchoolSnapshot4.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot4-koch-button').addEventListener('click', this.setupCwSchoolSnapshot4Koch.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot5-button').addEventListener('click', this.setupCwSchoolSnapshot5.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot6-button').addEventListener('click', this.setupCwSchoolSnapshot6.bind(this));
-        document.getElementById('m32-config-cw-school-setup-snaphot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
-        document.getElementById('m32-config-cw-school-setup-snaphot8-button').addEventListener('click', this.setupCwSchoolSnapshot8.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snaphot6-koch-button').addEventListener('click', this.setupCwSchoolSnapshot6Koch.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot7-button').addEventListener('click', this.setupCwSchoolSnapshot7.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot7-koch-button').addEventListener('click', this.setupCwSchoolSnapshot7Koch.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot8-button').addEventListener('click', this.setupCwSchoolSnapshot8.bind(this));
+        document.getElementById('m32-config-cw-school-setup-snapshot8-koch-button').addEventListener('click', this.setupCwSchoolSnapshot8Koch.bind(this));
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
@@ -359,6 +363,23 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot4Koch() {
+        // snapshot 4
+        log.debug('configure snapshots 4');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/20"); // Koch Trainer/CW Generator/Random
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Rnd Gr/9", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/15", false);
+        this.m32CommunicationService.sleep(1000);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/4", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot5() {
         // snapshot 5
         log.debug('configure snapshots 5');
@@ -386,6 +407,22 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot6Koch() {
+        // snapshot 6
+        log.debug('configure snapshots 6');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/26"); // Koch Trainer/Echo Trainer/CW Abbrevs
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Random Groups/0", false); // All Chars
+        this.m32CommunicationService.sendM32Command("PUT config/Length Abbrev/2", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/0", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/20", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/6", false);
+
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot7() {
         // snapshot 7
         log.debug('configure snapshots 7');
@@ -400,12 +437,41 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("GET configs");
     }
 
+    setupCwSchoolSnapshot7Koch() {
+        // snapshot 7
+        log.debug('configure snapshots 7');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
+        
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
     setupCwSchoolSnapshot8() {
         // snapshot 8
         log.debug('configure snapshots 8');
         this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/25", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
+        this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/8", false);
+        
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+        this.m32CommunicationService.sendM32Command("GET configs");
+    }
+
+    setupCwSchoolSnapshot8Koch() {
+        // snapshot 8
+        log.debug('configure snapshots 8');
+        this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
         this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
         this.m32CommunicationService.sendM32Command("PUT Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
