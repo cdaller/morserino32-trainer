@@ -131,16 +131,19 @@ class M32CommunicationService {
         const baudRate = 115200;
 
         //Optional filter to only see relevant boards
-        const filter = {
+        const filter = [
             // morserino32
             // Product ID: 0xea60
             // Vendor ID: 0x10c4  (Silicon Laboratories, Inc.)
-            usbVendorId: 0x10c4
-        };
+            { usbVendorId: 0x10c4 },
+            // morserino32
+            // Vendor ID: 0x303a (ESP32 Wroom version)
+            { usbVendorId: 0x303a }
+        ];
 
         //Try to connect to the Serial port
         try {
-            this.port = await navigator.serial.requestPort({ filters: [filter] });
+            this.port = await navigator.serial.requestPort({ filters: filter });
             // Continue connecting to |port|.
 
             // - Wait for the port to open.
