@@ -108,19 +108,21 @@ class M32CommunicationService {
         const baudRate = 115200;
 
         //Optional filter to only see relevant boards
-        const filter = [
-            // morserino32
-            // Product ID: 0xea60
-            // Vendor ID: 0x10c4  (Silicon Laboratories, Inc.)
-            { usbVendorId: 0x10c4 },
-            // morserino32
-            // Vendor ID: 0x303a (ESP32 Wroom version)
-            { usbVendorId: 0x303a }
+        const filters = [
+            { 
+                // morserino32
+                // Product ID: 0xea60
+                usbVendorId: 0x10c4 // Silicon Laboratories, Inc.
+            },
+            { 
+                // ESP32 Wroom version
+                usbVendorId: 0x303a 
+            }
         ];
 
         //Try to connect to the Serial port
         try {
-            this.port = await navigator.serial.requestPort({ filters: filter });
+            this.port = await navigator.serial.requestPort({ filters: filters });
             // Continue connecting to |port|.
 
             // - Wait for the port to open.
@@ -670,7 +672,7 @@ class M32Translations {
   getMenuTranslations() {
       return {
         'koch trainer': {de: 'Koch Trainer'},
-        'adapt. rand.': {en: 'Adaptive Random', de: 'Adaptiver Zufall'},
+          'adapt. rand.': {en: 'Adaptive Random', de: 'Adaptiver Zufall'},
         // koch lessons
         '1 char m':  {en: '1 m', en_speak: '1--mike'},
         '2 char k':  {en: '2 k', en_speak: '2--kilo'},

@@ -48,6 +48,10 @@ watchify js/m32main.js   -o js/bundle.js
 * Speech output for visually impaired users.
 * see [serialtest.html](serialtest.html) for details or better test at [serialtest at tegmento](//tegmento.org/serialtest.html)
 
+```bash
+browserify js/serialtest.js   -o js/bundle-serialtest.js
+```
+
 ### Play Texts
 
 * Play full QSO examples
