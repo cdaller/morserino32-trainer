@@ -107,3 +107,7 @@ watchify js/m32main.js   -o js/bundle.js
 * Select Wifi  (/)
 * CW Generator
   * Voice output for results. How? e.g. Bravo missing, X-Ray wrong, ...
+
+TODO:
+* cw keyer: button einfügen + radiergummi für letzte gruppe löschen
+* Voice comparison stopps after 16 seconds (cancelled by whom?)
