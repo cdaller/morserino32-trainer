@@ -204,13 +204,13 @@ class M32CwGeneratorUI {
             // grey for common parts
             if (part.added) {
                 let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
-                elements.push(`wrong ${letters}`);
+                elements.push(` wrong ${letters}`);
             } else if (part.removed) {
                 let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
-                elements.push(`missing ${letters}`);
+                elements.push(` missing ${letters}`);
             } else {
                 let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
-                elements.push(`correct ${letters}`);
+                elements.push(` correct ${letters}`);
             }
         });
         return elements;
