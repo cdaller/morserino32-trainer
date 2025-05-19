@@ -853,7 +853,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
-        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/2", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
         
@@ -867,7 +867,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT menu/set/8"); // CW Generator/File Player
         this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/6", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/3", false);
-        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/2", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/7", false);
         
@@ -879,10 +879,10 @@ class ConfigurationUI {
         // snapshot 8
         log.debug('configure snapshots 8');
         this.m32CommunicationService.sendM32Command("PUT menu/set/13"); // Echo Trainer / Callsigns
-        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/25", false);
+        this.m32CommunicationService.sendM32Command("PUT config/InterWord Spc/45", false);
         this.m32CommunicationService.sendM32Command("PUT config/Interchar Spc/15", false);
         this.m32CommunicationService.sendM32Command("PUT config/Length Calls/1", false); // length = 3
-        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/2", false);
+        this.m32CommunicationService.sendM32Command("PUT config/Each Word 2x/1", false);
         this.m32CommunicationService.sendM32Command("PUT config/Max # of Words/0", false);
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/8", false);
         
@@ -3606,7 +3606,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.4';
+let VERSION = '0.7.5';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
