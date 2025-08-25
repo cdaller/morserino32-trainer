@@ -786,7 +786,7 @@ class M32Translations {
       'd': {en: 'delta'},
       'e': {en: 'echo'},
       'f': {en: 'foxtrott'},
-      'g': {en: 'gamma'},
+      'g': {en: 'golf'},
       'h': {en: 'hotel'},
       'i': {en: 'india'},
       'j': {en: 'juliet'},

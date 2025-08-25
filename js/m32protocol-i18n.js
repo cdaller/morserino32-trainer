@@ -12,7 +12,11 @@ class M32Translations {
   }
 
   phonetisize(text) {
-    return [...text].map(char => this.translateCharacter(char)).join(' '); 
+    // Match groups like <sk> or <bk> or single characters
+    const regex = /<[^>]+>|./g;
+    return text.match(regex)
+      .map(token => this.translateCharacter(token))
+      .join('--');
   }
 
   translateMenu(key, language, languageVariant = '') {
@@ -29,8 +33,10 @@ class M32Translations {
 
 
   translate(key, language, languageVariant = '', i18nMap) {
-    log.debug("Translate key", key, "to language", language);
-    var translationMap = i18nMap[key.trim().toLowerCase()];
+    log.debug("Translate key '" + key + "' to language", language);
+    if (key !== ' ')
+      key = key.trim().toLowerCase();
+    var translationMap = i18nMap[key];
     if (!translationMap) {
       return key;
     }
@@ -171,7 +177,7 @@ class M32Translations {
       'd': {en: 'delta'},
       'e': {en: 'echo'},
       'f': {en: 'foxtrott'},
-      'g': {en: 'gamma'},
+      'g': {en: 'golf'},
       'h': {en: 'hotel'},
       'i': {en: 'india'},
       'j': {en: 'juliet'},
@@ -189,7 +195,23 @@ class M32Translations {
       'v': {en: 'victor'},
       'x': {en: 'x-ray'},
       'y': {en: 'yankee'},
-      'z': {en: 'zulu}'}
+      'z': {en: 'zulu'},
+      '.': {en: 'dot'},
+      '?': {en: 'questionmark'},
+      '/': {en: 'slash'},
+      ',': {en: 'comma'},
+      '-': {en: 'minus'},
+      '+': {en: 'plus'},
+      '=': {en: 'equals'},
+      ':': {en: 'colon'},
+      '@': {en: 'at'},
+      ' ': {en: 'space'},
+      '<sk>': {en: 'silent key'}, // silent key
+      '<as>': {en: 'alpha sierra'}, // wait
+      '<kn>': {en: 'kilo november'}, // invitation for named station to transmit
+      '<ka>': {en: 'kilo alpha'}, // attention, message begins
+      '<ve>': {en: 'victor echo'}, //verified
+      '<bt>': {en: 'bravo kilo'}, // break
     } 
   }
 }

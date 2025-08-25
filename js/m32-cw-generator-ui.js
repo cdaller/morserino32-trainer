@@ -202,14 +202,16 @@ class M32CwGeneratorUI {
         diff.forEach(function (part) {
             // green for additions, red for deletions
             // grey for common parts
+            console.log('part', part.value);
+            let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
+            //letters = letters.replace(/-   -/g, '- space -'); // speak spaces too
+            console.log('letters', letters);
+
             if (part.added) {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` wrong ${letters}`);
             } else if (part.removed) {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` missing ${letters}`);
             } else {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` correct ${letters}`);
             }
         });

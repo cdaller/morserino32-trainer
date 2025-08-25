@@ -1247,14 +1247,16 @@ class M32CwGeneratorUI {
         diff.forEach(function (part) {
             // green for additions, red for deletions
             // grey for common parts
+            console.log('part', part.value);
+            let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
+            //letters = letters.replace(/-   -/g, '- space -'); // speak spaces too
+            console.log('letters', letters);
+
             if (part.added) {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` wrong ${letters}`);
             } else if (part.removed) {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` missing ${letters}`);
             } else {
-                let letters = that.m32CommunicationService.m32translations.phonetisize(part.value);
                 elements.push(` correct ${letters}`);
             }
         });
@@ -3606,7 +3608,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.5';
+let VERSION = '0.7.6';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -3757,7 +3759,11 @@ class M32Translations {
   }
 
   phonetisize(text) {
-    return [...text].map(char => this.translateCharacter(char)).join(' '); 
+    // Match groups like <sk> or <bk> or single characters
+    const regex = /<[^>]+>|./g;
+    return text.match(regex)
+      .map(token => this.translateCharacter(token))
+      .join('--');
   }
 
   translateMenu(key, language, languageVariant = '') {
@@ -3774,8 +3780,10 @@ class M32Translations {
 
 
   translate(key, language, languageVariant = '', i18nMap) {
-    log.debug("Translate key", key, "to language", language);
-    var translationMap = i18nMap[key.trim().toLowerCase()];
+    log.debug("Translate key '" + key + "' to language", language);
+    if (key !== ' ')
+      key = key.trim().toLowerCase();
+    var translationMap = i18nMap[key];
     if (!translationMap) {
       return key;
     }
@@ -3916,7 +3924,7 @@ class M32Translations {
       'd': {en: 'delta'},
       'e': {en: 'echo'},
       'f': {en: 'foxtrott'},
-      'g': {en: 'gamma'},
+      'g': {en: 'golf'},
       'h': {en: 'hotel'},
       'i': {en: 'india'},
       'j': {en: 'juliet'},
@@ -3934,7 +3942,23 @@ class M32Translations {
       'v': {en: 'victor'},
       'x': {en: 'x-ray'},
       'y': {en: 'yankee'},
-      'z': {en: 'zulu}'}
+      'z': {en: 'zulu'},
+      '.': {en: 'dot'},
+      '?': {en: 'questionmark'},
+      '/': {en: 'slash'},
+      ',': {en: 'comma'},
+      '-': {en: 'minus'},
+      '+': {en: 'plus'},
+      '=': {en: 'equals'},
+      ':': {en: 'colon'},
+      '@': {en: 'at'},
+      ' ': {en: 'space'},
+      '<sk>': {en: 'silent key'}, // silent key
+      '<as>': {en: 'alpha sierra'}, // wait
+      '<kn>': {en: 'kilo november'}, // invitation for named station to transmit
+      '<ka>': {en: 'kilo alpha'}, // attention, message begins
+      '<ve>': {en: 'victor echo'}, //verified
+      '<bt>': {en: 'bravo kilo'}, // break
     } 
   }
 }
