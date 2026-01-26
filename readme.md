@@ -34,10 +34,10 @@ By default, the morserino does not send data to the serial connection.
 
 ```bash
 # compile script to bundle.js
-browserify js/m32main.js   -o js/bundle.js
+browserify js/m32main.js -o js/bundle.js
 
 # or during development use watchify to compile on changes:
-watchify js/m32main.js   -o js/bundle.js
+watchify js/m32main.js -o js/bundle.js
 ```
 
 ## Feature Requests
