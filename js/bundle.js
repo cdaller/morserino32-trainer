@@ -651,8 +651,6 @@ class M32CommunicationService {
             log.debug("connecting to port ", this.port);
             await this.port.open({ baudRate: baudRate });
 
-            this.eventEmitter.emit(EVENT_M32_CONNECTED);
-
             // eslint-disable-next-line no-undef
             let decoder = new TextDecoderStream();
             this.inputDone = this.port.readable.pipeTo(decoder.writable);
@@ -665,13 +663,17 @@ class M32CommunicationService {
 
             this.reader = this.inputStream.getReader();
 
-            this.sleep(5000); // wait for morserino to settle
+            log.debug('M32 Communication Service connected to morserino.');
+            await this.sleep(5000); // wait for morserino to settle
 
             this.readLoop();
 
             if (this.autoInitM32Protocol) {
+                log.debug('Initializing M32 Protocol...');
                 this.initM32Protocol();
             }
+
+            this.eventEmitter.emit(EVENT_M32_CONNECTED);
 
         } catch (e) {
             let msg = e;
@@ -4109,7 +4111,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.8';
+let VERSION = '0.7.9';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
