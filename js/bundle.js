@@ -2143,7 +2143,34 @@ class EchoTrainerUI {
         this.clearEchoTrainerButton.addEventListener('click', this.clearEchoTrainerFields.bind(this));
         this.showAllAbbreviationsButton.addEventListener('click', this.showAllAbbreviations.bind(this));
 
-        this.abbreviations = this.getAbbreviations();
+        // merge abbreviations and country codes:
+        const addAll = (target, dict) => {
+            Object.keys(dict).forEach((k) => {
+                const key = String(k).toLowerCase();
+                const val = dict[k] || {};
+                const deVal = (val.de ?? '').toString().trim();
+                const enVal = (val.en ?? '').toString().trim();
+
+                if (!target[key]) {
+                    target[key] = { de: deVal, en: enVal };
+                    return;
+                } 
+                const deValPrevious = target[key].de
+                const enValPrevious = target[key].en
+                if (!deValPrevious.includes(deVal)) {
+                    target[key].de = `${deValPrevious}, ${deVal}`;
+                }
+                if (!enValPrevious.includes(enVal)) {
+                    target[key].en = `${deValPrevious}, ${deVal}`;
+                }
+                return;
+            });
+        };
+    
+        // merge abbreviations and country prefixes:
+        this.abbreviations = {};
+        addAll(this.abbreviations, this.getAbbreviations());
+        addAll(this.abbreviations, this.getCountryPrefixes());
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
@@ -2562,11 +2589,150 @@ class EchoTrainerUI {
             'yr': {de: 'Jahr', en: 'year' },
             'yrs': {de: 'Jahre', en: 'years' },
             'z': {de: 'Zulu Time', en: 'zulu time' },
-        }
+        };
     }
-    
 
+    getCountryPrefixes() {
+        return {
+            'ZA': { de: 'Albanien', en: 'Albania' },
+            'OE': { de: 'Österreich', en: 'Austria' },
+            'EW': { de: 'Belarus', en: 'Belarus' },
+            'ON': { de: 'Belgien', en: 'Belgium' },
+            'E7': { de: 'Bosnien und Herzegowina', en: 'Bosnia and Herzegovina' },
+            'LZ': { de: 'Bulgarien', en: 'Bulgaria' },
+            '9A': { de: 'Kroatien', en: 'Croatia' },
+            '5B': { de: 'Zypern', en: 'Cyprus' },
+            'OK': { de: 'Tschechien', en: 'Czech Republic' },
+            'OZ': { de: 'Dänemark', en: 'Denmark' },
+            'OY': { de: 'Färöer', en: 'Faroe Islands' },
+            'OX': { de: 'Grönland', en: 'Greenland' },
+            'ES6': { de: 'Estland', en: 'Estonia' },
+            'OH': { de: 'Finnland', en: 'Finland' },
+            'OH0': { de: 'Åland', en: 'Aland Islands' },
+            'DL': { de: 'Deutschland', en: 'Germany' },
+            'SV': { de: 'Griechenland', en: 'Greece' },
+            'HA': { de: 'Ungarn', en: 'Hungary' },
+            'HG': { de: 'Ungarn', en: 'Hungary' },
+            'TF': { de: 'Island', en: 'Iceland' },
+            'EI': { de: 'Irland', en: 'Ireland' },
+            'EJ9': { de: 'Irland', en: 'Ireland' },
+            'I': { de: 'Italien', en: 'Italy' },
+            'YL': { de: 'Lettland', en: 'Latvia' },
+            'HB0': { de: 'Liechtenstein', en: 'Liechtenstein' },
+            'LY': { de: 'Litauen', en: 'Lithuania' },
+            'LX': { de: 'Luxemburg', en: 'Luxembourg' },
+            'Z3': { de: 'Nordmazedonien', en: 'North Macedonia' },
+            'ER': { de: 'Moldau', en: 'Moldova' },
+            '9H': { de: 'Malta', en: 'Malta' },
+            '3A': { de: 'Monaco', en: 'Monaco' },
+            '4O': { de: 'Montenegro', en: 'Montenegro' },
+            'PA': { de: 'Niederlande', en: 'Netherlands' },
+            'LA': { de: 'Norwegen', en: 'Norway' },
+            'JW': { de: 'Svalbard', en: 'Svalbard' },
+
+            'HF': { de: 'Polen', en: 'Poland' },
+            'SN': { de: 'Polen', en: 'Poland' },
+            'SO': { de: 'Polen', en: 'Poland' },
+            'SQ': { de: 'Polen', en: 'Poland' },
+            'SP': { de: 'Polen', en: 'Poland' },
+            '3Z': { de: 'Polen', en: 'Poland' },
+
+            'CT7': { de: 'Azoren', en: 'Azores' },
+            'CT8': { de: 'Madeira', en: 'Madeira' },
+            'CT9': { de: 'Portugal', en: 'Portugal' },
+
+            'YO': { de: 'Rumänien', en: 'Romania' },
+            'RA': { de: 'Russland', en: 'Russian Federation' },
+            'YU': { de: 'Serbien', en: 'Serbia' },
+            'OM': { de: 'Slowakei', en: 'Slovak Republic' },
+            'S5': { de: 'Slowenien', en: 'Slovenia' },
+            'EA': { de: 'Spanien', en: 'Spain' },
+            'SM': { de: 'Schweden', en: 'Sweden' },
+            'SA': { de: 'Schweden', en: 'Sweden' },
+            'HB9': { de: 'Schweiz', en: 'Switzerland' },
+            'TA': { de: 'Türkei', en: 'Turkey' },
+            'UT': { de: 'Ukraine', en: 'Ukraine' },
+
+            'M': { de: 'England', en: 'England' },
+            'MD': { de: 'Isle of Man', en: 'Isle of Man' },
+            'MI': { de: 'Nordirland', en: 'Northern Ireland' },
+            'MJ': { de: 'Jersey', en: 'Jersey' },
+            'MM': { de: 'Schottland', en: 'Scotland' },
+            'MU': { de: 'Guernsey', en: 'Guernsey' },
+            'MW': { de: 'Wales', en: 'Wales' },
+
+            'F': { de: 'Frankreich', en: 'France' },
+            'TK': { de: 'Korsika', en: 'Corsica' },
+            'FG': { de: 'Guadeloupe', en: 'Guadeloupe' },
+            'FY': { de: 'Französisch-Guayana', en: 'French Guiana' },
+            'FM': { de: 'Martinique', en: 'Martinique' },
+            'FJ': { de: 'Saint-Barthélemy', en: 'St-Bartholomew' },
+            'FP': { de: 'Saint-Pierre und Miquelon', en: 'St-Pierre/Miquelon' },
+            'FS': { de: 'Saint-Martin', en: 'St-Martin' },
+            'FR': { de: 'Réunion', en: 'Réunion' },
+            'FH': { de: 'Mayotte', en: 'Mayotte' },
+            'FT': { de: 'Französische Süd- und Antarktisgebiete', en: 'French Southern Territories' },
+            'FO': { de: 'Französisch-Polynesien', en: 'French Polynesia' },
+            'FK': { de: 'Neukaledonien', en: 'New Caledonia' },
+            'FW': { de: 'Wallis und Futuna', en: 'Wallis & Futuna' },
+
+            'VK': { de: 'Australien', en: 'Australia' },
+            'VA': { de: 'Kanada', en: 'Canada' },
+            'VE': { de: 'Kanada', en: 'Canada' },
+            // 'VO': { de: 'Kanada', en: 'Canada' },
+            // 'VY': { de: 'Kanada', en: 'Canada' },
+            '4X': { de: 'Israel', en: 'Israel' },
+            '4Z': { de: 'Israel', en: 'Israel' },
+            'ZL': { de: 'Neuseeland', en: 'New Zealand' },
+            'OA': { de: 'Peru', en: 'Peru' },
+            'ZS': { de: 'Südafrika', en: 'South Africa' },
+
+            // ===== USA (duplicate keys merged, comma-separated) =====
+            'W1': {
+                de: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont',
+                en: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont'
+            },
+            'W2': {
+                de: 'USA New Jersey, New York',
+                en: 'USA New Jersey, New York'
+            },
+            'W3': {
+                de: 'USA Delaware, District of Columbia, Maryland, Pennsylvania',
+                en: 'USA Delaware, District of Columbia, Maryland, Pennsylvania'
+            },
+            'W4': {
+                de: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia',
+                en: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia'
+            },
+            'W5': {
+                de: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas',
+                en: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas'
+            },
+            'W6': { de: 'USA California', en: 'USA California' },
+            'W7': {
+                de: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming',
+                en: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming'
+            },
+            'W8': {
+                de: 'USA Michigan, Ohio, West Virginia',
+                en: 'USA Michigan, Ohio, West Virginia'
+            },
+            'W9': {
+                de: 'USA Illinois, Indiana, Wisconsin',
+                en: 'USA Illinois, Indiana, Wisconsin'
+            },
+
+            'KL7': { de: 'USA Alaska', en: 'USA Alaska' },
+            'KH6': { de: 'USA Hawaii', en: 'USA Hawaii' },
+            'KP4': { de: 'USA Puerto Rico', en: 'USA Puerto Rico' },
+            'KP2': { de: 'USA US Virgin Islands', en: 'USA Virgin Islands' },
+            'KH2': { de: 'USA Guam', en: 'USA Guam' },
+            'KH8': { de: 'USA American Samoa', en: 'USA American Samoa' },
+            'KH0': { de: 'USA Northern Mariana Islands', en: 'USA Northern Mariana Islands' }
+        };
+    }
 }
+
 
 module.exports = { EchoTrainerUI }
 },{"./dom-utils":2,"./m32-communication-service":3,"loglevel":19}],9:[function(require,module,exports){
@@ -3373,12 +3539,18 @@ So beschwören, fest zu bannen liebem Sohn ans zarte Knie ihn, des Waldes Hochty
 allgemein Frage bleiben gehen Kunst ziehen selber gewiss Ding Hand fühlen gehören anbieten Boden Teil recht zu stehen wollen schauen allerdings Herr deren dass drei Regel öffentlich Mal denn Recht eher Möglichkeit scheinen Gruppe nächste Moment dazu dich Angst dann wie fahren da um schreiben schließen bestimmt Arbeit anderer alleine verlieren studieren klar planen Tisch geschehen also Werk an kein nach handeln Tür kennen wissen richtig obwohl kurz fünf Sohn bekannt führen während darin mehr Gesellschaft Zahl wachsen genug Platz solche was alt erklären die anfangen denken gewinnen Spiel Minute Anfang ähnlich Beziehung sagen Stück in leicht Zukunft Meter halten wir mehrere Paar verschieden gleich ansehen Kopf stark etwas beide Person Information gut Aufgabe Haus beginnen verlassen brauchen wohl dort Monat davon arbeiten glauben offen einzeln wenn mit spät schnell bekommen Geld lang der weitere folgen Frau fragen ja Musik schwarz Sache schwierig gegenüber uns bedeuten Krieg legen nun liegen sitzen Entwicklung sehen gerne du dessen am seit sollen Programm bestehen oben genau Raum darauf Abbildung mich jemand gemeinsam fallen Schule aber wer Punkt sich meist als wo es Nacht Tag sprechen doch wirklich Staat Eltern all etwa spielen wichtig eigentlich mal erwarten erkennen Funktion ändern acht Beispiel einsetzen bisher Bedeutung Zeit annehmen einige Begriff praktisch zwei steigen schaffen unterschiedlich Folge Rahmen möglich Erfahrung Leute Familie zeigen sicher Geschichte Wohnung irgendwie einmal Vater dafür fehlen System Beruf müssen ihnen ihm vier rüber zwar ein nämlich manch Sinn je Mann klein reden stellen interessieren finden Ergebnis Jahrhundert Gott natürlich erstes ab kaum nahe warten Thema bereits Gespräch bis sein wohnen beschreiben erzählen kommen Problem nehmen danach Unternehmen sogar gering Art Freund gegen werden entwickeln Buch deshalb Gesicht Euro von erreichen gerade Absatz wesentlich laufen schön Million verstehen durch Woche vor Situation dein oft gar Rolle jetzt Uni lange Interesse überhaupt eigen Form Bild völlig lassen nein Preis Mensch groß Stadt selbst aussehen fast sofort Auge rot ganz Bereich der, Abend Grund letzt Prozent wahrscheinlich dabei Land erscheinen verbinden er dadurch bisschen, Ort rund Deutsch erster Stelle ausgehen Text jung ob deutsch einfach Fall plötzlich wieder vergehen dagegen Auto zunächst das Lehrer Blick frei dürfen hoch zwischen endlich Mutter daran Kind Stimme welche Milliarde weil und schon Seite häufig kriegen Wert Richtung Ihr naja Weise anderes man sie tun ihn inzwischen leben haben immer erhalten schwer über hinter ziemlich für früh nutzen damit Ende na Morgen international neu so beziehungsweise Regierung politisch erst suchen früher viel Straße nennen lernen dir Weg einzig manchmal weiter ach hier bei vielleicht außerdem Ziel vergleichen sondern auf zehn andere heute tragen sozial unter Stunde im vorstellen auch Wasser schließlich damals sehr erinnern deutlich ergeben halb ich Schüler setzen noch Politik mir gelten mein direkt bringen wegen dies anders versuchen nie mögen sechs Uhr machen denen best- darstellen halt neben her nichts Wort Welt besonder- aus bissel Universität können Mark Jahr treffen besonders heißen bilden wenig ohne jedoch helfen nicht niemand nur meinen ebenso persönlich entstehen oder eben Schritt Leben voll lesen europäisch bieten besser warum Name sowie daher weit erste entsprechen Sprache bald sonst betreffen schlecht 
 `
 },
-
 {
     title: 'Wordlist Top 500 (EN)',
     content: 
 `\\cWordlist
 step even class hour nothing left eye should every foot between on after head often science took since notice is hundred what bed base few south play thing I but tell first against drive picture some bird street behind travel why let hot hot warm clear rain horse fast unit big game piece take come does language possible common word top answer add less red force will rock from look through feet heat full dark try book problem same reach very record use we house sea care where green than three how build several field toward second next with boat decide fill dry year boy air six my pose serve fish know which friend old order stood press plane watch no am group down him sound our happen sun perhaps color has read for find go wood east check last ran country wheel bring great vowel whole better quick measure final up say ever them out beauty was draw his morning list animal did course help of stand it correct contain note cause side among her form small home simple surface father might fact such north day cold two work yes they main while name mother feel question would well put get when gave in their oh strong high example do face star by if power music numeral above end any table size life new plant about saw wonder said give ago king fine night blue line money brought too TRUE fly ask think test move lot got pound act center able carry done fall told cry pass light had half again right change wind man body good room area four large pattern family tail story city place week be back still teach see produce paper machine grow during hear slow west must could found make only once lead water ship noun miss shape set learn door dog start write point free one ground appear self ready special round went wait plan mountain box began show sing cross fire farm before there live black war your listen world town can sure men car need have at figure stop talk usual snow love young hand map until ten together mind sentence rule mark you direct weight follow real lay all low gold the cut way knew certain interest early those number may little page most yet though begin then eat soon never me enough port govern kind five made came product more white tree idea late river close school own earth walk mean island complete best sleep she run turn ease front people mile this remember who far and near thought cover land road inch deep differ he a minute voice call as part rest leave that heard both keep are short an develop busy spell laugh like study over person thousand time sit children were girl long been stay each much song moon always hard under hold many or us seem so object other pull letter these state want age also now to plain don't open off just here food 
+`
+},
+{
+    title: 'Country Prefixes',
+    content: 
+`\\cCountry Prefixes
+ZA OE EW ON E7 LZ 9A 5B OK OZ OY OX ES6 OH OH0 DL SV HA HG TF EI EJ9 I YL HB0 LY LX Z3 ER 9H 3A 4O PA LA JW HF SN SO SQ SP 3Z CT7 CT8 CT9 YO RA YU OM S5 EA SM SA HB9 TA UT M MD MI MJ MM MU MW F TK FG FY FM FJ FP FS FR FH FT FO FK FW VK VA VE 4X 4Z ZL OA ZS W1 W2 W3 W4 W5 W6 W7 W8 W9 KL7 KH6 KP4 KP2 KH2 KH8 KH0
 `
 },
 // {
@@ -4111,7 +4283,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.10';
+let VERSION = '0.7.11';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';

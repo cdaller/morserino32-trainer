@@ -17,7 +17,34 @@ class EchoTrainerUI {
         this.clearEchoTrainerButton.addEventListener('click', this.clearEchoTrainerFields.bind(this));
         this.showAllAbbreviationsButton.addEventListener('click', this.showAllAbbreviations.bind(this));
 
-        this.abbreviations = this.getAbbreviations();
+        // merge abbreviations and country codes:
+        const addAll = (target, dict) => {
+            Object.keys(dict).forEach((k) => {
+                const key = String(k).toLowerCase();
+                const val = dict[k] || {};
+                const deVal = (val.de ?? '').toString().trim();
+                const enVal = (val.en ?? '').toString().trim();
+
+                if (!target[key]) {
+                    target[key] = { de: deVal, en: enVal };
+                    return;
+                } 
+                const deValPrevious = target[key].de
+                const enValPrevious = target[key].en
+                if (!deValPrevious.includes(deVal)) {
+                    target[key].de = `${deValPrevious}, ${deVal}`;
+                }
+                if (!enValPrevious.includes(enVal)) {
+                    target[key].en = `${deValPrevious}, ${deVal}`;
+                }
+                return;
+            });
+        };
+    
+        // merge abbreviations and country prefixes:
+        this.abbreviations = {};
+        addAll(this.abbreviations, this.getAbbreviations());
+        addAll(this.abbreviations, this.getCountryPrefixes());
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
@@ -436,10 +463,149 @@ class EchoTrainerUI {
             'yr': {de: 'Jahr', en: 'year' },
             'yrs': {de: 'Jahre', en: 'years' },
             'z': {de: 'Zulu Time', en: 'zulu time' },
-        }
+        };
     }
-    
 
+    getCountryPrefixes() {
+        return {
+            'ZA': { de: 'Albanien', en: 'Albania' },
+            'OE': { de: 'Österreich', en: 'Austria' },
+            'EW': { de: 'Belarus', en: 'Belarus' },
+            'ON': { de: 'Belgien', en: 'Belgium' },
+            'E7': { de: 'Bosnien und Herzegowina', en: 'Bosnia and Herzegovina' },
+            'LZ': { de: 'Bulgarien', en: 'Bulgaria' },
+            '9A': { de: 'Kroatien', en: 'Croatia' },
+            '5B': { de: 'Zypern', en: 'Cyprus' },
+            'OK': { de: 'Tschechien', en: 'Czech Republic' },
+            'OZ': { de: 'Dänemark', en: 'Denmark' },
+            'OY': { de: 'Färöer', en: 'Faroe Islands' },
+            'OX': { de: 'Grönland', en: 'Greenland' },
+            'ES6': { de: 'Estland', en: 'Estonia' },
+            'OH': { de: 'Finnland', en: 'Finland' },
+            'OH0': { de: 'Åland', en: 'Aland Islands' },
+            'DL': { de: 'Deutschland', en: 'Germany' },
+            'SV': { de: 'Griechenland', en: 'Greece' },
+            'HA': { de: 'Ungarn', en: 'Hungary' },
+            'HG': { de: 'Ungarn', en: 'Hungary' },
+            'TF': { de: 'Island', en: 'Iceland' },
+            'EI': { de: 'Irland', en: 'Ireland' },
+            'EJ9': { de: 'Irland', en: 'Ireland' },
+            'I': { de: 'Italien', en: 'Italy' },
+            'YL': { de: 'Lettland', en: 'Latvia' },
+            'HB0': { de: 'Liechtenstein', en: 'Liechtenstein' },
+            'LY': { de: 'Litauen', en: 'Lithuania' },
+            'LX': { de: 'Luxemburg', en: 'Luxembourg' },
+            'Z3': { de: 'Nordmazedonien', en: 'North Macedonia' },
+            'ER': { de: 'Moldau', en: 'Moldova' },
+            '9H': { de: 'Malta', en: 'Malta' },
+            '3A': { de: 'Monaco', en: 'Monaco' },
+            '4O': { de: 'Montenegro', en: 'Montenegro' },
+            'PA': { de: 'Niederlande', en: 'Netherlands' },
+            'LA': { de: 'Norwegen', en: 'Norway' },
+            'JW': { de: 'Svalbard', en: 'Svalbard' },
+
+            'HF': { de: 'Polen', en: 'Poland' },
+            'SN': { de: 'Polen', en: 'Poland' },
+            'SO': { de: 'Polen', en: 'Poland' },
+            'SQ': { de: 'Polen', en: 'Poland' },
+            'SP': { de: 'Polen', en: 'Poland' },
+            '3Z': { de: 'Polen', en: 'Poland' },
+
+            'CT7': { de: 'Azoren', en: 'Azores' },
+            'CT8': { de: 'Madeira', en: 'Madeira' },
+            'CT9': { de: 'Portugal', en: 'Portugal' },
+
+            'YO': { de: 'Rumänien', en: 'Romania' },
+            'RA': { de: 'Russland', en: 'Russian Federation' },
+            'YU': { de: 'Serbien', en: 'Serbia' },
+            'OM': { de: 'Slowakei', en: 'Slovak Republic' },
+            'S5': { de: 'Slowenien', en: 'Slovenia' },
+            'EA': { de: 'Spanien', en: 'Spain' },
+            'SM': { de: 'Schweden', en: 'Sweden' },
+            'SA': { de: 'Schweden', en: 'Sweden' },
+            'HB9': { de: 'Schweiz', en: 'Switzerland' },
+            'TA': { de: 'Türkei', en: 'Turkey' },
+            'UT': { de: 'Ukraine', en: 'Ukraine' },
+
+            'M': { de: 'England', en: 'England' },
+            'MD': { de: 'Isle of Man', en: 'Isle of Man' },
+            'MI': { de: 'Nordirland', en: 'Northern Ireland' },
+            'MJ': { de: 'Jersey', en: 'Jersey' },
+            'MM': { de: 'Schottland', en: 'Scotland' },
+            'MU': { de: 'Guernsey', en: 'Guernsey' },
+            'MW': { de: 'Wales', en: 'Wales' },
+
+            'F': { de: 'Frankreich', en: 'France' },
+            'TK': { de: 'Korsika', en: 'Corsica' },
+            'FG': { de: 'Guadeloupe', en: 'Guadeloupe' },
+            'FY': { de: 'Französisch-Guayana', en: 'French Guiana' },
+            'FM': { de: 'Martinique', en: 'Martinique' },
+            'FJ': { de: 'Saint-Barthélemy', en: 'St-Bartholomew' },
+            'FP': { de: 'Saint-Pierre und Miquelon', en: 'St-Pierre/Miquelon' },
+            'FS': { de: 'Saint-Martin', en: 'St-Martin' },
+            'FR': { de: 'Réunion', en: 'Réunion' },
+            'FH': { de: 'Mayotte', en: 'Mayotte' },
+            'FT': { de: 'Französische Süd- und Antarktisgebiete', en: 'French Southern Territories' },
+            'FO': { de: 'Französisch-Polynesien', en: 'French Polynesia' },
+            'FK': { de: 'Neukaledonien', en: 'New Caledonia' },
+            'FW': { de: 'Wallis und Futuna', en: 'Wallis & Futuna' },
+
+            'VK': { de: 'Australien', en: 'Australia' },
+            'VA': { de: 'Kanada', en: 'Canada' },
+            'VE': { de: 'Kanada', en: 'Canada' },
+            // 'VO': { de: 'Kanada', en: 'Canada' },
+            // 'VY': { de: 'Kanada', en: 'Canada' },
+            '4X': { de: 'Israel', en: 'Israel' },
+            '4Z': { de: 'Israel', en: 'Israel' },
+            'ZL': { de: 'Neuseeland', en: 'New Zealand' },
+            'OA': { de: 'Peru', en: 'Peru' },
+            'ZS': { de: 'Südafrika', en: 'South Africa' },
+
+            // ===== USA (duplicate keys merged, comma-separated) =====
+            'W1': {
+                de: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont',
+                en: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont'
+            },
+            'W2': {
+                de: 'USA New Jersey, New York',
+                en: 'USA New Jersey, New York'
+            },
+            'W3': {
+                de: 'USA Delaware, District of Columbia, Maryland, Pennsylvania',
+                en: 'USA Delaware, District of Columbia, Maryland, Pennsylvania'
+            },
+            'W4': {
+                de: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia',
+                en: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia'
+            },
+            'W5': {
+                de: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas',
+                en: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas'
+            },
+            'W6': { de: 'USA California', en: 'USA California' },
+            'W7': {
+                de: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming',
+                en: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming'
+            },
+            'W8': {
+                de: 'USA Michigan, Ohio, West Virginia',
+                en: 'USA Michigan, Ohio, West Virginia'
+            },
+            'W9': {
+                de: 'USA Illinois, Indiana, Wisconsin',
+                en: 'USA Illinois, Indiana, Wisconsin'
+            },
+
+            'KL7': { de: 'USA Alaska', en: 'USA Alaska' },
+            'KH6': { de: 'USA Hawaii', en: 'USA Hawaii' },
+            'KP4': { de: 'USA Puerto Rico', en: 'USA Puerto Rico' },
+            'KP2': { de: 'USA US Virgin Islands', en: 'USA Virgin Islands' },
+            'KH2': { de: 'USA Guam', en: 'USA Guam' },
+            'KH8': { de: 'USA American Samoa', en: 'USA American Samoa' },
+            'KH0': { de: 'USA Northern Mariana Islands', en: 'USA Northern Mariana Islands' }
+        };
+    }
 }
+
 
 module.exports = { EchoTrainerUI }
