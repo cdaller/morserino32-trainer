@@ -665,9 +665,9 @@ class M32CommunicationService {
 
             this.reader = this.inputStream.getReader();
 
-            this.readLoop();
-
             this.sleep(5000); // wait for morserino to settle
+
+            this.readLoop();
 
             if (this.autoInitM32Protocol) {
                 this.initM32Protocol();
@@ -4109,7 +4109,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.7';
+let VERSION = '0.7.8';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';

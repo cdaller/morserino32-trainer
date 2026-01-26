@@ -142,9 +142,9 @@ class M32CommunicationService {
 
             this.reader = this.inputStream.getReader();
 
-            this.readLoop();
-
             this.sleep(5000); // wait for morserino to settle
+
+            this.readLoop();
 
             if (this.autoInitM32Protocol) {
                 this.initM32Protocol();
