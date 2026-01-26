@@ -141,7 +141,7 @@ class M32CommunicationService {
             this.reader = this.inputStream.getReader();
 
             log.debug('M32 Communication Service connected to morserino.');
-            await this.sleep(5000); // wait for morserino to settle
+            await this.sleep(1000); // wait for morserino to settle, some morserinos draw too much power right after connection
 
             this.readLoop();
 
