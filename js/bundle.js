@@ -664,7 +664,7 @@ class M32CommunicationService {
             this.reader = this.inputStream.getReader();
 
             log.debug('M32 Communication Service connected to morserino.');
-            await this.sleep(1000); // wait for morserino to settle, some morserinos draw too much power right after connection
+            await this.sleep(2000); // wait for morserino to settle, some morserinos draw too much power right after connection
 
             this.readLoop();
 
@@ -4283,7 +4283,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.11';
+let VERSION = '0.7.12';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
