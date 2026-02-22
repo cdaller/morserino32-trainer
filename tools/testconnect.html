@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<!--
+Test page for Web Serial API connection to Morserino32
+
+Strange behavior on Windows (works flawlessly on Mac!)
+* load the page
+* connect morserino with USB cable (selected morserino menu is "CW Keyer")
+* click "Connect" button + select the com port
+* morserino reboots and serial output is shown:
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0030,len:1184
+load:0x40078000,len:13232
+load:0x40080400,len:3028
+entry 0x400805e4
+[SX12xx] Initializing ...
+
+* send "PUT device/protocol/on"
+* receive ' {"device":{"hardware":"M32 2nd edition","firmware":"7.0.3","protocol":"1.1"}}'
+
+* Disconnect
+* Push "Connect" button -> morserino reboots! Before showing the port selection dialog!
+* Push "Connect" button again -> port selection dialog is shown, select the port
+* Send "PUT device/protocol/on"
+* receive '{"device":{"hardware":"M32 2nd edition","firmware":"7.0.3","protocol":"1.1"}}''
+* Disconnect
+* Push "Connect" button -> morserino reboots! Before showing the port selection dialog!
+
+every second connect attempt causes a reboot, even if the port is not selected yet. 
+After the first connect, the port is selected and the second connect causes a reboot immediately, without showing the port selection dialog. After that, the port selection dialog is shown again and the connection works as expected.
+
+* change 1: added "Forget port on disconnect" checkbox, which calls port.forget() on disconnect, which seems to prevent the auto-selection of the same port on the next connect and thus prevents the reboot-before-dialog issue on Windows.
+* load page
+* plugin in morserino, select "CW Keyer" menu
+* use DTR true and RTS true
+* reboots and prints message as above, but morserino is connected and answers to "PUT device/protocol/on"
+* Disconnect: reboots again
+* Connect: nothing happens! no reboot, not port dialog, no connection!
+
+* change 2: no "forget", set DTR true, RTS false
+* Connect & choose port:
+* morserino prints this, but screen stays blank:
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x3 (DOWNLOAD_BOOT(UART0/UART1/SDIO_REI_REO_V2))
+waiting for download
+
+* unplug/replug morserino
+
+* change 3: no "forget", set DTR false, RTS true
+* connect & choose port
+* screen goes blank, nothing ins printed.
+
+* change 4: no "forget", set DTR false, RTS false
+* connect & choose port
+* reboots and prints (long) message as above, but morserino is connected and answers to "PUT device/protocol/on"
+
+
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Morserino Serial Test</title>
+  <style>
+    body { font-family: monospace; padding: 20px; }
+    button { padding: 8px 16px; font-size: 1rem; cursor: pointer; }
+    #init { width: 100%; height: 100px; font-size: 0.95rem; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    #output { width: 100%; height: 400px; margin-top: 4px; font-size: 0.95rem; }
+    #status { margin-top: 8px; color: gray; }
+  </style>
+</head>
+<body>
+  <h2>Morserino Serial Test</h2>
+  <button id="connectBtn">Connect</button>
+  <button id="clearBtn">Clear</button>
+  <div id="status">Not connected</div>
+
+  <details style="margin-top:12px">
+    <summary style="cursor:pointer; font-weight:bold">Windows reboot workarounds</summary>
+    <div style="margin-top:8px; line-height:2">
+      <label style="display:inline; font-weight:normal">
+        <input type="checkbox" id="forgetPort">
+        Forget port on disconnect (prevents auto-select / reboot-before-dialog)
+      </label><br>
+      <label style="display:inline; font-weight:normal">
+        <input type="checkbox" id="setSignals">
+        Set DTR/RTS immediately after open:
+      </label>
+      <label style="display:inline; font-weight:normal; margin-left:12px">
+        DTR <input type="checkbox" id="dtr">
+      </label>
+      <label style="display:inline; font-weight:normal; margin-left:8px">
+        RTS <input type="checkbox" id="rts">
+      </label>
+      <span style="color:gray; font-size:0.85rem; margin-left:8px">
+        (DTR=false RTS=false → reboots but works; DTR=true RTS=true → default/Mac behavior)
+      </span>
+    </div>
+  </details>
+
+  <button id="sendBtn">Send</button>
+  <textarea id="init">PUT device/protocol/on
+  </textarea>
+  <label for="output">Received data:</label>
+  <textarea id="output" readonly></textarea>
+
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const output = document.getElementById('output');
+    const initArea = document.getElementById('init');
+    const status = document.getElementById('status');
+    const forgetPortCb = document.getElementById('forgetPort');
+    const setSignalsCb = document.getElementById('setSignals');
+    const dtrCb = document.getElementById('dtr');
+    const rtsCb = document.getElementById('rts');
+
+    const FILTERS = [
+      { usbVendorId: 0x10c4 }, // Silicon Laboratories (Morserino32)
+      { usbVendorId: 0x303a }, // ESP32 Wroom
+    ];
+    const BAUD_RATE = 115200;
+
+    let port = null;
+    let reader = null;
+    let writer = null;
+    let readLoopPromise = null;
+
+    clearBtn.addEventListener('click', () => { output.value = ''; });
+    sendBtn.addEventListener('click', async () => {
+      if (!writer) { status.textContent = 'Not connected'; return; }
+      await sendCommands();
+    });
+
+    connectBtn.addEventListener('click', async () => {
+      if (port) {
+        await disconnect();
+      } else {
+        await connect();
+      }
+    });
+
+    async function connect() {
+      try {
+        port = await navigator.serial.requestPort({ filters: FILTERS });
+        await port.open({ baudRate: BAUD_RATE });
+
+        const decoder = new TextDecoderStream();
+        port.readable.pipeTo(decoder.writable);
+        reader = decoder.readable.getReader();
+
+        const encoder = new TextEncoderStream();
+        encoder.readable.pipeTo(port.writable);
+        writer = encoder.writable.getWriter();
+
+        if (setSignalsCb.checked) {
+          await port.setSignals({ dataTerminalReady: dtrCb.checked, requestToSend: rtsCb.checked });
+        }
+
+        connectBtn.textContent = 'Disconnect';
+        status.textContent = 'Connected';
+        status.style.color = 'green';
+
+        readLoopPromise = readLoop();
+        //await sendInitCommands();
+      } catch (err) {
+        status.textContent = 'Error: ' + err.message;
+        status.style.color = 'red';
+        port = null;
+      }
+    }
+
+    async function readLoop() {
+      try {
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          if (value) {
+            output.value += value;
+            output.scrollTop = output.scrollHeight;
+            console.log('Received:', value);
+          }
+        }
+      } catch (err) {
+        if (port) { // not a user-initiated disconnect
+          status.textContent = 'Read error: ' + err.message;
+          status.style.color = 'red';
+        }
+      }
+    }
+
+    async function sendCommands() {
+      const commands = initArea.value.split('\n').map(l => l.trim()).filter(l => l);
+      for (const cmd of commands) {
+        await writer.write(cmd + '\n');
+      }
+    }
+
+    async function disconnect() {
+      try {
+        if (writer) {
+          await writer.close();
+          writer = null;
+        }
+        if (reader) {
+          await reader.cancel();
+          reader = null;
+        }
+        if (port) {
+          if (forgetPortCb.checked) await port.forget();
+          await port.close();
+          port = null;
+        }
+      } catch (err) {
+        // ignore close errors
+      }
+      connectBtn.textContent = 'Connect';
+      status.textContent = 'Disconnected';
+      status.style.color = 'gray';
+    }
+  </script>
+</body>
+</html>

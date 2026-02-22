@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text to Speech Demo</title>
+</head>
+<body>
+  <h2>Text to Speech</h2>
+  
+  <textarea id="text" rows="6" cols="50" placeholder="Type something to speak...">tango... echo --- lima foxtrot tango sierra uniform papa echo romeo tango
+  </textarea><br><br>
+  
+  <button onclick="speakText()">Speak</button>
+  <button onclick="stopSpeaking()">Stop</button>
+
+  <script>
+    let selectedVoice = null;
+
+    // Load voices asynchronously
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      selectedVoice = voices.find(v => v.name === "Google UK English Male") || null;
+    }
+
+    // Voices may not be ready immediately, so hook into onvoiceschanged
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+
+    function speakText() {
+      const text = document.getElementById("text").value;
+      if (!text) return;
+
+      // Cancel any ongoing speech before starting new
+      window.speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1;       // speed (0.1 to 1.0)
+      utterance.pitch = 1;      // voice pitch (0 to 2)
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+      }
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopSpeaking() {
+      window.speechSynthesis.cancel();
+    }
+  </script>
+</body>
+</html>

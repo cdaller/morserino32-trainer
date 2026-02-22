@@ -532,6 +532,8 @@ const { M32State, M32CommandStateHandler } = require('./m32protocol-state-handle
 const { M32CommandUIHandler} = require('./m32protocol-ui-handler');
 const { M32Translations } = require('./m32protocol-i18n');
 
+const MORSERINO_REBOOT_WAIT_TIME_MS = 6000;
+
 const MORSERINO_START = 'vvv<ka> ';
 const MORSERINO_END = ' +';
 const STATUS_JSON = 'status-m32-json-received';
@@ -543,8 +545,28 @@ const EVENT_M32_DISCONNECTED = "event-m32-disconnected";
 const EVENT_M32_CONNECTION_ERROR = "event-m32-connection-error";
 const EVENT_M32_TEXT_RECEIVED = "event-m32-text-received";
 const EVENT_M32_JSON_ERROR_RECEIVED = "event-m32-json-error-received";
+const EVENT_M32_REBOOTING = "event-m32-rebooting";
 
 const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
+
+// ESP32 bootloader/ROM messages emitted on reset — should be silently ignored
+const ESP32_BOOT_ERROR_PREFIXES = [
+    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (',
+];
+
+function isEsp32BootOrErrorMessage(text) {
+    const trimmed = text.trim();
+    return ESP32_BOOT_ERROR_PREFIXES.some(prefix => trimmed.startsWith(prefix));
+}
+
+function isRebootMessage(text) {
+    return text.includes('(SPI_FAST_FLASH_BOOT)');
+}
+
+// Returns true if `text` is or could grow into a boot message line (no \n yet)
+function couldBeBootMessageStart(text) {
+    return ESP32_BOOT_ERROR_PREFIXES.some(p => p.startsWith(text) || text.startsWith(p));
+}
 
 class M32CommunicationService {
 
@@ -557,6 +579,9 @@ class M32CommunicationService {
         this.outputDone;
 
         this.autoInitM32Protocol = autoInitM32Protocol;
+        this._lineBuffer = '';
+        this._lineBufferTimer = null;
+        this._rebootInitPending = false;
 
         this.timer = ms => new Promise(res => setTimeout(res, ms))
 
@@ -663,9 +688,16 @@ class M32CommunicationService {
 
             this.reader = this.inputStream.getReader();
 
-            log.debug('M32 Communication Service connected to morserino.');
-            await this.sleep(3000); // wait for morserino to settle, some morserinos draw too much power right after connection
+            // De-assert DTR and RTS immediately to prevent the ESP32 auto-reset circuit
+            // from triggering on Windows, where the CP210x/CH340 driver asserts both
+            // signals when the port opens. (WICG/serial issue #177)
+            // On Mac this is not necessary and also works without reboot. So skip setting the signals.
+            if (!/Mac/.test(navigator.userAgent)) {
+                // setting DTR to false and RTS to false: reboots on connect, but is connected afterwards, only initial boot message shown (same on mac and windows)
+                await this.port.setSignals({ dataTerminalReady: false, requestToSend: false });
+            }
 
+            log.debug('M32 Communication Service connected to Morserino.');
             this.readLoop();
 
             if (this.autoInitM32Protocol) {
@@ -753,7 +785,54 @@ class M32CommunicationService {
             }
         } else if (result.status === STATUS_TEXT) {
             log.debug("text values received", result.content);
-            this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, result.content);
+
+            // Cancel any pending flush — new data arrived
+            if (this._lineBufferTimer) {
+                clearTimeout(this._lineBufferTimer);
+                this._lineBufferTimer = null;
+            }
+
+            this._lineBuffer += result.content;
+
+            // Process all complete lines
+            let newlineIdx;
+            while ((newlineIdx = this._lineBuffer.indexOf('\n')) !== -1) {
+                const line = this._lineBuffer.substring(0, newlineIdx + 1);
+                this._lineBuffer = this._lineBuffer.substring(newlineIdx + 1);
+                if (isEsp32BootOrErrorMessage(line)) {
+                    log.debug("ignoring ESP32 boot message:", line);
+                    if (isRebootMessage(line)) {
+                        this.onRebootDetected();
+                    }
+                } else {
+                    this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, line);
+                }
+            }
+
+            // For the incomplete tail: emit immediately unless it could still be a boot message prefix,
+            // in which case wait briefly — boot lines arrive as a burst so the rest will follow within ms.
+            // If nothing arrives within the timeout it's a CW character (e.g. 'e') and gets flushed.
+            if (this._lineBuffer) {
+                if (couldBeBootMessageStart(this._lineBuffer)) {
+                    this._lineBufferTimer = setTimeout(() => {
+                        this._lineBufferTimer = null;
+                        if (this._lineBuffer) {
+                            if (isEsp32BootOrErrorMessage(this._lineBuffer)) {
+                                log.debug("ignoring ESP32 boot message (no newline):", this._lineBuffer);
+                                if (isRebootMessage(this._lineBuffer)) {
+                                    this.onRebootDetected();
+                                }
+                            } else {
+                                this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, this._lineBuffer);
+                            }
+                            this._lineBuffer = '';
+                        }
+                    }, 300);
+                } else {
+                    this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, this._lineBuffer);
+                    this._lineBuffer = '';
+                }
+            }
         }
     }
 
@@ -787,6 +866,22 @@ class M32CommunicationService {
         this.sendM32Command('GET kochlesson');
         //sendM32Command('GET control/volume');
         this.sendM32Command('GET menu');
+    }
+
+    onRebootDetected() {
+        if (this._rebootInitPending) {
+            return;
+        }
+        this._rebootInitPending = true;
+        log.debug('Reboot detected, re-initializing M32 protocol after settle delay...');
+        this.eventEmitter.emit(EVENT_M32_REBOOTING);
+        this.sleep(MORSERINO_REBOOT_WAIT_TIME_MS).then(() => {
+            this._rebootInitPending = false;
+            this.waitForReponseLock.locked = false; // release any lock stuck from pre-reboot commands
+            log.debug('Re-initializing M32 protocol after reboot.');
+            this.initM32Protocol();
+            this.eventEmitter.emit(EVENT_M32_CONNECTED);
+        });
     }
 
 
@@ -920,9 +1015,9 @@ class Lock {
     }
 }
 
-module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, 
-    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, MORSERINO_START, MORSERINO_END,
-    M32_MENU_CW_GENERATOR_FILE_PLAYER_ID }
+module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED,
+    EVENT_M32_CONNECTION_ERROR, EVENT_M32_TEXT_RECEIVED, EVENT_M32_JSON_ERROR_RECEIVED, EVENT_M32_REBOOTING,
+    MORSERINO_START, MORSERINO_END, M32_MENU_CW_GENERATOR_FILE_PLAYER_ID }
 
 },{"./m32protocol-i18n":13,"./m32protocol-speech-handler":14,"./m32protocol-state-handler":15,"./m32protocol-ui-handler":16,"events":1,"loglevel":19}],4:[function(require,module,exports){
 'use strict';
@@ -1424,7 +1519,7 @@ module.exports = { ConfigurationUI }
 'use strict';
 
 const log  = require ('loglevel');
-const { EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
+const { EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR, EVENT_M32_REBOOTING } = require('./m32-communication-service');
 const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
 
 class M32ConnectUI {
@@ -1440,6 +1535,7 @@ class M32ConnectUI {
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECTED, this.connected);
         this.m32CommunicationService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
+        this.m32CommunicationService.addEventListener(EVENT_M32_REBOOTING, this.rebooting.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
         if (this.voiceOutputCheckbox) {
@@ -1489,6 +1585,11 @@ class M32ConnectUI {
         this.statusBar.innerText = `Connected`;
         this.statusBar.className = 'badge bg-success';
         this.connectButton.innerText = 'Disconnect';
+    }
+
+    rebooting() {
+        this.statusBar.innerText = 'Reboot detected, reconnecting...';
+        this.statusBar.className = 'badge bg-warning text-dark';
     }
 
     disconnected() {
@@ -4283,7 +4384,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.7.16';
+let VERSION = '0.8.0';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';

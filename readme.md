@@ -1,6 +1,6 @@
 # Morserino32 CW Trainer
 
-A browser reads the cw trainer characters from the morserino device via serial input and compares them to the characters entered by the user.
+A browser reads the cw trainer characters from the Morserino device via serial input and compares them to the characters entered by the user.
 
 Just go to the [Live Demo Page](https://tegmento.org)!
 
@@ -39,6 +39,20 @@ browserify js/m32main.js -o js/bundle.js
 # or during development use watchify to compile on changes:
 watchify js/m32main.js -o js/bundle.js
 ```
+
+## OS Specific Specialities
+
+### Windows (and Linux): DTR/RTS Signal Handling on Connect
+
+On **macOS**, the CP210x USB-serial driver keeps the DTR and RTS lines stable when the serial port is opened, so the Morserino connects cleanly without any reset.
+
+On **Windows** (and potentially Linux), the CP210x/CH340 driver asserts both DTR and RTS when `port.open()` is called. The Morserino's ESP32 has an auto-reset circuit wired to these lines: asserting DTR pulses the EN (reset) pin, causing the device to **reboot on every connect**.
+
+To prevent this, the app immediately calls `port.setSignals({ dataTerminalReady: false, requestToSend: false })` after opening the port on non-Mac systems. This de-asserts both lines before the reset circuit can latch. As a side effect, the Morserino still reboots once on the very first connect (the DTR transition during `port.open()` is unavoidable), but subsequent connects are clean.
+
+Because of this initial reboot, the app detects the ESP32 boot messages on the serial stream (lines starting with `rst:0x`, `ets `, `load:0x`, etc.) and:
+- **Suppresses** them so they don't appear as CW text in the UI.
+- **Re-initializes the M32 protocol** automatically after a 5-second settle delay (the status bar shows "Reboot detected, reconnecting..." in yellow during this time).
 
 ## Feature Requests
 
@@ -115,3 +129,5 @@ browserify js/serialtest.js   -o js/bundle-serialtest.js
 TODO:
 * cw keyer: button einfügen + radiergummi für letzte gruppe löschen
 * Voice comparison stopps after 16 seconds (cancelled by whom?)
+
+

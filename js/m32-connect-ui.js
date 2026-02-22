@@ -1,7 +1,7 @@
 'use strict';
 
 const log  = require ('loglevel');
-const { EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR } = require('./m32-communication-service');
+const { EVENT_M32_CONNECTED, EVENT_M32_DISCONNECTED, EVENT_M32_CONNECT_ERROR, EVENT_M32_REBOOTING } = require('./m32-communication-service');
 const { EVENT_SETTINGS_CHANGED } = require('./m32-storage');
 
 class M32ConnectUI {
@@ -17,6 +17,7 @@ class M32ConnectUI {
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECTED, this.connected);
         this.m32CommunicationService.addEventListener(EVENT_M32_DISCONNECTED, this.disconnected.bind(this));
         this.m32CommunicationService.addEventListener(EVENT_M32_CONNECT_ERROR, this.connectError.bind(this));
+        this.m32CommunicationService.addEventListener(EVENT_M32_REBOOTING, this.rebooting.bind(this));
 
         this.connectButton.addEventListener('click', this.clickConnect.bind(this), false);
         if (this.voiceOutputCheckbox) {
@@ -66,6 +67,11 @@ class M32ConnectUI {
         this.statusBar.innerText = `Connected`;
         this.statusBar.className = 'badge bg-success';
         this.connectButton.innerText = 'Disconnect';
+    }
+
+    rebooting() {
+        this.statusBar.innerText = 'Reboot detected, reconnecting...';
+        this.statusBar.className = 'badge bg-warning text-dark';
     }
 
     disconnected() {
