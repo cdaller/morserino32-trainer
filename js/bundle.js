@@ -2577,6 +2577,7 @@ class EchoTrainerUI {
             'pwr': {de: 'Leistung', en: 'power' },
             'px': {de: 'Präfix, Landeskenner', en: 'prefix, country code' },
             'q': {de: 'Quebec', en: 'Quebec'  },
+            'qaz':  {de: 'Gewitter, ich schalte ab', en: 'Lightning, I am shutting down' },
             'qra':  {de: 'Der Name meiner Funkstelle ist...', en: 'name of my station is...'},
             'qrb':  {de: 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', en: 'distance between our stations is...'},
             'qrg': {de: 'Deine genaue Frequenz ist ...', en: 'your exact frequency is ...' },
@@ -4384,7 +4385,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.8.0';
+let VERSION = '0.8.1';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';

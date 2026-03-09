@@ -350,6 +350,7 @@ class EchoTrainerUI {
             'pwr': {de: 'Leistung', en: 'power' },
             'px': {de: 'Präfix, Landeskenner', en: 'prefix, country code' },
             'q': {de: 'Quebec', en: 'Quebec'  },
+            'qaz':  {de: 'Gewitter, ich schalte ab', en: 'Lightning, I am shutting down' },
             'qra':  {de: 'Der Name meiner Funkstelle ist...', en: 'name of my station is...'},
             'qrb':  {de: 'Die Entfernung zwischen unseren Funkstellen beträgt ungefähr ... Kilometer.', en: 'distance between our stations is...'},
             'qrg': {de: 'Deine genaue Frequenz ist ...', en: 'your exact frequency is ...' },
