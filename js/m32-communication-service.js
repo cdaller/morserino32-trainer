@@ -28,7 +28,7 @@ const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
 
 // ESP32 bootloader/ROM messages emitted on reset — should be silently ignored
 const ESP32_BOOT_ERROR_PREFIXES = [
-    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (',
+    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (', 'Powerpath'
 ];
 
 function isEsp32BootOrErrorMessage(text) {

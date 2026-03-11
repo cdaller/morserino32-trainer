@@ -551,7 +551,7 @@ const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
 
 // ESP32 bootloader/ROM messages emitted on reset — should be silently ignored
 const ESP32_BOOT_ERROR_PREFIXES = [
-    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (',
+    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (', 'Powerpath'
 ];
 
 function isEsp32BootOrErrorMessage(text) {
@@ -4385,7 +4385,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.8.1';
+let VERSION = '0.8.2';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
