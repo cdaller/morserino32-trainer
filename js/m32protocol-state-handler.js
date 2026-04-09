@@ -4,6 +4,7 @@
 class M32State {
     constructor() {
         this.speedWpm = null;
+        this.menuEntry = null;
     }
 }
 
@@ -29,6 +30,9 @@ class M32CommandStateHandler {
                         this.receivedM32Speed(controlValue);
                     }
                     break;
+                case 'menu':
+                    this.receivedM32Menu(value);
+                    break;
                 case 'device':
                     console.log('M32 Device:', value);
                     break;
@@ -46,6 +50,11 @@ class M32CommandStateHandler {
 
     receivedM32Speed(speed) {
         this.m32State.speedWpm = Number(speed);
+    }
+
+    receivedM32Menu(menuEntry) {
+        this.m32State.menuEntry = menuEntry;
+        //console.log('M32 State Handler: Menu:', menuEntry);
     }
 }
 

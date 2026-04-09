@@ -17,37 +17,20 @@ class EchoTrainerUI {
         this.clearEchoTrainerButton.addEventListener('click', this.clearEchoTrainerFields.bind(this));
         this.showAllAbbreviationsButton.addEventListener('click', this.showAllAbbreviations.bind(this));
 
-        // merge abbreviations and country codes:
-        const addAll = (target, dict) => {
-            Object.keys(dict).forEach((k) => {
-                const key = String(k).toLowerCase();
-                const val = dict[k] || {};
-                const deVal = (val.de ?? '').toString().trim();
-                const enVal = (val.en ?? '').toString().trim();
-
-                if (!target[key]) {
-                    target[key] = { de: deVal, en: enVal };
-                    return;
-                } 
-                const deValPrevious = target[key].de
-                const enValPrevious = target[key].en
-                if (!deValPrevious.includes(deVal)) {
-                    target[key].de = `${deValPrevious}, ${deVal}`;
-                }
-                if (!enValPrevious.includes(enVal)) {
-                    target[key].en = `${deValPrevious}, ${deVal}`;
-                }
-                return;
-            });
-        };
-    
         // merge abbreviations and country prefixes:
-        this.abbreviations = {};
-        addAll(this.abbreviations, this.getAbbreviations());
-        addAll(this.abbreviations, this.getCountryPrefixes());
+        this.allKeyValues = {};
+        this.addAllKeyValues(this.allKeyValues, this.getAbbreviations());
+        this.addAllKeyValues(this.allKeyValues, this.getCountryPrefixes());
+
+        this.abbreviationKeyValues = {};
+        this.addAllKeyValues(this.abbreviationKeyValues, this.getAbbreviations());
+
+        this.countryPrefixKeyValues = {};
+        this.addAllKeyValues(this.countryPrefixKeyValues, this.getCountryPrefixes());
 
         this.m32CommunicationService = m32CommunicationService;
         this.m32CommunicationService.addEventListener(EVENT_M32_TEXT_RECEIVED, this.textReceived.bind(this));
+        this.m32State = this.m32CommunicationService.m32State;
 
         document.getElementById("echo-trainer-start-snapshot6-button").addEventListener('click', this.startSnapshot6.bind(this));
         document.getElementById("echo-trainer-start-snapshot8-button").addEventListener('click', this.startSnapshot8.bind(this));
@@ -55,6 +38,32 @@ class EchoTrainerUI {
 
         this.activeMode = false;
     }
+
+    // merge abbreviations and country codes:
+    addAllKeyValues = (target, dict) => {
+        Object.keys(dict).forEach((k) => {
+            const key = String(k).toLowerCase();
+            const val = dict[k] || {};
+            const deVal = (val.de ?? '').toString().trim();
+            const enVal = (val.en ?? '').toString().trim();
+
+            if (!target[key]) {
+                target[key] = { de: deVal, en: enVal };
+                return;
+            } 
+            const deValPrevious = target[key].de
+            const enValPrevious = target[key].en
+            if (!deValPrevious.includes(deVal)) {
+                target[key].de = `${deValPrevious}, ${deVal}`;
+            }
+            if (!enValPrevious.includes(enVal)) {
+                target[key].en = `${deValPrevious}, ${deVal}`;
+            }
+            return;
+        });
+    };
+
+    
 
     textReceived(value) {
         if (this.activeMode) {
@@ -86,16 +95,33 @@ class EchoTrainerUI {
 
     detectAbbreviation() {
         let text = this.receiveText.value;
-        if (text.endsWith(' OK')) {
+        if (text.endsWith(' OK') || text.endsWith(' ERR')) {
             let lines = text.split(String.fromCharCode(10));
             let lastLine = lines[lines.length - 1];
             //console.log('lastline: ', lastLine);
-            let abbreviation = lastLine.split(' ')[0];
-            //console.log('abbreviation: ', abbreviation);
-            if (abbreviation in this.abbreviations) {
-                this.addAbbreviationToList(abbreviation, 1);
-                //console.log('Abbreviation detected:', abbreviation, abbreviations[abbreviation]);
-                // let abbrevText = abbreviations[abbreviation]['en'] + '/' + abbreviations[abbreviation]['de'];
+            let userInput = lastLine.split(' ')[0];
+            //console.log('userInput: ', userInput);
+
+            // use merged abbreviations and country prefixes:
+            let keyValues = {};
+
+            // depending on the current menu, only show abbreviations or country prefixes:
+            let currentMenuEntry = this.m32State ? this.m32State.menuEntry : null;
+            //console.log('currentMenuEntry', currentMenuEntry);
+            if (currentMenuEntry && currentMenuEntry['menu number'] === 11) {
+                //console.log('using abbreviations for menu 11');
+                allKeyValues = this.abbreviationKeyValues;
+            } else if (currentMenuEntry && currentMenuEntry['menu number'] === 13) { // FIXME: Prefix is not 13!
+                //console.log('using country prefixes for menu 13');
+                keyValues = this.countryPrefixKeyValues;
+            } else {
+                keyValues = this.allKeyValues;
+            }
+
+            if (userInput in keyValues) {
+                this.addAbbreviationToList(userInput, 1);
+                //console.log('Abbreviation detected:', userInput, keyValues[userInput]);
+                // let abbrevText = keyValues[userInput]['en'] + '/' + keyValues[userInput]['de'];
                 // let content = receiveTextEchoTrainer.value;//.slice(0, -1); // cut off trailing new line
                 // receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')';//  + String.fromCharCode(10);
             }
@@ -103,7 +129,7 @@ class EchoTrainerUI {
     }
 
     showAllAbbreviations() {
-        Object.keys(this.abbreviations).forEach((key) => {
+        Object.keys(this.allKeyValues).forEach((key) => {
             this.addAbbreviationToList(key, -1);
         })
     }
@@ -113,8 +139,8 @@ class EchoTrainerUI {
         let rowElement = table.insertRow(position); // insert in 1st position after header
         let cells = [];
         cells.push(createElement(abbreviation, 'td', null));
-        cells.push(createElement(this.abbreviations[abbreviation]['en'], 'td', null));
-        cells.push(createElement(this.abbreviations[abbreviation]['de'], 'td', null));
+        cells.push(createElement(this.allKeyValues[abbreviation]['en'], 'td', null));
+        cells.push(createElement(this.allKeyValues[abbreviation]['de'], 'td', null));
         rowElement.replaceChildren(...cells);
     }
     
