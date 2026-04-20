@@ -28,7 +28,10 @@ const M32_MENU_CW_GENERATOR_FILE_PLAYER_ID = 8;
 
 // ESP32 bootloader/ROM messages emitted on reset — should be silently ignored
 const ESP32_BOOT_ERROR_PREFIXES = [
-    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (', 'Powerpath'
+    'ets ', 'rst:0x', 'configsip: ', 'clk_drv:0x', 'mode:DIO, ', 'load:0x', 'entry 0x', '[SX12xx] ', 'E (', 'Powerpath', 'Stopping BLE',
+    'ESP_ERROR_CHECK failed', 'file: ', 'func: ', 'expression: ', 'Backtrace: ', 'Guru Meditation Error:', 'abort() was called', 'assert failed:',
+    '[I] ', 'ELF file SHA256:', 'ESP-ROM:', 'Rebooting...', 'W (', 'I (', 'E (', 'ASSERT_ERR', 'PANIC: ', 'Core ', 'CPU0: ', 'CPU1: ',
+    'Build:', 'Saved PC:', 'SPIWP:0x'
 ];
 
 function isEsp32BootOrErrorMessage(text) {
