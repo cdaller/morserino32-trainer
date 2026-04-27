@@ -190,6 +190,7 @@ class M32Translations {
       'tone pitch': { en: 'Tone Pitch' },
       'encoder click': { en: 'Encoder Click' },
       'headphone output': { en: 'Headphone Output' },
+      'invader orient.': { en: 'Invader Orientation' },
     }
   }
 

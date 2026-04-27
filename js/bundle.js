@@ -529,6 +529,18 @@ module.exports = { M32CommunicationService, EVENT_M32_CONNECTED, EVENT_M32_DISCO
 const log  = require ('loglevel');
 const { createElement } = require('./dom-utils');
 
+// taken from Willi's original code, but adapted to new config structure
+// see https://github.com/oe1wkl/Morserino-32/blob/master/Software/Utilities/m32_config_tool.html
+var CONFIGURATION_GROUPS=[
+  {name:'General',icon:'⚙',params:['Encoder Click','Tone Pitch','Time-out','Quick Start','Output Case','Headphone Output','Theme','BLT Kbd Output','Serial Output']},
+  {name:'Key, Paddles & Keyer',icon:'🔑',params:['Paddle Polar.','External Pol.','Keyer Mode','CurtisB DahT%','CurtisB DitT%','AutoChar Spc','Latency']},
+  {name:'CW Generation',icon:'📡',params:['Interchar Spc','InterWord Spc','Random Groups','Length Rnd Gr','Length Calls','Calls Region','Call Prefixes','Length Abbrev','Length Words','Max # of Words','Stop<Next>Rep','CW Gen Displ','Randomize File','Each Word 2x']},
+  {name:'Echo Trainer',icon:'🔊',params:['Echo Prompt','Echo Repeats','Confrm. Tone','Tone Shift','Adaptv. Speed','Echo Speed Max']},
+  {name:'Transmitting & Decoding',icon:'📻',params:['Key ext TX','Generator Tx','Trx Channel','Bandwidth','Decoded on IO']},
+  {name:'Koch Character Sequence',icon:'📖',params:['Koch Sequence','LICW Carousel']},
+  {name:'Games',icon:'🎮',params:['Invader Orient.']}
+];
+
 class M32Config {
     constructor(value) {
         this.name = value['name'];
@@ -616,6 +628,7 @@ class ConfigurationUI {
                             let name = value[index]['name'];
                             this.configNames.push(name);
                         }
+                        this.initGroupContainers();
                         this.fetchFullConfiguration();
                     }
                     break;
@@ -657,6 +670,38 @@ class ConfigurationUI {
         }
     }
 
+    initGroupContainers() {
+        this.configRootElement.innerHTML = '';
+        this.groupContainers = {};
+
+        for (let group of CONFIGURATION_GROUPS) {
+            let groupDiv = createElement(null, 'div', 'mb-4');
+            let heading = createElement(`${group.icon} ${group.name}`, 'h4', 'border-bottom pb-1 mt-3');
+            groupDiv.appendChild(heading);
+            let paramsDiv = createElement(null, 'div', null);
+            groupDiv.appendChild(paramsDiv);
+            this.configRootElement.appendChild(groupDiv);
+            this.groupContainers[group.name] = paramsDiv;
+        }
+
+        this.otherGroupDiv = createElement(null, 'div', 'mb-4 d-none');
+        this.otherGroupDiv.appendChild(createElement('Others', 'h4', 'border-bottom pb-1 mt-3'));
+        let otherParamsDiv = createElement(null, 'div', null);
+        this.otherGroupDiv.appendChild(otherParamsDiv);
+        this.configRootElement.appendChild(this.otherGroupDiv);
+        this.groupContainers['__other__'] = otherParamsDiv;
+    }
+
+    findGroupContainer(configName) {
+        for (let group of CONFIGURATION_GROUPS) {
+            if (group.params.includes(configName)) {
+                return this.groupContainers[group.name];
+            }
+        }
+        this.otherGroupDiv.classList.remove('d-none');
+        return this.groupContainers['__other__'];
+    }
+
     fetchFullConfiguration() {
         // FIXME: order is sometimes mixed up!
         log.debug('fetching configuration settings for', this.configNames);
@@ -676,7 +721,7 @@ class ConfigurationUI {
         if (!configElement) {
             configElement = createElement(null, 'div', 'row');
             configElement.id = elementId;
-            this.configRootElement.appendChild(configElement);
+            this.findGroupContainer(config.name).appendChild(configElement);
 
             let elements = [];
             let titleColumn = createElement(null, 'div', 'col-md-6');
@@ -4244,6 +4289,7 @@ class M32Translations {
       'tone pitch': { en: 'Tone Pitch' },
       'encoder click': { en: 'Encoder Click' },
       'headphone output': { en: 'Headphone Output' },
+      'invader orient.': { en: 'Invader Orientation' },
     }
   }
 
