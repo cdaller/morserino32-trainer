@@ -34,11 +34,12 @@ class M32Translations {
 
   translate(key, language, languageVariant = '', i18nMap) {
     log.debug("Translate key '" + key + "' to language", language);
+    const origKey = key;
     if (key !== ' ')
       key = key.trim().toLowerCase();
     var translationMap = i18nMap[key];
     if (!translationMap) {
-      return key;
+      return origKey; // no translation available
     }
 
     var translation;
