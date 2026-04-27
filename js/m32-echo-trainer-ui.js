@@ -93,54 +93,62 @@ class EchoTrainerUI {
 
 
 
+    // Returns { keyValues, searchLongestPrefix } for the currently active menu entry.
+    // 11 = Echo Trainer/CW Abbrevs, 21 = Koch Trainer/CW Generator/CW Abbrevs, 26 = Koch Trainer/Echo Trainer/CW Abbrevs
+    // 13 = Echo Trainer/Call Signs
+    getKeyValuesForCurrentMenu() {
+        const menuNumber = this.m32State?.menuEntry?.['menu number'];
+        if (menuNumber === 11 || menuNumber === 21 || menuNumber === 26) {
+            return { keyValues: this.abbreviationKeyValues, searchLongestPrefix: false };
+        } else if (menuNumber === 13) {
+            return { keyValues: this.countryPrefixKeyValues, searchLongestPrefix: true };
+        }
+        return { keyValues: this.allKeyValues, searchLongestPrefix: false };
+    }
+
     detectAbbreviation() {
         let text = this.receiveText.value;
-        if (text.endsWith(' OK') || text.endsWith(' ERR')) {
+        if (text.endsWith(' OK') || text.endsWith(' ERR')) { // FIXME: remove ERR!
             let lines = text.split(String.fromCharCode(10));
             let lastLine = lines[lines.length - 1];
-            //console.log('lastline: ', lastLine);
-            let userInput = lastLine.split(' ')[0];
-            //console.log('userInput: ', userInput);
+            let userInput = lastLine.split(' ')[0].toLowerCase();
 
-            // use merged abbreviations and country prefixes:
-            let keyValues = {};
+            const { keyValues, searchLongestPrefix } = this.getKeyValuesForCurrentMenu();
 
-            // depending on the current menu, only show abbreviations or country prefixes:
-            let currentMenuEntry = this.m32State ? this.m32State.menuEntry : null;
-            //console.log('currentMenuEntry', currentMenuEntry);
-            if (currentMenuEntry && currentMenuEntry['menu number'] === 11) {
-                //console.log('using abbreviations for menu 11');
-                allKeyValues = this.abbreviationKeyValues;
-            } else if (currentMenuEntry && currentMenuEntry['menu number'] === 13) { // FIXME: Prefix is not 13!
-                //console.log('using country prefixes for menu 13');
-                keyValues = this.countryPrefixKeyValues;
-            } else {
-                keyValues = this.allKeyValues;
+            let matchedKey = null;
+            if (searchLongestPrefix) {
+                let longestLen = 0;
+                for (const key of Object.keys(keyValues)) {
+                    const keyLower = key.toLowerCase();
+                    if (userInput.startsWith(keyLower) && keyLower.length > longestLen) {
+                        longestLen = keyLower.length;
+                        matchedKey = key;
+                    }
+                }
+            } else if (userInput in keyValues) {
+                matchedKey = userInput;
             }
 
-            if (userInput in keyValues) {
-                this.addAbbreviationToList(userInput, 1);
-                //console.log('Abbreviation detected:', userInput, keyValues[userInput]);
-                // let abbrevText = keyValues[userInput]['en'] + '/' + keyValues[userInput]['de'];
-                // let content = receiveTextEchoTrainer.value;//.slice(0, -1); // cut off trailing new line
-                // receiveTextEchoTrainer.value = content + ' (' + abbrevText + ')';//  + String.fromCharCode(10);
+            if (matchedKey !== null) {
+                this.addAbbreviationToList(keyValues, matchedKey, 1);
             }
         }
     }
 
     showAllAbbreviations() {
-        Object.keys(this.allKeyValues).forEach((key) => {
-            this.addAbbreviationToList(key, -1);
-        })
+        const { keyValues } = this.getKeyValuesForCurrentMenu();
+        Object.keys(keyValues).forEach((key) => {
+            this.addAbbreviationToList(keyValues, key, -1);
+        });
     }
     
-    addAbbreviationToList(abbreviation, position) {
+    addAbbreviationToList(keyValueList, abbreviation, position) {
         let table = document.getElementById('abbreviationTable');
         let rowElement = table.insertRow(position); // insert in 1st position after header
         let cells = [];
         cells.push(createElement(abbreviation, 'td', null));
-        cells.push(createElement(this.allKeyValues[abbreviation]['en'], 'td', null));
-        cells.push(createElement(this.allKeyValues[abbreviation]['de'], 'td', null));
+        cells.push(createElement(keyValueList[abbreviation]['en'], 'td', null));
+        cells.push(createElement(keyValueList[abbreviation]['de'], 'td', null));
         rowElement.replaceChildren(...cells);
     }
     
@@ -580,8 +588,8 @@ class EchoTrainerUI {
             'VK': { de: 'Australien', en: 'Australia' },
             'VA': { de: 'Kanada', en: 'Canada' },
             'VE': { de: 'Kanada', en: 'Canada' },
-            // 'VO': { de: 'Kanada', en: 'Canada' },
-            // 'VY': { de: 'Kanada', en: 'Canada' },
+            'VO': { de: 'Kanada', en: 'Canada' },
+            'VY': { de: 'Kanada', en: 'Canada' },
             '4X': { de: 'Israel', en: 'Israel' },
             '4Z': { de: 'Israel', en: 'Israel' },
             'ZL': { de: 'Neuseeland', en: 'New Zealand' },
@@ -589,40 +597,42 @@ class EchoTrainerUI {
             'ZS': { de: 'Südafrika', en: 'South Africa' },
 
             // ===== USA (duplicate keys merged, comma-separated) =====
-            'W1': {
-                de: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont',
-                en: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont'
-            },
-            'W2': {
-                de: 'USA New Jersey, New York',
-                en: 'USA New Jersey, New York'
-            },
-            'W3': {
-                de: 'USA Delaware, District of Columbia, Maryland, Pennsylvania',
-                en: 'USA Delaware, District of Columbia, Maryland, Pennsylvania'
-            },
-            'W4': {
-                de: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia',
-                en: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia'
-            },
-            'W5': {
-                de: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas',
-                en: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas'
-            },
-            'W6': { de: 'USA California', en: 'USA California' },
-            'W7': {
-                de: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming',
-                en: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming'
-            },
-            'W8': {
-                de: 'USA Michigan, Ohio, West Virginia',
-                en: 'USA Michigan, Ohio, West Virginia'
-            },
-            'W9': {
-                de: 'USA Illinois, Indiana, Wisconsin',
-                en: 'USA Illinois, Indiana, Wisconsin'
-            },
-
+            'K': { de: 'USA', en: 'USA' },
+            'W': { de: 'USA', en: 'USA' },
+            // 'W1': {
+            //     de: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont',
+            //     en: 'USA Connecticut, Maine, Massachusetts, New Hampshire, Rhode Island, Vermont'
+            // },
+            // 'W2': {
+            //     de: 'USA New Jersey, New York',
+            //     en: 'USA New Jersey, New York'
+            // },
+            // 'W3': {
+            //     de: 'USA Delaware, District of Columbia, Maryland, Pennsylvania',
+            //     en: 'USA Delaware, District of Columbia, Maryland, Pennsylvania'
+            // },
+            // 'W4': {
+            //     de: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia',
+            //     en: 'USA Alabama, Florida, Georgia, Kentucky, North Carolina, South Carolina, Tennessee, Virginia'
+            // },
+            // 'W5': {
+            //     de: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas',
+            //     en: 'USA Arkansas, Louisiana, Mississippi, Oklahoma, Texas'
+            // },
+            // 'W6': { de: 'USA California', en: 'USA California' },
+            // 'W7': {
+            //     de: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming',
+            //     en: 'USA Arizona, Idaho, Montana, Nevada, Oregon, Utah, Washington, Wyoming'
+            // },
+            // 'W8': {
+            //     de: 'USA Michigan, Ohio, West Virginia',
+            //     en: 'USA Michigan, Ohio, West Virginia'
+            // },
+            // 'W9': {
+            //     de: 'USA Illinois, Indiana, Wisconsin',
+            //     en: 'USA Illinois, Indiana, Wisconsin'
+            // },
+            'K': { de: 'USA', en: 'USA' },
             'KL7': { de: 'USA Alaska', en: 'USA Alaska' },
             'KH6': { de: 'USA Hawaii', en: 'USA Hawaii' },
             'KP4': { de: 'USA Puerto Rico', en: 'USA Puerto Rico' },

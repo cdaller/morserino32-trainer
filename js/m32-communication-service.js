@@ -284,7 +284,7 @@ class M32CommunicationService {
                     if (isRebootMessage(line)) {
                         this.onRebootDetected();
                     }
-                } else if (line.trim() !== '') {
+                } else {
                     this.eventEmitter.emit(EVENT_M32_TEXT_RECEIVED, line);
                 }
             }
