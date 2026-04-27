@@ -82,6 +82,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command('GET wifi');
         this.m32CommunicationService.sendM32Command('GET snapshots');
         this.m32CommunicationService.sendM32Command('GET configs'); // triggers a handleM32Object callback
+        this.m32CommunicationService.sendM32Command('GET kochlesson');
     }
 
     // callback method for a full json object received
@@ -132,12 +133,22 @@ class ConfigurationUI {
                     }
                     break;
                 case 'device':
-                    if (this.configRootElement) {                            
+                    if (this.configRootElement) {
                         console.log(value);
                         this.receivedDevice(value);
                     }
                     break;
-        
+                case 'customchars':
+                    if (this.configRootElement) {
+                        this.receivedCustomChars(value);
+                    }
+                    break;
+                case 'kochlesson':
+                    if (this.configRootElement) {
+                        this.receivedKochLesson(value);
+                    }
+                    break;
+
                 }
         } else {
             console.log('cannot handle json', jsonObject);
@@ -154,9 +165,16 @@ class ConfigurationUI {
             groupDiv.appendChild(heading);
             let paramsDiv = createElement(null, 'div', null);
             groupDiv.appendChild(paramsDiv);
+            if (group.name === 'Koch Character Sequence') {
+                this.kochExtrasContainer = createElement(null, 'div', null);
+                groupDiv.appendChild(this.kochExtrasContainer);
+            }
             this.configRootElement.appendChild(groupDiv);
             this.groupContainers[group.name] = paramsDiv;
         }
+
+        this.createCustomCharsUI();
+        this.createKochLessonUI();
 
         this.otherGroupDiv = createElement(null, 'div', 'mb-4 d-none');
         this.otherGroupDiv.appendChild(createElement('Others', 'h4', 'border-bottom pb-1 mt-3'));
@@ -164,6 +182,115 @@ class ConfigurationUI {
         this.otherGroupDiv.appendChild(otherParamsDiv);
         this.configRootElement.appendChild(this.otherGroupDiv);
         this.groupContainers['__other__'] = otherParamsDiv;
+    }
+
+    createCustomCharsUI() {
+        let container = this.kochExtrasContainer;
+        if (!container) return;
+
+        let rowDiv = createElement(null, 'div', 'row d-none');
+        rowDiv.id = 'custom-chars-row';
+
+        let titleColumn = createElement(null, 'div', 'col-md-6');
+        titleColumn.replaceChildren(
+            createElement('Custom Characters', 'h4', null),
+            createElement('Characters used in the custom Koch sequence', 'p', null)
+        );
+
+        let inputGroupDiv = createElement(null, 'div', 'col-md-4');
+        let inputGroup = createElement(null, 'div', 'input-group');
+        let inputEl = createElement(null, 'input', 'form-control');
+        inputEl.type = 'text';
+        inputEl.id = 'm32-custom-chars-input';
+        let saveButton = createElement('Save', 'button', 'btn btn-primary');
+        saveButton.addEventListener('click', this.saveCustomChars.bind(this));
+        inputGroup.replaceChildren(inputEl, saveButton);
+        inputGroupDiv.appendChild(inputGroup);
+
+        rowDiv.replaceChildren(titleColumn, inputGroupDiv);
+        container.appendChild(rowDiv);
+    }
+
+    setCustomCharsVisible(visible) {
+        let row = document.getElementById('custom-chars-row');
+        if (row) {
+            row.classList.toggle('d-none', !visible);
+        }
+    }
+
+    receivedCustomChars(value) {
+        let input = document.getElementById('m32-custom-chars-input');
+        if (input) {
+            input.value = value['characters'] || '';
+        }
+    }
+
+    saveCustomChars() {
+        let input = document.getElementById('m32-custom-chars-input');
+        if (!input) return;
+        let chars = input.value.replace(/\s/g, '');
+        this.m32CommunicationService.sendM32Command(`PUT customchars/set/${chars}`, false);
+    }
+
+    createKochLessonUI() {
+        let container = this.kochExtrasContainer;
+        if (!container) return;
+
+        let rowDiv = createElement(null, 'div', 'row mt-3');
+        rowDiv.id = 'koch-lesson-row';
+
+        let titleColumn = createElement(null, 'div', 'col-md-6');
+        titleColumn.replaceChildren(
+            createElement('Koch Lesson', 'h4', null),
+            createElement('Selected lesson — determines which characters are active in the Koch sequence', 'p', null)
+        );
+
+        let controlDiv = createElement(null, 'div', 'col-md-4');
+        let inputGroup = createElement(null, 'div', 'input-group');
+        let inputEl = createElement(null, 'input', 'form-control');
+        inputEl.type = 'number';
+        inputEl.id = 'm32-koch-lesson-input';
+        inputEl.min = 1;
+        inputEl.addEventListener('input', this.onKochLessonInput.bind(this));
+        let saveButton = createElement('Save', 'button', 'btn btn-primary');
+        saveButton.addEventListener('click', this.saveKochLesson.bind(this));
+        inputGroup.replaceChildren(inputEl, saveButton);
+
+        let charsDisplay = createElement(null, 'div', 'mt-2 font-monospace');
+        charsDisplay.id = 'm32-koch-lesson-chars';
+
+        controlDiv.replaceChildren(inputGroup, charsDisplay);
+        rowDiv.replaceChildren(titleColumn, controlDiv);
+        container.appendChild(rowDiv);
+    }
+
+    receivedKochLesson(value) {
+        this.kochLessonCharacters = value['characters'] || [];
+        let input = document.getElementById('m32-koch-lesson-input');
+        if (input) {
+            input.min = value['minimum'] || 1;
+            input.max = value['maximum'] || this.kochLessonCharacters.length;
+            input.value = value['value'];
+        }
+        this.updateKochLessonCharsDisplay(value['value']);
+    }
+
+    onKochLessonInput(event) {
+        this.updateKochLessonCharsDisplay(parseInt(event.target.value));
+    }
+
+    updateKochLessonCharsDisplay(lessonNumber) {
+        let display = document.getElementById('m32-koch-lesson-chars');
+        if (!display || !this.kochLessonCharacters) return;
+        let active = this.kochLessonCharacters.slice(0, lessonNumber);
+        display.textContent = active.join(' ');
+    }
+
+    saveKochLesson() {
+        let input = document.getElementById('m32-koch-lesson-input');
+        if (!input) return;
+        this.m32CommunicationService.sendM32Command(`PUT kochlesson/${input.value}`, false);
+        this.m32CommunicationService.sendM32Command('GET kochlesson');
     }
 
     findGroupContainer(configName) {
@@ -238,6 +365,15 @@ class ConfigurationUI {
                 }
             }
         //}
+
+        if (config.name === 'Koch Sequence') {
+            let displayValue = config.displayed
+                || (config.isMapped ? config.mappedValues[config.value] : config.value.toString());
+            let isCustom = displayValue === 'Custom Chars';
+            this.setCustomCharsVisible(isCustom);
+            if (isCustom) this.m32CommunicationService.sendM32Command('GET customchars');
+            this.m32CommunicationService.sendM32Command('GET kochlesson');
+        }
     }
 
     getIdFromName(configName) {
@@ -250,6 +386,15 @@ class ConfigurationUI {
         let command = "PUT config/" + configName + "/" + value;
         log.debug('changed:', configName, value);
         this.m32CommunicationService.sendM32Command(command, false);
+
+        if (configName === 'Koch Sequence') {
+            let config = this.configMap[configName];
+            let displayValue = config && config.isMapped ? config.mappedValues[parseInt(value)] : value;
+            let isCustom = displayValue === 'Custom Chars';
+            this.setCustomCharsVisible(isCustom);
+            if (isCustom) this.m32CommunicationService.sendM32Command('GET customchars');
+            this.m32CommunicationService.sendM32Command('GET kochlesson');
+        }
     }
 
     receivedWifis(wifiConfig) {
