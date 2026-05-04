@@ -138,13 +138,13 @@ class M32CommandSpeechHandler {
                     this.speak(configName + ' is ' + configValue, 'config');
                     break;
                 }
-                case 'kochlesson': {
-                    let lesson = value['value'];
-                    let chars = value['characters'];
-                    let lastChar = chars && chars.length >= lesson ? chars[lesson - 1] : '';
-                    this.speak(`Koch lesson ${lesson}, ${lastChar}`, 'kochlesson');
-                    break;
-                }
+                // case 'kochlesson': {
+                //     let lesson = value['value'];
+                //     let chars = value['characters'];
+                //     let lastChar = chars && chars.length >= lesson ? chars[lesson - 1] : '';
+                //     this.speak(`Koch lesson ${lesson}, ${lastChar}`, 'kochlesson');
+                //     break;
+                // }
                 case 'error':
                     this.speak(value['message'], 'error');
                     break;

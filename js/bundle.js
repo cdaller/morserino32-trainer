@@ -5004,7 +5004,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.8.5';
+let VERSION = '0.8.6';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
@@ -5527,13 +5527,13 @@ class M32CommandSpeechHandler {
                     this.speak(configName + ' is ' + configValue, 'config');
                     break;
                 }
-                case 'kochlesson': {
-                    let lesson = value['value'];
-                    let chars = value['characters'];
-                    let lastChar = chars && chars.length >= lesson ? chars[lesson - 1] : '';
-                    this.speak(`Koch lesson ${lesson}, ${lastChar}`, 'kochlesson');
-                    break;
-                }
+                // case 'kochlesson': {
+                //     let lesson = value['value'];
+                //     let chars = value['characters'];
+                //     let lastChar = chars && chars.length >= lesson ? chars[lesson - 1] : '';
+                //     this.speak(`Koch lesson ${lesson}, ${lastChar}`, 'kochlesson');
+                //     break;
+                // }
                 case 'error':
                     this.speak(value['message'], 'error');
                     break;
