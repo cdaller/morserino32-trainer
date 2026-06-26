@@ -277,7 +277,7 @@ class M32CommunicationService {
             this.waitForReponseLock.locked = false;
             try {
                 // fix wrong encoding of new lines in json from morserino:
-                result.content = result.content.replaceAll(/\n/g,"\\n").replaceAll(/\r/g, "").replaceAll("\\c","\\\\c");
+                result.content = result.content.replaceAll(/\n/g,"\\n").replaceAll(/\r/g, "").replace(/(?<!\\)\\c/g,"\\\\c");
                 let jsonObject = JSON.parse(result.content);
                 this.protocolHandlers.forEach(handler => {
                     handler.handleM32Object(jsonObject);
@@ -5004,7 +5004,7 @@ const { FileUploadUI } = require('./m32-file-upload-ui');
 // let m32Protocolhandler;
 
 // some constants
-let VERSION = '0.8.6';
+let VERSION = '0.8.7';
 
 const MODE_CW_GENERATOR = 'cw-generator';
 const MODE_ECHO_TRAINER = 'echo-trainer';
