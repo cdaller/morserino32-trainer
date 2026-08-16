@@ -761,15 +761,16 @@ class ConfigurationUI {
     receivedHardware(value) {
         let lines = [];
         lines.push('Brightness: ' + value['brightness']);
-        lines.push('Left Handed: ' + value['leftHanded']);
+        lines.push('Left Handed: ' + (value['leftHanded'] ? 'Yes' : 'No'));
         if (value['cn3Paddle'] !== undefined) {
             lines.push('CN3 Paddle: ' + value['cn3Paddle']);
         }
         lines.push('V-Adjust: ' + value['vAdjust']);
         if (value['loraBand'] !== undefined) {
-            lines.push('LoRa Band: ' + value['loraBand']);
-            lines.push('LoRa Frequency: ' + value['loraFrequency']);
-            lines.push('LoRa Power: ' + value['loraPower']);
+            const LORA_BANDS = ['433 MHz', '868 MHz', '920 MHz'];
+            lines.push('LoRa Band: ' + (LORA_BANDS[value['loraBand']] || value['loraBand']));
+            lines.push('LoRa Frequency: ' + (value['loraFrequency'] / 1000000).toFixed(3) + ' MHz');
+            lines.push('LoRa Power: ' + value['loraPower'] + ' dBm');
         }
         document.getElementById('m32-config-hardware-info').innerHTML = lines.join(', ');
     }
