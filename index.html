@@ -140,6 +140,22 @@
         .changed {
             border: 1px solid red;
         }
+        .m32-config-row {
+            border: 1px solid #CCCCCC;
+            border-radius: 4px;
+            padding: 8px 0;
+            margin-bottom: 8px;
+        }
+        .m32-config-select {
+            max-width: 20ch;
+        }
+        .m32-snapshot-value {
+            max-width: 20ch;
+        }
+        .m32-snapshot-value.diff {
+            font-weight: bold;
+            color: #dc3545;
+        }
     </style>
 </head>
 
@@ -288,7 +304,7 @@
                 </div>
             </div>
             <ul>
-                <li>2026-08-16: v0.8.8 Nicer snapshot recall/store/clear.</li>
+                <li>2026-08-16: v0.8.8 Nicer snapshot recall/store/clear/inspect.</li>
                 <li>2026-04-27: v0.8.5 Group configuration settings, add Koch custom characters. Callsign prefixes as abbreviations.</li>
                 <li>2026-04-20: v0.8.4 Eliminate boot and error messages.</li>
                 <li>2026-02-22: v0.8.0 Finally found (and hopefully fixed) the connection problems on Windows systems.</li>
@@ -708,6 +724,7 @@
                                     <h4 class="card-title">1</h4>
                                     <p class="card-text" id="m32-config-snapshot-1-status">Empty</p>
                                     <button id="m32-config-snapshot-1-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-1-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-1-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-1-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -721,6 +738,7 @@
                                     <h4 class="card-title">2</h4>
                                     <p class="card-text" id="m32-config-snapshot-2-status">Empty</p>
                                     <button id="m32-config-snapshot-2-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-2-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-2-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-2-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -734,6 +752,7 @@
                                     <h4 class="card-title">3</h4>
                                     <p class="card-text" id="m32-config-snapshot-3-status">Empty</p>
                                     <button id="m32-config-snapshot-3-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-3-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-3-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-3-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -747,6 +766,7 @@
                                     <h4 class="card-title">4</h4>
                                     <p class="card-text" id="m32-config-snapshot-4-status">Empty</p>
                                     <button id="m32-config-snapshot-4-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-4-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-4-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-4-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -760,6 +780,7 @@
                                     <h4 class="card-title">5</h4>
                                     <p class="card-text" id="m32-config-snapshot-5-status">Empty</p>
                                     <button id="m32-config-snapshot-5-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-5-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-5-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-5-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -773,6 +794,7 @@
                                     <h4 class="card-title">6</h4>
                                     <p class="card-text" id="m32-config-snapshot-6-status">Empty</p>
                                     <button id="m32-config-snapshot-6-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-6-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-6-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-6-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -786,6 +808,7 @@
                                     <h4 class="card-title">7</h4>
                                     <p class="card-text" id="m32-config-snapshot-7-status">Empty</p>
                                     <button id="m32-config-snapshot-7-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-7-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-7-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-7-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
@@ -799,6 +822,7 @@
                                     <h4 class="card-title">8</h4>
                                     <p class="card-text" id="m32-config-snapshot-8-status">Empty</p>
                                     <button id="m32-config-snapshot-8-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <button id="m32-config-snapshot-8-inspect-button" class="btn btn-outline-secondary btn-sm" type="button" disabled>Inspect</button>
                                     <div class="btn-group mt-2 d-block">
                                         <button id="m32-config-snapshot-8-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
                                         <button id="m32-config-snapshot-8-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>

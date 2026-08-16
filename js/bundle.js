@@ -584,14 +584,17 @@ class ConfigurationUI {
         this.snapshotStatusElements = {};
         this.snapshotRecallButtons = {};
         this.snapshotClearButtons = {};
+        this.snapshotInspectButtons = {};
         for (let index = 1; index < MAX_NUMBER_SNAPSHOTS + 1; index++) {
             this.snapshotStatusElements[index] = document.getElementById('m32-config-snapshot-' + index + '-status');
             this.snapshotRecallButtons[index] = document.getElementById('m32-config-snapshot-' + index + '-recall-button');
             this.snapshotClearButtons[index] = document.getElementById('m32-config-snapshot-' + index + '-clear-button');
+            this.snapshotInspectButtons[index] = document.getElementById('m32-config-snapshot-' + index + '-inspect-button');
 
             document.getElementById('m32-config-snapshot-' + index + '-store-button').addEventListener('click', this.storeSnapshot.bind(this, index));
             this.snapshotRecallButtons[index].addEventListener('click', this.recallSnapshotClicked.bind(this, index));
             this.snapshotClearButtons[index].addEventListener('click', this.clearSnapshotClicked.bind(this, index));
+            this.snapshotInspectButtons[index].addEventListener('click', this.inspectSnapshotClicked.bind(this, index));
         }
 
 
@@ -665,9 +668,15 @@ class ConfigurationUI {
                     }
                     break;
                 case 'snapshots':
-                    if (this.configRootElement) {                            
+                    if (this.configRootElement) {
                         console.log(value);
                         this.receivedSnapshots(value);
+                    }
+                    break;
+                case 'snapshot':
+                    if (this.configRootElement) {
+                        console.log(value);
+                        this.receivedSnapshotInspect(value);
                     }
                     break;
                 case 'device':
@@ -858,20 +867,20 @@ class ConfigurationUI {
         let elementId = this.getIdFromName(config.name);
         let configElement = document.getElementById(elementId);
         if (!configElement) {
-            configElement = createElement(null, 'div', 'row');
+            configElement = createElement(null, 'div', 'row align-items-center m32-config-row');
             configElement.id = elementId;
             this.findGroupContainer(config.name).appendChild(configElement);
 
             let elements = [];
-            let titleColumn = createElement(null, 'div', 'col-md-6');
+            let titleColumn = createElement(null, 'div', 'col-md-5');
             titleColumn.replaceChildren(...[createElement(i18nName, 'h4', null), createElement(config.description, 'p', null)]);
             elements.push(titleColumn);
-            let selectDivElement = createElement(null, 'div', 'col-md-4');
-            let selectElement = createElement(null, 'select', 'form-select');
+            let selectDivElement = createElement(null, 'div', 'col-md-3');
+            let selectElement = createElement(null, 'select', 'form-select m32-config-select');
             //selectElement.disabled = true; // FIXME: remove for edit!
             selectElement.setAttribute('data-m32-config-name', config.name);
             selectElement.addEventListener('change', this.onChangeConfig.bind(this));
-            
+
             let optionElements = [];
             for (let index = config.minimum; index <= config.maximum; index += config.step) {
                 let displayValue = config.isMapped ? config.mappedValues[index] : index.toString();
@@ -885,6 +894,11 @@ class ConfigurationUI {
             selectElement.replaceChildren(...optionElements);
             selectDivElement.replaceChildren(...[selectElement]);
             elements.push(selectDivElement);
+
+            let snapshotValueDiv = createElement(null, 'div', 'col-md-4 m32-snapshot-value d-none');
+            snapshotValueDiv.id = elementId + '-snapshot-value';
+            elements.push(snapshotValueDiv);
+
             configElement.replaceChildren(...elements);
         }
         // if a config element is received on manual user interaction on morserino, a different config
@@ -972,6 +986,7 @@ class ConfigurationUI {
             this.snapshotStatusElements[index].textContent = exists ? 'Stored' : 'Empty';
             this.snapshotRecallButtons[index].disabled = !exists;
             this.snapshotClearButtons[index].disabled = !exists;
+            this.snapshotInspectButtons[index].disabled = !exists;
         }
     }
 
@@ -1003,6 +1018,41 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command("PUT snapshot/store/" + snapshotId, false);
         // read new configuration:
         this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    inspectSnapshotClicked(snapshotId) {
+        log.debug("inspect snapshot", snapshotId);
+        this.m32CommunicationService.sendM32Command("GET snapshot/" + snapshotId);
+    }
+
+    receivedSnapshotInspect(snapshot) {
+        this.clearSnapshotComparison();
+        let snapshotNumber = snapshot['number'];
+        let configs = snapshot['configs'] || [];
+        for (let index = 0; index < configs.length; index++) {
+            this.showSnapshotValue(snapshotNumber, configs[index]);
+        }
+        document.getElementById('m32-config-settings').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    clearSnapshotComparison() {
+        document.querySelectorAll('.m32-snapshot-value').forEach(element => {
+            element.classList.add('d-none');
+            element.classList.remove('diff');
+            element.textContent = '';
+        });
+    }
+
+    showSnapshotValue(snapshotNumber, config) {
+        let element = document.getElementById(this.getIdFromName(config.name) + '-snapshot-value');
+        if (!element) {
+            return;
+        }
+        let currentConfig = this.configMap[config.name];
+        let isDifferent = !currentConfig || Number(currentConfig.value) !== Number(config.value);
+        element.textContent = 'Snapshot ' + snapshotNumber + ': ' + config.displayed;
+        element.classList.remove('d-none');
+        element.classList.toggle('diff', isDifferent);
     }
 
 
