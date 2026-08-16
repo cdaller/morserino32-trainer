@@ -370,6 +370,7 @@ class M32CommunicationService {
         this.sendM32Command('GET control/volume');
         this.sendM32Command('GET kochlesson');
         this.sendM32Command('GET menu');
+        this.sendM32Command('GET menus');
     }
 
     onRebootDetected() {
@@ -5246,6 +5247,10 @@ module.exports = { MODE_CW_GENERATOR, MODE_ECHO_TRAINER, MODE_QSO_TRAINER, MODE_
 
 const log  = require ('loglevel');
 
+// Some menu labels contain a literal '/' (e.g. "iCW/Ext Trx", "SOTA/POTA") that isn't a
+// path separator between menu levels — mask them before splitting the path on '/'.
+const MENU_PATH_LABEL_LITERALS = ['iCW/Ext Trx', 'SOTA/POTA'];
+
 class M32Translations {
 
   constructor() {
@@ -5253,6 +5258,14 @@ class M32Translations {
     this.menuTranslations = this.getMenuTranslations();
     this.configTranslations = this.getConfigTranslations();
     this.characterTranslations = this.getAlphabetTranslations();
+  }
+
+  splitMenuPath(menu) {
+    let maskedMenu = menu;
+    MENU_PATH_LABEL_LITERALS.forEach(literal => {
+      maskedMenu = maskedMenu.replace(literal, literal.replace(/\//g, ' '));
+    });
+    return maskedMenu.split('/').map(segment => segment.replace(/ /g, '/'));
   }
 
   phonetisize(text) {
@@ -5377,7 +5390,7 @@ class M32Translations {
       'wifi trx': {en: 'WiFi Transceiver', de: 'WLAN Tranceiver'},
       'icw/ext trx': {en: 'iCW/External Tranceiver', de: 'iCW/Externer Tranceiver'},
       'qso bot': {en: 'QSO Bot'},
-      'sota/pota': {en: 'SOTA/POTA'},
+      'sota/pota': {en: 'SOTA/POTA', en_speak: 'sota pota'},
       'standard': {en: 'Standard'},
       'contest': {en: 'Contest'},
     'cw decoder': {en: 'CW Decoder'},
@@ -5609,7 +5622,7 @@ class M32CommandSpeechHandler {
             const value = jsonObject[key];
             switch(key) {
                 case 'menu':
-                    var menues = value['content'].split('/');
+                    var menues = this.m32Translations.splitMenuPath(value['content']);
                     var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
                     this.speak(textToSpeak, 'menu');
                     break;
@@ -5736,10 +5749,6 @@ let log = require("loglevel");
 
 const CONTROL_PANEL_DEBOUNCE_MS = 150;
 
-// Some menu labels contain a literal '/' (e.g. "iCW/Ext Trx", "SOTA/POTA") that isn't a
-// path separator between menu levels — mask them before splitting the path on '/'.
-const MENU_PATH_LABEL_LITERALS = ['iCW/Ext Trx', 'SOTA/POTA'];
-
 class M32CommandUIHandler {
 
     constructor(language = 'en', m32translations, m32CommunicationService) {
@@ -5756,12 +5765,47 @@ class M32CommandUIHandler {
             buildCommand: (value) => 'PUT kochlesson/' + value
         });
 
+        this.setupMenuPanel();
+
         document.addEventListener('click', this.closeAllControlPanels.bind(this));
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 this.closeAllControlPanels();
             }
         });
+    }
+
+    setupMenuPanel() {
+        let badge = document.getElementById('m32Menu');
+        let panel = document.getElementById('m32MenuPanel');
+        if (!badge || !panel) {
+            return;
+        }
+        this.menuBadge = badge;
+        this.menuPanel = panel;
+
+        badge.addEventListener('click', (event) => {
+            event.stopPropagation();
+            let isOpen = panel.classList.contains('show');
+            this.closeAllControlPanels();
+            if (!isOpen) {
+                panel.classList.add('show');
+            }
+        });
+        panel.addEventListener('click', (event) => event.stopPropagation());
+
+        panel.addEventListener('click', (event) => {
+            let item = event.target.closest('[data-menu-number]');
+            if (item) {
+                this.selectMenu(item.getAttribute('data-menu-number'));
+            }
+        });
+    }
+
+    selectMenu(menuNumber) {
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
+        this.m32CommunicationService.sendM32Command('PUT menu/start/' + menuNumber, false);
+        this.closeAllControlPanels();
     }
 
     setupControlPanel(controlName, badgeId, panelId, rangeId, rangeValueId, options = {}) {
@@ -5859,7 +5903,10 @@ class M32CommandUIHandler {
                     break;
                 case 'kochlesson':
                     this.receivedM32KochLesson(value);
-                    break;                        
+                    break;
+                case 'menus':
+                    this.receivedM32MenuList(value);
+                    break;
                 }
         } else {
             console.debug('cannot handle json', jsonObject);
@@ -5892,11 +5939,7 @@ class M32CommandUIHandler {
     }
 
     receivedM32Menu(menu) {
-        var maskedMenu = menu;
-        MENU_PATH_LABEL_LITERALS.forEach(literal => {
-            maskedMenu = maskedMenu.replace(literal, literal.replace(/\//g, ' '));
-        });
-        var menues = maskedMenu.split('/').map(segment => segment.replace(/ /g, '/'));
+        var menues = this.m32translations.splitMenuPath(menu);
         var textToDisplay = menues.map((segment) => this.m32translations.translateMenu(segment, this.language)).join('/');
         var menuElement = document.getElementById("m32Menu");
         if (menuElement) {
@@ -5928,6 +5971,46 @@ class M32CommandUIHandler {
             kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
         }
         this.updateControlPanel('kochlesson', value, kochlesson['minimum'], kochlesson['maximum'], characters);
+    }
+
+    receivedM32MenuList(menuList) {
+        if (!this.menuPanel) {
+            return;
+        }
+        let elements = menuList.map(entry => {
+            let segments = this.m32translations.splitMenuPath(entry['content']);
+            let isFolderHeader = segments[segments.length - 1] === '..';
+            let depth = isFolderHeader ? segments.length - 2 : segments.length - 1;
+            let labelSegment = isFolderHeader ? segments[segments.length - 2] : segments[segments.length - 1];
+            let label = this.m32translations.translateMenu(labelSegment, this.language);
+            let paddingLeft = (0.75 + depth * 0.75) + 'rem';
+
+            if (isFolderHeader) {
+                let header = document.createElement('h6');
+                header.className = 'dropdown-header';
+                header.style.paddingLeft = paddingLeft;
+                header.textContent = label;
+                return header;
+            }
+
+            let breadcrumb = segments
+                .filter(segment => segment !== '..')
+                .map(segment => this.m32translations.translateMenu(segment, this.language))
+                .join(' / ');
+            let item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'dropdown-item' + (entry['executable'] ? '' : ' disabled');
+            item.style.paddingLeft = paddingLeft;
+            item.title = breadcrumb;
+            item.textContent = label;
+            if (entry['executable']) {
+                item.setAttribute('data-menu-number', entry['menu number']);
+            } else {
+                item.disabled = true;
+            }
+            return item;
+        });
+        this.menuPanel.replaceChildren(...elements);
     }
 
 }

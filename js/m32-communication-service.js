@@ -346,6 +346,7 @@ class M32CommunicationService {
         this.sendM32Command('GET control/volume');
         this.sendM32Command('GET kochlesson');
         this.sendM32Command('GET menu');
+        this.sendM32Command('GET menus');
     }
 
     onRebootDetected() {

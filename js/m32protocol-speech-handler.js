@@ -106,7 +106,7 @@ class M32CommandSpeechHandler {
             const value = jsonObject[key];
             switch(key) {
                 case 'menu':
-                    var menues = value['content'].split('/');
+                    var menues = this.m32Translations.splitMenuPath(value['content']);
                     var textToSpeak = menues.map((menu) => this.m32Translations.translateMenu(menu, this.language, 'speak')).join(' ');
                     this.speak(textToSpeak, 'menu');
                     break;

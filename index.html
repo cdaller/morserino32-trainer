@@ -304,7 +304,7 @@
                 </div>
             </div>
             <ul>
-                <li>2026-08-16: v0.8.8 Nicer snapshot recall/store/clear/inspect. ESP-Now as Wifi setting. Show Hardware & Status. Allow to set speed, volume and koch lesson on badges.</li>
+                <li>2026-08-16: v0.8.8 Nicer snapshot recall/store/clear/inspect. ESP-Now as Wifi setting. Show Hardware & Status. Allow to set speed, volume, menu and koch lesson on badges.</li>
                 <li>2026-04-27: v0.8.5 Group configuration settings, add Koch custom characters. Callsign prefixes as abbreviations.</li>
                 <li>2026-04-20: v0.8.4 Eliminate boot and error messages.</li>
                 <li>2026-02-22: v0.8.0 Finally found (and hopefully fixed) the connection problems on Windows systems.</li>
@@ -371,7 +371,11 @@
             <div class="col-4 m32-protocol container" id="m32state">
                 <div class="row" >
                     <div class="col text-end">
-                        <span id="m32Menu" class="badge bg-dark"></span>
+                        <span class="position-relative d-inline-block">
+                            <span id="m32Menu" class="badge bg-dark" role="button" style="cursor: pointer;"></span>
+                            <div id="m32MenuPanel" class="dropdown-menu p-1 text-start" style="min-width: 260px; max-height: 320px; overflow-y: auto; left: auto; right: 0;">
+                            </div>
+                        </span>
                     </div>
                 </div>
                 <div class="row">
