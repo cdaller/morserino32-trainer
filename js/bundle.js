@@ -5376,10 +5376,8 @@ class M32Translations {
       'lora trx': {en: 'Lora Transceiver', de: 'Lora Transceiver'},
       'wifi trx': {en: 'WiFi Transceiver', de: 'WLAN Tranceiver'},
       'icw/ext trx': {en: 'iCW/External Tranceiver', de: 'iCW/Externer Tranceiver'},
-      'icw': {en: 'iCW'},
       'qso bot': {en: 'QSO Bot'},
-      'sota': {en: 'SOTA'},
-      'pota': {en: 'POTA'},
+      'sota/pota': {en: 'SOTA/POTA'},
       'standard': {en: 'Standard'},
       'contest': {en: 'Contest'},
     'cw decoder': {en: 'CW Decoder'},
@@ -5738,6 +5736,10 @@ let log = require("loglevel");
 
 const CONTROL_PANEL_DEBOUNCE_MS = 150;
 
+// Some menu labels contain a literal '/' (e.g. "iCW/Ext Trx", "SOTA/POTA") that isn't a
+// path separator between menu levels — mask them before splitting the path on '/'.
+const MENU_PATH_LABEL_LITERALS = ['iCW/Ext Trx', 'SOTA/POTA'];
+
 class M32CommandUIHandler {
 
     constructor(language = 'en', m32translations, m32CommunicationService) {
@@ -5890,8 +5892,12 @@ class M32CommandUIHandler {
     }
 
     receivedM32Menu(menu) {
-        var menues = menu.split('/');
-        var textToDisplay = menues.map((menu) => this.m32translations.translateMenu(menu, this.language)).join('/');
+        var maskedMenu = menu;
+        MENU_PATH_LABEL_LITERALS.forEach(literal => {
+            maskedMenu = maskedMenu.replace(literal, literal.replace(/\//g, ' '));
+        });
+        var menues = maskedMenu.split('/').map(segment => segment.replace(/ /g, '/'));
+        var textToDisplay = menues.map((segment) => this.m32translations.translateMenu(segment, this.language)).join('/');
         var menuElement = document.getElementById("m32Menu");
         if (menuElement) {
             menuElement.textContent = textToDisplay;
