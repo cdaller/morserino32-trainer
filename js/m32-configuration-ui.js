@@ -3,6 +3,8 @@
 const log  = require ('loglevel');
 const { createElement } = require('./dom-utils');
 
+const MAX_NUMBER_SNAPSHOTS = 8;
+
 // taken from Willi's original code, but adapted to new config structure
 // see https://github.com/oe1wkl/Morserino-32/blob/master/Software/Utilities/m32_config_tool.html
 var CONFIGURATION_GROUPS=[
@@ -53,10 +55,20 @@ class ConfigurationUI {
         document.getElementById('m32-select-wifi2-button').addEventListener('click', this.selectWifi.bind(this));
         document.getElementById('m32-select-wifi3-button').addEventListener('click', this.selectWifi.bind(this));
 
-        document.getElementById('m32-config-snapshots-select').addEventListener('change', this.changedSnapshot.bind(this));
+        this.snapshotStatusElements = {};
+        this.snapshotRecallButtons = {};
+        this.snapshotClearButtons = {};
+        for (let index = 1; index < MAX_NUMBER_SNAPSHOTS + 1; index++) {
+            this.snapshotStatusElements[index] = document.getElementById('m32-config-snapshot-' + index + '-status');
+            this.snapshotRecallButtons[index] = document.getElementById('m32-config-snapshot-' + index + '-recall-button');
+            this.snapshotClearButtons[index] = document.getElementById('m32-config-snapshot-' + index + '-clear-button');
 
-        document.getElementById('m32-config-snapshot-button-store').addEventListener('click', this.storeSnapshot.bind(this));
-        
+            document.getElementById('m32-config-snapshot-' + index + '-store-button').addEventListener('click', this.storeSnapshot.bind(this, index));
+            this.snapshotRecallButtons[index].addEventListener('click', this.recallSnapshotClicked.bind(this, index));
+            this.snapshotClearButtons[index].addEventListener('click', this.clearSnapshotClicked.bind(this, index));
+        }
+
+
         document.getElementById('m32-config-cw-school-setup-snaphot1-button').addEventListener('click', this.setupCwSchoolSnapshot1.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot2-button').addEventListener('click', this.setupCwSchoolSnapshot2.bind(this));
         document.getElementById('m32-config-cw-school-setup-snaphot3-button').addEventListener('click', this.setupCwSchoolSnapshot3.bind(this));
@@ -72,10 +84,10 @@ class ConfigurationUI {
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
 
-        this.snapshotRecallButton = document.getElementById('m32-config-snapshot-button-recall');
-        this.snapshotRecallButton.addEventListener('click', this.recallSnapshotClicked.bind(this));
-        this.snapshotClearButton = document.getElementById('m32-config-snapshot-button-clear');
-        this.snapshotClearButton.addEventListener('click', this.clearSnapshotClicked.bind(this));
+        this.snapshotClearConfirmModalElement = document.getElementById('m32-config-snapshot-clear-confirm-modal');
+        this.snapshotClearConfirmModal = new bootstrap.Modal(this.snapshotClearConfirmModalElement);
+        this.snapshotClearConfirmText = document.getElementById('m32-config-snapshot-clear-confirm-text');
+        document.getElementById('m32-config-snapshot-clear-confirm-button').addEventListener('click', this.clearSnapshotConfirmed.bind(this));
     }
 
     readConfigs() {
@@ -428,59 +440,43 @@ class ConfigurationUI {
     }
 
     receivedSnapshots(snapshots) {
-        let selectElement = document.getElementById('m32-config-snapshots-select');
-        let existingSnapshots = snapshots['existing snapshots']
-        let optionElements = [];
-
-        for (let index = 0; index < existingSnapshots.length; index++) {
-            let snapshotId = existingSnapshots[index];
-            let optionElement = createElement(snapshotId.toString(), 'option', null);
-            optionElement.value = snapshotId;
-            optionElements.push(optionElement);
-        }
-        selectElement.replaceChildren(...optionElements);
-        selectElement.selectedIndex = -1; // no element selected by default
-    }
-
-    changedSnapshot(event) {
-        //let selectElement = event.target;
-        //let newSnapshotId = selectElement.options[selectElement.selectedIndex].value;
-        this.snapshotRecallButton.disabled = false;
-        this.snapshotClearButton.disabled = false;
-    }
-
-    recallSnapshotClicked() {
-        let selectedOption = document.getElementById('m32-config-snapshots-select');
-        let snapshotId = selectedOption.value;
-        if (snapshotId) {
-            log.debug("recall snapshot", snapshotId);
-            this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
-            this.m32CommunicationService.sendM32Command("PUT snapshot/recall/" + snapshotId, false);
-            // read new configuration:
-            this.m32CommunicationService.sendM32Command("GET configs");
+        let existingSnapshots = snapshots['existing snapshots'];
+        for (let index = 1; index < MAX_NUMBER_SNAPSHOTS + 1; index++) {
+            let exists = existingSnapshots.some(snapshotId => Number(snapshotId) === index);
+            this.snapshotStatusElements[index].textContent = exists ? 'Stored' : 'Empty';
+            this.snapshotRecallButtons[index].disabled = !exists;
+            this.snapshotClearButtons[index].disabled = !exists;
         }
     }
 
-    clearSnapshotClicked() {
-        let selectedOption = document.getElementById('m32-config-snapshots-select');
-        let snapshotId = selectedOption.value;
-        if (snapshotId) {
-            log.debug("clear snapshot", snapshotId);
-            this.m32CommunicationService.sendM32Command("PUT snapshot/clear/" + snapshotId, false);
-            // read new configuration:
-            this.m32CommunicationService.sendM32Command("GET snapshots");
-        }
+    recallSnapshotClicked(snapshotId) {
+        log.debug("recall snapshot", snapshotId);
+        this.m32CommunicationService.sendM32Command('PUT menu/stop', false);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/recall/" + snapshotId, false);
+        // read new configuration:
+        this.m32CommunicationService.sendM32Command("GET configs");
     }
 
-    storeSnapshot() {
-        let selectedOption = document.getElementById('m32-config-snapshots-store-select');
-        let snapshotId = selectedOption.value;
-        if (snapshotId) {
-            log.debug("store snapshot", snapshotId);
-            this.m32CommunicationService.sendM32Command("PUT snapshot/store/" + snapshotId, false);
-            // read new configuration:
-            this.m32CommunicationService.sendM32Command("GET snapshots");
-        }
+    clearSnapshotClicked(snapshotId) {
+        this.pendingClearSnapshotId = snapshotId;
+        this.snapshotClearConfirmText.textContent = "Do you really want to clear snapshot " + snapshotId + "?";
+        this.snapshotClearConfirmModal.show();
+    }
+
+    clearSnapshotConfirmed() {
+        let snapshotId = this.pendingClearSnapshotId;
+        this.snapshotClearConfirmModal.hide();
+        log.debug("clear snapshot", snapshotId);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/clear/" + snapshotId, false);
+        // read new configuration:
+        this.m32CommunicationService.sendM32Command("GET snapshots");
+    }
+
+    storeSnapshot(snapshotId) {
+        log.debug("store snapshot", snapshotId);
+        this.m32CommunicationService.sendM32Command("PUT snapshot/store/" + snapshotId, false);
+        // read new configuration:
+        this.m32CommunicationService.sendM32Command("GET snapshots");
     }
 
 

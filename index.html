@@ -191,13 +191,13 @@
             </div>
             <h4>Morserino Firmware Update</h4>
             <p>
-            Morserino Firmware needs to be 5.x to work with this page. Do an online in-browser firmware update 
-            at the <a href="https://www.morserino.info/flash.html" target="_blank">Morserino Flash Page</a>. 
-            Please note that you have to disconnect on this page to allo a firmware flash!
+            Morserino Firmware needs to be > 5.x (latest is recommended) to work with this page. Do an online in-browser firmware update 
+            at the <a href="https://www.morserino.info/install.html" target="_blank">Morserino Install Page</a>. 
+            Please note that you have to disconnect on this page to allow a firmware flash!
             </p>
             <h4>CW Generator mode</h4>
             <p>
-                You might need to configure the morserino to send characters via serial line first (see below)! Only Chrome, Edge and Opera are supported at the moment!
+                You might need to configure the Morserino to send characters via serial line first (see below)! Only Chrome, Firefox, Edge and Opera are supported at the moment!
                 <ul>
                     <li>Connect usb cable from Morserino32 to your PC/Mac/Linux machine.</li>
                     <li>Use "Connect" button and select serial port of Morserino32</li>
@@ -288,6 +288,7 @@
                 </div>
             </div>
             <ul>
+                <li>2026-08-16: v0.8.8 Nicer snapshot recall/store/clear.</li>
                 <li>2026-04-27: v0.8.5 Group configuration settings, add Koch custom characters. Callsign prefixes as abbreviations.</li>
                 <li>2026-04-20: v0.8.4 Eliminate boot and error messages.</li>
                 <li>2026-02-22: v0.8.0 Finally found (and hopefully fixed) the connection problems on Windows systems.</li>
@@ -371,7 +372,7 @@
                         <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
                       </svg>
                     Your browser does not support communication to Morserino!
-                    Please use Chrome, Edge or Opera!
+                    Please use Chrome, Firefox, Edge or Opera!
                 </div>
             </div>
         </div>
@@ -700,46 +701,132 @@
 
                 <div id="m32-config-snapshots">
                     <h3>Snapshots</h3>
-                    <div id="m32-config-snapshots" class="row">
-                        <div class="col-md-5">
-                            <p>Select snapshot to recall or clear a snapshot</p>
+                    <div class="d-flex flex-wrap gap-3" style="zoom: 0.8;">
+                        <div id="m32-config-snapshot-1-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">1</h4>
+                                    <p class="card-text" id="m32-config-snapshot-1-status">Empty</p>
+                                    <button id="m32-config-snapshot-1-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-1-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-1-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="m32-config-snapshots-select">
-                            </select>
-                        </div>    
-                        <div class="col-md-5">
-                            <button id="m32-config-snapshot-button-recall" class="btn btn-outline-primary" style="margin-top: 4px" type="button" disabled>
-                                Recall
-                            </button>
-                            <button id="m32-config-snapshot-button-clear" class="btn btn-outline-danger" style="margin-top: 4px" type="button" disabled>
-                                Clear
-                            </button>
+                        <div id="m32-config-snapshot-2-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">2</h4>
+                                    <p class="card-text" id="m32-config-snapshot-2-status">Empty</p>
+                                    <button id="m32-config-snapshot-2-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-2-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-2-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div id="m32-config-snapshots-store" class="row">
-                        <div class="col-md-5">
-                            <p>Select id to store/overwrite configuration as snapshot.</p>
+                        <div id="m32-config-snapshot-3-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">3</h4>
+                                    <p class="card-text" id="m32-config-snapshot-3-status">Empty</p>
+                                    <button id="m32-config-snapshot-3-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-3-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-3-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <select class="form-select" id="m32-config-snapshots-store-select">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                                <option value="8">8</option>
-                            </select>
-                        </div>    
-                        <div class="col-md-5">
-                            <button id="m32-config-snapshot-button-store" class="btn btn-outline-primary" style="margin-top: 4px" type="button">
-                                Store
-                            </button>
+                        <div id="m32-config-snapshot-4-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">4</h4>
+                                    <p class="card-text" id="m32-config-snapshot-4-status">Empty</p>
+                                    <button id="m32-config-snapshot-4-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-4-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-4-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="m32-config-snapshot-5-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">5</h4>
+                                    <p class="card-text" id="m32-config-snapshot-5-status">Empty</p>
+                                    <button id="m32-config-snapshot-5-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-5-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-5-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="m32-config-snapshot-6-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">6</h4>
+                                    <p class="card-text" id="m32-config-snapshot-6-status">Empty</p>
+                                    <button id="m32-config-snapshot-6-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-6-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-6-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="m32-config-snapshot-7-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">7</h4>
+                                    <p class="card-text" id="m32-config-snapshot-7-status">Empty</p>
+                                    <button id="m32-config-snapshot-7-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-7-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-7-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="m32-config-snapshot-8-card">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h4 class="card-title">8</h4>
+                                    <p class="card-text" id="m32-config-snapshot-8-status">Empty</p>
+                                    <button id="m32-config-snapshot-8-store-button" class="btn btn-success btn-sm" type="button">Store</button>
+                                    <div class="btn-group mt-2 d-block">
+                                        <button id="m32-config-snapshot-8-recall-button" class="btn btn-primary btn-sm" type="button" disabled>Recall</button>
+                                        <button id="m32-config-snapshot-8-clear-button" class="btn btn-danger btn-sm" type="button" disabled>Clear</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="modal fade" id="m32-config-snapshot-clear-confirm-modal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Clear Snapshot</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p id="m32-config-snapshot-clear-confirm-text">Do you really want to clear this snapshot?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" id="m32-config-snapshot-clear-confirm-button">Clear</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <hr/>
                 <div id="m32-config-wifi">
                     <h3>Wifi Configuration</h3>
