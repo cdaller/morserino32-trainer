@@ -141,7 +141,7 @@
             border: 1px solid red;
         }
         .m32-config-row {
-            border: 1px solid #CCCCCC;
+            border: 1px solid rgba(0, 0, 0, .125);
             border-radius: 4px;
             padding: 8px 0;
             margin-bottom: 8px;
@@ -853,110 +853,130 @@
 
                 <hr/>
                 <div id="m32-config-wifi">
-                    <h3>Wifi Configuration</h3>
-                    <h4>Wifi 1</h4>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi1-ssid" class="form-label">SSID</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi1-ssid">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi1-password" class="form-label">Password</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="password" id="m32-config-wifi1-password">
+                    <h3><i class="bi bi-wifi"></i> Wifi Configuration</h3>
+                    <div class="m32-config-row">
+                        <h4>ESPNow (Peer-to-Peer)</h4>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <span id="m32-config-wifi0-selected-badge" class="badge bg-success d-none" style="margin-top: 4px; display: inline-block;">Selected</span>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="m32-select-wifi0-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Slot</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi1-trxpeer" class="form-label">Trx Peer</label>
+                    <div class="m32-config-row">
+                        <h4>Wifi Slot 1</h4>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi1-ssid" class="form-label">SSID</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi1-ssid">
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi1-trxpeer" value="cq.morserino.info">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi1-password" class="form-label">Password</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="password" id="m32-config-wifi1-password">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi1-trxpeer" class="form-label">Trx Peer</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi1-trxpeer" value="cq.morserino.info">
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <button id="m32-config-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button id="m32-select-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
-                        </div>
-                    </div>
-                    <h4>Wifi 2</h4>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi2-ssid" class="form-label">SSID</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi2-ssid">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi2-password" class="form-label">Password</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input type="password" id="m32-config-wifi2-password">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi2-trxpeer" class="form-label">Trx Peer</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi2-trxpeer" value="cq.morserino.info">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <span id="m32-config-wifi1-selected-badge" class="badge bg-success d-none" style="margin-top: 4px; display: inline-block;">Selected</span>
+                            </div>
+                            <div class="col-md-1">
+                                <button id="m32-config-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="m32-select-wifi1-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Slot</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-2">
+                    <div class="m32-config-row">
+                        <h4>Wifi Slot 2</h4>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi2-ssid" class="form-label">SSID</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi2-ssid">
+                            </div>
                         </div>
-                        <div class="col-md-1">
-                            <button id="m32-config-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi2-password" class="form-label">Password</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="password" id="m32-config-wifi2-password">
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <button id="m32-select-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi2-trxpeer" class="form-label">Trx Peer</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi2-trxpeer" value="cq.morserino.info">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <span id="m32-config-wifi2-selected-badge" class="badge bg-success d-none" style="margin-top: 4px; display: inline-block;">Selected</span>
+                            </div>
+                            <div class="col-md-1">
+                                <button id="m32-config-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="m32-select-wifi2-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Slot</button>
+                            </div>
                         </div>
                     </div>
-                    <h4>Wifi 3</h4>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi3-ssid" class="form-label">SSID</label>
+                    <div class="m32-config-row">
+                        <h4>Wifi Slot 3</h4>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi3-ssid" class="form-label">SSID</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi3-ssid">
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi3-ssid">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi3-password" class="form-label">Password</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="password" id="m32-config-wifi3-password">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi3-password" class="form-label">Password</label>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="m32-config-wifi3-trxpeer" class="form-label">Trx Peer</label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="m32-config-wifi3-trxpeer" value="cq.morserino.info">
+                            </div>
                         </div>
-                        <div class="col-md-2">
-                            <input type="password" id="m32-config-wifi3-password">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <label for="m32-config-wifi3-trxpeer" class="form-label">Trx Peer</label>
-                        </div>
-                        <div class="col-md-2">
-                            <input id="m32-config-wifi3-trxpeer" value="cq.morserino.info">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                        </div>
-                        <div class="col-md-1">
-                            <button id="m32-config-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
-                        </div>
-                        <div class="col-md-2">
-                            <button id="m32-select-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Wifi</button>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <span id="m32-config-wifi3-selected-badge" class="badge bg-success d-none" style="margin-top: 4px; display: inline-block;">Selected</span>
+                            </div>
+                            <div class="col-md-1">
+                                <button id="m32-config-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Save</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button id="m32-select-wifi3-button" class="btn btn-outline-primary" style="margin-top: 4px" type="button">Select Slot</button>
+                            </div>
                         </div>
                     </div>
                 </div>

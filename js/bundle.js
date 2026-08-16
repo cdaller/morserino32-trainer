@@ -577,9 +577,15 @@ class ConfigurationUI {
         document.getElementById('m32-config-wifi2-button').addEventListener('click', this.saveWifi.bind(this));
         document.getElementById('m32-config-wifi3-button').addEventListener('click', this.saveWifi.bind(this));
 
+        document.getElementById('m32-select-wifi0-button').addEventListener('click', this.selectWifi.bind(this));
         document.getElementById('m32-select-wifi1-button').addEventListener('click', this.selectWifi.bind(this));
         document.getElementById('m32-select-wifi2-button').addEventListener('click', this.selectWifi.bind(this));
         document.getElementById('m32-select-wifi3-button').addEventListener('click', this.selectWifi.bind(this));
+
+        this.wifiSelectedBadges = {};
+        for (let index = 0; index < 4; index++) {
+            this.wifiSelectedBadges[index] = document.getElementById('m32-config-wifi' + index + '-selected-badge');
+        }
 
         this.snapshotStatusElements = {};
         this.snapshotRecallButtons = {};
@@ -662,9 +668,9 @@ class ConfigurationUI {
                     }
                     break;
                 case 'wifi':
-                    if (this.configRootElement) {                            
+                    if (this.configRootElement) {
                         console.log(value);
-                        this.receivedWifis(value);
+                        this.receivedWifis(value, jsonObject);
                     }
                     break;
                 case 'snapshots':
@@ -949,13 +955,18 @@ class ConfigurationUI {
         }
     }
 
-    receivedWifis(wifiConfig) {
+    receivedWifis(wifiConfig, jsonObject) {
         let baseId = 'm32-config-wifi';
         for (let index = 1; index < 4; index++) {
             let ssidId = baseId + index + '-ssid';
             let trxPeerId = baseId + index + '-trxpeer';
             document.getElementById(ssidId).value = wifiConfig[index-1]['ssid'];
             document.getElementById(trxPeerId).value = wifiConfig[index-1]['trxpeer'];
+        }
+
+        let selectedWifi = jsonObject['wlanChoice'];
+        for (let index = 0; index < 4; index++) {
+            this.wifiSelectedBadges[index].classList.toggle('d-none', index !== selectedWifi);
         }
     }
 
@@ -977,6 +988,7 @@ class ConfigurationUI {
         let baseId = event.target.id.substring(0, event.target.id.length - '-button'.length);
         let wifiNumber = baseId.substring(baseId.length - 1);
         this.m32CommunicationService.sendM32Command(`PUT wifi/select/${wifiNumber}`, false);
+        this.m32CommunicationService.sendM32Command('GET wifi');
     }
 
     receivedSnapshots(snapshots) {
