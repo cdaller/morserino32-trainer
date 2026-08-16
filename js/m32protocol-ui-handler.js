@@ -2,13 +2,76 @@
 
 let log = require("loglevel");
 
+const CONTROL_PANEL_DEBOUNCE_MS = 150;
 
 class M32CommandUIHandler {
 
-    constructor(language = 'en', m32translations) {
+    constructor(language = 'en', m32translations, m32CommunicationService) {
         this.m32ProtocolEnabled = false;
         this.language = language;
         this.m32translations = m32translations;
+        this.m32CommunicationService = m32CommunicationService;
+        this.controlPanels = {};
+
+        this.setupControlPanel('speed', 'm32Speed', 'm32SpeedPanel', 'm32SpeedRange', 'm32SpeedRangeValue');
+        this.setupControlPanel('volume', 'm32Volume', 'm32VolumePanel', 'm32VolumeRange', 'm32VolumeRangeValue');
+
+        document.addEventListener('click', this.closeAllControlPanels.bind(this));
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                this.closeAllControlPanels();
+            }
+        });
+    }
+
+    setupControlPanel(controlName, badgeId, panelId, rangeId, rangeValueId) {
+        let badge = document.getElementById(badgeId);
+        let panel = document.getElementById(panelId);
+        let range = document.getElementById(rangeId);
+        let rangeValue = document.getElementById(rangeValueId);
+        if (!badge || !panel || !range || !rangeValue) {
+            return;
+        }
+
+        badge.addEventListener('click', (event) => {
+            event.stopPropagation();
+            let isOpen = panel.classList.contains('show');
+            this.closeAllControlPanels();
+            if (!isOpen) {
+                panel.classList.add('show');
+            }
+        });
+        panel.addEventListener('click', (event) => event.stopPropagation());
+
+        let debounceTimer = null;
+        range.addEventListener('input', () => {
+            rangeValue.textContent = range.value;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                this.m32CommunicationService.sendM32Command('PUT control/' + controlName + '/' + range.value, false);
+            }, CONTROL_PANEL_DEBOUNCE_MS);
+        });
+
+        this.controlPanels[controlName] = { range, rangeValue };
+    }
+
+    closeAllControlPanels() {
+        document.querySelectorAll('.dropdown-menu.show').forEach(element => element.classList.remove('show'));
+    }
+
+    updateControlPanel(controlName, value, minimum, maximum) {
+        let controlPanel = this.controlPanels[controlName];
+        if (!controlPanel) {
+            return;
+        }
+        if (minimum !== undefined) {
+            controlPanel.range.min = minimum;
+        }
+        if (maximum !== undefined) {
+            controlPanel.range.max = maximum;
+        }
+        controlPanel.range.value = value;
+        controlPanel.rangeValue.textContent = value;
     }
 
     // callback method for a full json object received
@@ -30,10 +93,14 @@ class M32CommandUIHandler {
                 case 'control':
                     var controlKey = value['name'];
                     var controlValue = value['value'];
+                    var controlMinimum = value['minimum'];
+                    var controlMaximum = value['maximum'];
                     if (controlKey === 'speed') {
-                        this.receivedM32Speed(controlValue);
+                        this.receivedM32Speed(controlValue, controlMinimum, controlMaximum);
+                    } else if (controlKey === 'volume') {
+                        this.receivedM32Volume(controlValue, controlMinimum, controlMaximum);
                     }
-                    break;            
+                    break;
                 case 'kochlesson':
                     this.receivedM32KochLesson(value);
                     break;                        
@@ -52,11 +119,20 @@ class M32CommandUIHandler {
         document.querySelectorAll('.m32-protocol').forEach(element => element.classList.add('m32-protocol-enabled'))
     }
 
-    receivedM32Speed(speed) {
+    receivedM32Speed(speed, minimum, maximum) {
         let speedElement = document.getElementById("m32Speed");
         if (speedElement) {
             speedElement.textContent = speed + ' wpm';
         }
+        this.updateControlPanel('speed', speed, minimum, maximum);
+    }
+
+    receivedM32Volume(volume, minimum, maximum) {
+        let volumeElement = document.getElementById("m32Volume");
+        if (volumeElement) {
+            volumeElement.textContent = 'Vol: ' + volume;
+        }
+        this.updateControlPanel('volume', volume, minimum, maximum);
     }
 
     receivedM32Menu(menu) {

@@ -376,7 +376,20 @@
                 </div>
                 <div class="row">
                     <div class="col text-end">
-                        <span id="m32Speed" class="badge bg-dark">17 wpm</span>
+                        <span class="position-relative d-inline-block">
+                            <span id="m32Speed" class="badge bg-dark" role="button" style="cursor: pointer;">17 wpm</span>
+                            <div id="m32SpeedPanel" class="dropdown-menu p-2 text-start" style="min-width: 180px; left: 50%; right: auto; transform: translateX(-50%);">
+                                <label for="m32SpeedRange" class="form-label small mb-1">Speed: <span id="m32SpeedRangeValue"></span> wpm</label>
+                                <input type="range" class="form-range" id="m32SpeedRange" min="5" max="60" value="17">
+                            </div>
+                        </span>
+                        <span class="position-relative d-inline-block">
+                            <span id="m32Volume" class="badge bg-dark" role="button" style="cursor: pointer;"></span>
+                            <div id="m32VolumePanel" class="dropdown-menu p-2 text-start" style="min-width: 180px; left: 50%; right: auto; transform: translateX(-50%);">
+                                <label for="m32VolumeRange" class="form-label small mb-1">Volume: <span id="m32VolumeRangeValue"></span></label>
+                                <input type="range" class="form-range" id="m32VolumeRange" min="0" max="19" value="0">
+                            </div>
+                        </span>
                         <span id="m32KochLesson" class="badge bg-dark">Koch: a (1)</span>
                     </div>
                 </div>

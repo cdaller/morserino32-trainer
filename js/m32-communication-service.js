@@ -72,7 +72,7 @@ class M32CommunicationService {
         this.m32State = new M32State();
         this.m32translations = new M32Translations(this.m32Language);
         this.speechSynthesisHandler = new M32CommandSpeechHandler(this.m32Language);
-        this.commandUIHandler = new M32CommandUIHandler(this.m32Language, this.m32translations);
+        this.commandUIHandler = new M32CommandUIHandler(this.m32Language, this.m32translations, this);
         this.protocolHandlers = [
             new M32CommandStateHandler(this.m32State), 
             this.commandUIHandler, 
@@ -343,8 +343,8 @@ class M32CommunicationService {
         this.sendM32Command('PUT config/Serial Output/5', false);
         //sendM32Command('GET device');
         this.sendM32Command('GET control/speed');
+        this.sendM32Command('GET control/volume');
         this.sendM32Command('GET kochlesson');
-        //sendM32Command('GET control/volume');
         this.sendM32Command('GET menu');
     }
 
