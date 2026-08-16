@@ -618,6 +618,7 @@ class ConfigurationUI {
         document.getElementById('m32-config-cw-school-setup-snapshot8-koch-button').addEventListener('click', this.setupCwSchoolSnapshot8Koch.bind(this));
         
         document.getElementById('m32-device-info-button').addEventListener('click', this.requestDeviceInfo.bind(this));
+        document.getElementById('m32-hardware-status-button').addEventListener('click', this.requestHardwareStatus.bind(this));
 
         this.snapshotClearConfirmModalElement = document.getElementById('m32-config-snapshot-clear-confirm-modal');
         this.snapshotClearConfirmModal = new bootstrap.Modal(this.snapshotClearConfirmModalElement);
@@ -630,6 +631,7 @@ class ConfigurationUI {
         this.m32CommunicationService.sendM32Command('GET snapshots');
         this.m32CommunicationService.sendM32Command('GET configs'); // triggers a handleM32Object callback
         this.m32CommunicationService.sendM32Command('GET kochlesson');
+        this.requestHardwareStatus();
     }
 
     // callback method for a full json object received
@@ -689,6 +691,18 @@ class ConfigurationUI {
                     if (this.configRootElement) {
                         console.log(value);
                         this.receivedDevice(value);
+                    }
+                    break;
+                case 'hardware':
+                    if (this.configRootElement) {
+                        console.log(value);
+                        this.receivedHardware(value);
+                    }
+                    break;
+                case 'battery':
+                    if (this.configRootElement) {
+                        console.log(value);
+                        this.receivedBattery(value);
                     }
                     break;
                 case 'customchars':
@@ -789,7 +803,7 @@ class ConfigurationUI {
         let container = this.kochExtrasContainer;
         if (!container) return;
 
-        let rowDiv = createElement(null, 'div', 'row mt-3');
+        let rowDiv = createElement(null, 'div', 'row align-items-center m32-config-row mt-3');
         rowDiv.id = 'koch-lesson-row';
 
         let titleColumn = createElement(null, 'div', 'col-md-6');
@@ -1260,8 +1274,36 @@ class ConfigurationUI {
     }
 
     receivedDevice(value) {
-        let message = 'Hardware: ' + value['hardware'] + ', Firmware: ' + value['firmware'];
+        let message = 'Hardware: ' + value['hardware'] + ', Firmware: ' + value['firmware']
+            + ', Protocol: ' + value['protocol'] + ', Build: ' + value['build'];
         document.getElementById('m32-config-device-info').innerHTML = message;
+    }
+
+    requestHardwareStatus() {
+        this.m32CommunicationService.sendM32Command("GET hardware");
+        this.m32CommunicationService.sendM32Command("GET battery");
+    }
+
+    receivedHardware(value) {
+        let lines = [];
+        lines.push('Brightness: ' + value['brightness']);
+        lines.push('Left Handed: ' + value['leftHanded']);
+        if (value['cn3Paddle'] !== undefined) {
+            lines.push('CN3 Paddle: ' + value['cn3Paddle']);
+        }
+        lines.push('V-Adjust: ' + value['vAdjust']);
+        if (value['loraBand'] !== undefined) {
+            lines.push('LoRa Band: ' + value['loraBand']);
+            lines.push('LoRa Frequency: ' + value['loraFrequency']);
+            lines.push('LoRa Power: ' + value['loraPower']);
+        }
+        document.getElementById('m32-config-hardware-info').innerHTML = lines.join(', ');
+    }
+
+    receivedBattery(value) {
+        // voltage is reported in millivolts
+        let message = 'Battery: ' + (value['voltage'] !== undefined ? (value['voltage'] / 1000).toFixed(3) + 'V, ' : '') + value['status'];
+        document.getElementById('m32-config-battery-info').innerHTML = message;
     }
 }
 

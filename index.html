@@ -697,10 +697,11 @@
                 </div>
                 <div>
                     <ul>
-                        <li><a href="#m32-config-device">Device Info</a></li>
-                        <li><a href="#m32-config-snapshots">Snapshots</a></li>
-                        <li><a href="#m32-config-wifi">Wifi Configuration</a></li>
-                        <li><a href="#m32-config-settings">Configuration</a></li>
+                        <li><a href="#m32-config-device"><i class="bi bi-info-circle"></i> Device Info</a></li>
+                        <li><a href="#m32-config-hardware-status"><i class="bi bi-cpu"></i> Hardware &amp; Status</a></li>
+                        <li><a href="#m32-config-snapshots"><i class="bi bi-camera"></i> Snapshots</a></li>
+                        <li><a href="#m32-config-wifi"><i class="bi bi-wifi"></i> Wifi Configuration</a></li>
+                        <li><a href="#m32-config-settings"><i class="bi bi-sliders"></i> Configuration</a></li>
                         <li class="cw-school-graz"><a href="#m32-config-cw-school-graz"><i class="bi bi-music-note-beamed"></i> CW School Graz Configuration</a></li>
                     </ul>
                 </div>
@@ -708,15 +709,24 @@
                 <hr/>
 
                 <div id="m32-config-device">
-                    <h3>Device Info</h3>
+                    <h3><i class="bi bi-info-circle"></i> Device Info</h3>
                     <div id="m32-config-device-info"></div>
                     <button id="m32-device-info-button" class="btn btn-outline-primary">Load Device Info</button>
                 </div>
 
                 <hr/>
 
+                <div id="m32-config-hardware-status">
+                    <h3><i class="bi bi-cpu"></i> Hardware &amp; Status</h3>
+                    <div id="m32-config-hardware-info"></div>
+                    <div id="m32-config-battery-info"></div>
+                    <button id="m32-hardware-status-button" class="btn btn-outline-primary">Load Hardware &amp; Status</button>
+                </div>
+
+                <hr/>
+
                 <div id="m32-config-snapshots">
-                    <h3>Snapshots</h3>
+                    <h3><i class="bi bi-camera"></i> Snapshots</h3>
                     <div class="d-flex flex-wrap gap-3" style="zoom: 0.8;">
                         <div id="m32-config-snapshot-1-card">
                             <div class="card text-center">
@@ -983,7 +993,7 @@
                 <hr/>
 
                 <div id="m32-config-settings">
-                    <h3>Configuration</h3>
+                    <h3><i class="bi bi-sliders"></i> Configuration</h3>
                     <div id="m32-config"></div>
                 </div>
 
