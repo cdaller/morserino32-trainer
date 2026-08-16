@@ -390,7 +390,14 @@
                                 <input type="range" class="form-range" id="m32VolumeRange" min="0" max="19" value="0">
                             </div>
                         </span>
-                        <span id="m32KochLesson" class="badge bg-dark">Koch: a (1)</span>
+                        <span class="position-relative d-inline-block">
+                            <span id="m32KochLesson" class="badge bg-dark" role="button" style="cursor: pointer;">Koch: a (1)</span>
+                            <div id="m32KochLessonPanel" class="dropdown-menu p-2 text-start" style="min-width: 220px; left: auto; right: 0;">
+                                <label for="m32KochLessonRange" class="form-label small mb-1">Koch Lesson: <span id="m32KochLessonRangeValue"></span></label>
+                                <input type="range" class="form-range" id="m32KochLessonRange" min="1" max="40" value="1">
+                                <div id="m32KochLessonRangeChars" class="small font-monospace"></div>
+                            </div>
+                        </span>
                     </div>
                 </div>
             </div>

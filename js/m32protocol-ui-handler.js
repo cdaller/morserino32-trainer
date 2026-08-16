@@ -15,6 +15,10 @@ class M32CommandUIHandler {
 
         this.setupControlPanel('speed', 'm32Speed', 'm32SpeedPanel', 'm32SpeedRange', 'm32SpeedRangeValue');
         this.setupControlPanel('volume', 'm32Volume', 'm32VolumePanel', 'm32VolumeRange', 'm32VolumeRangeValue');
+        this.setupControlPanel('kochlesson', 'm32KochLesson', 'm32KochLessonPanel', 'm32KochLessonRange', 'm32KochLessonRangeValue', {
+            charsElementId: 'm32KochLessonRangeChars',
+            buildCommand: (value) => 'PUT kochlesson/' + value
+        });
 
         document.addEventListener('click', this.closeAllControlPanels.bind(this));
         document.addEventListener('keydown', (event) => {
@@ -24,11 +28,12 @@ class M32CommandUIHandler {
         });
     }
 
-    setupControlPanel(controlName, badgeId, panelId, rangeId, rangeValueId) {
+    setupControlPanel(controlName, badgeId, panelId, rangeId, rangeValueId, options = {}) {
         let badge = document.getElementById(badgeId);
         let panel = document.getElementById(panelId);
         let range = document.getElementById(rangeId);
         let rangeValue = document.getElementById(rangeValueId);
+        let charsElement = options.charsElementId ? document.getElementById(options.charsElementId) : null;
         if (!badge || !panel || !range || !rangeValue) {
             return;
         }
@@ -43,23 +48,26 @@ class M32CommandUIHandler {
         });
         panel.addEventListener('click', (event) => event.stopPropagation());
 
+        let buildCommand = options.buildCommand || (value => 'PUT control/' + controlName + '/' + value);
+
         let debounceTimer = null;
         range.addEventListener('input', () => {
             rangeValue.textContent = range.value;
+            this.updateControlPanelChars(controlName, range.value);
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
-                this.m32CommunicationService.sendM32Command('PUT control/' + controlName + '/' + range.value, false);
+                this.m32CommunicationService.sendM32Command(buildCommand(range.value), false);
             }, CONTROL_PANEL_DEBOUNCE_MS);
         });
 
-        this.controlPanels[controlName] = { range, rangeValue };
+        this.controlPanels[controlName] = { range, rangeValue, charsElement, characters: [] };
     }
 
     closeAllControlPanels() {
         document.querySelectorAll('.dropdown-menu.show').forEach(element => element.classList.remove('show'));
     }
 
-    updateControlPanel(controlName, value, minimum, maximum) {
+    updateControlPanel(controlName, value, minimum, maximum, characters) {
         let controlPanel = this.controlPanels[controlName];
         if (!controlPanel) {
             return;
@@ -70,8 +78,20 @@ class M32CommandUIHandler {
         if (maximum !== undefined) {
             controlPanel.range.max = maximum;
         }
+        if (characters !== undefined) {
+            controlPanel.characters = characters;
+        }
         controlPanel.range.value = value;
         controlPanel.rangeValue.textContent = value;
+        this.updateControlPanelChars(controlName, value);
+    }
+
+    updateControlPanelChars(controlName, lessonNumber) {
+        let controlPanel = this.controlPanels[controlName];
+        if (!controlPanel || !controlPanel.charsElement) {
+            return;
+        }
+        controlPanel.charsElement.textContent = controlPanel.characters.slice(0, lessonNumber).join(' ');
     }
 
     // callback method for a full json object received
@@ -167,6 +187,7 @@ class M32CommandUIHandler {
         if (kochLessonElement) {
             kochLessonElement.textContent = "Koch " + value + " '" + currentCharacter + "'";
         }
+        this.updateControlPanel('kochlesson', value, kochlesson['minimum'], kochlesson['maximum'], characters);
     }
 
 }
